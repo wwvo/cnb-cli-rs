@@ -83,6 +83,7 @@ async fn async_main() -> anyhow::Result<()> {
             match cmd.subcommand {
                 IssueSubcommand::List(ref args) => commands::issue::list::run(&ctx, args).await,
                 IssueSubcommand::Mine => commands::issue::mine::run(&ctx).await,
+                IssueSubcommand::Create(ref args) => commands::issue::create::run(&ctx, args).await,
             }
         }
     }

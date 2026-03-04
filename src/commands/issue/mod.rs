@@ -2,6 +2,7 @@
 
 use clap::Parser;
 
+pub mod create;
 pub mod list;
 pub mod mine;
 
@@ -19,4 +20,7 @@ pub enum IssueSubcommand {
 
     /// 列出与我相关的 Issue
     Mine,
+
+    /// 创建 Issue
+    Create(create::CreateArgs),
 }
