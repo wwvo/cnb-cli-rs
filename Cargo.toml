@@ -1,0 +1,75 @@
+[package]
+name = "cnb"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[workspace]
+resolver = "2"
+members = [
+  "crates/cnb-api",
+  "crates/cnb-chat",
+  "crates/cnb-core",
+  "crates/cnb-tui",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+repository = "https://cnb.cool/prevailna/cnb"
+license = "MIT"
+
+[workspace.dependencies]
+# 内部 crate
+cnb-api = { path = "crates/cnb-api" }
+cnb-chat = { path = "crates/cnb-chat" }
+cnb-core = { path = "crates/cnb-core" }
+cnb-tui = { path = "crates/cnb-tui" }
+
+# 外部依赖
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+clap_complete = "4"
+dirs = "6"
+regex-lite = "0.1"
+reqwest = { version = "0.12", default-features = false, features = [
+  "json",
+  "rustls-tls"
+] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "signal"] }
+toml = "0.8"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+url = "2"
+
+[workspace.lints.clippy]
+expect_used = "deny"
+needless_borrow = "deny"
+redundant_clone = "deny"
+uninlined_format_args = "deny"
+unwrap_used = "deny"
+
+[[bin]]
+name = "cnb"
+path = "src/main.rs"
+
+[[bin]]
+name = "git-cnb"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true }
+clap_complete = { workspace = true }
+cnb-api = { workspace = true }
+cnb-core = { workspace = true }
+cnb-tui = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+[lints]
+workspace = true
