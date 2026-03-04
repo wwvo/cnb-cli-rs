@@ -54,7 +54,7 @@ impl Config {
         Ok(config)
     }
 
-    /// 配置文件路径: ~/.cnb/config.toml
+    /// 配置文件路径：~/.cnb/config.toml
     pub fn config_path() -> PathBuf {
         let home = cnb_home_dir();
         home.join(CONFIG_FILE)
@@ -85,7 +85,7 @@ impl Config {
         match key {
             "domain" => config.domain = Some(value.to_string()),
             "git_protocol" => config.git_protocol = Some(value.to_string()),
-            _ => anyhow::bail!("未知配置项: {key}\n可用配置项: {}", Self::VALID_KEYS.join(", ")),
+            _ => anyhow::bail!("未知配置项：{key}\n可用配置项：{}", Self::VALID_KEYS.join(", ")),
         }
 
         Self::write_config(&path, &config)
@@ -149,7 +149,7 @@ impl Config {
     }
 }
 
-/// 获取 CNB 主目录: ~/.cnb/
+/// 获取 CNB 主目录：~/.cnb/
 pub fn cnb_home_dir() -> PathBuf {
     dirs::home_dir()
         .unwrap_or_else(|| PathBuf::from("."))

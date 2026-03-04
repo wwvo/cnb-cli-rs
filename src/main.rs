@@ -139,7 +139,10 @@ async fn async_main() -> anyhow::Result<()> {
                     commands::config::list::run(&ctx);
                     Ok(())
                 }
-                ConfigSubcommand::Get(_ref_args) => todo!("config get"),
+                ConfigSubcommand::Get(ref args) => {
+                    commands::config::get::run(&ctx, args)?;
+                    Ok(())
+                }
                 ConfigSubcommand::Set(_ref_args) => todo!("config set"),
             }
         }
