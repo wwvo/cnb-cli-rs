@@ -3,6 +3,7 @@
 use anyhow::Result;
 use cnb_api::types::ListIssuesOptions;
 use cnb_core::context::AppContext;
+use cnb_tui::{Column, Table};
 
 /// 执行 issue mine 命令
 pub async fn run(ctx: &AppContext) -> Result<()> {
@@ -55,11 +56,19 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
     }
 
     // 表格输出
-    println!("{:<15} {:<70} {:<10}", "NUMBER", "TITLE", "TYPE");
+    let mut table = Table::new(vec![
+        Column::new("NUMBER", 15),
+        Column::new("TITLE", 65),
+        Column::new("TYPE", 10),
+    ]);
     for (number, title, issue_type) in &results {
-        let title = truncate_str(title, 67);
-        println!("{:<15} {:<70} {:<10}", number, title, issue_type);
+        table.add_row(vec![
+            number.clone(),
+            title.clone(),
+            issue_type.to_string(),
+        ]);
     }
+    table.print();
 
     // 尝试获取同组织下 feedback 仓库的 Issue（忽略错误）
     let feedback_repo = get_feedback_repo(repo);
@@ -77,29 +86,23 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
             ..Default::default()
         };
         if let Ok(fb_issues) = feedback_client.list_issues(&fb_to_me_opts).await {
+            let mut fb_table = Table::new(vec![
+                Column::new("NUMBER", 15),
+                Column::new("TITLE", 65),
+                Column::new("TYPE", 10),
+            ]);
             for issue in &fb_issues {
-                println!(
-                    "{:<15} {:<70} {:<10}",
+                fb_table.add_row(vec![
                     format!("feedback#{}", issue.number),
-                    issue.title,
-                    "->ME"
-                );
+                    issue.title.clone(),
+                    "->ME".to_string(),
+                ]);
             }
+            fb_table.print();
         }
     }
 
     Ok(())
-}
-
-/// UTF-8 安全的字符串截断（按字符数而非字节数）
-fn truncate_str(s: &str, max_chars: usize) -> String {
-    let chars: Vec<char> = s.chars().collect();
-    if chars.len() > max_chars {
-        let truncated: String = chars[..max_chars].iter().collect();
-        format!("{truncated}...")
-    } else {
-        s.to_string()
-    }
 }
 
 /// 获取同组织下的 feedback 仓库路径

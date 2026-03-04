@@ -2,6 +2,7 @@
 
 use anyhow::Result;
 use cnb_core::context::AppContext;
+use cnb_tui::{Column, Table};
 
 /// 执行 release list 命令
 pub async fn run(ctx: &AppContext) -> Result<()> {
@@ -13,10 +14,12 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
         return Ok(());
     }
 
-    println!(
-        "{:<15} {:<15} {:<15} {:<25}",
-        "Name", "TAG NAME", "TYPE", "PUBLISHED"
-    );
+    let mut table = Table::new(vec![
+        Column::new("Name", 15),
+        Column::new("TAG NAME", 15),
+        Column::new("TYPE", 15),
+        Column::new("PUBLISHED", 25),
+    ]);
     for release in &releases {
         let release_type = if release.is_latest {
             "Latest"
@@ -26,11 +29,14 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
             ""
         };
         let published = parse_rfc3339(&release.published_at);
-        println!(
-            "{:<15} {:<15} {:<15} {:<25}",
-            release.name, release.tag_name, release_type, published
-        );
+        table.add_row(vec![
+            release.name.clone(),
+            release.tag_name.clone(),
+            release_type.to_string(),
+            published,
+        ]);
     }
+    table.print();
 
     Ok(())
 }

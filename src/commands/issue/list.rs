@@ -3,6 +3,7 @@
 use anyhow::Result;
 use clap::Parser;
 use cnb_core::context::AppContext;
+use cnb_tui::{Column, Table};
 
 /// 列出仓库的 Issue
 #[derive(Debug, Parser)]
@@ -33,18 +34,22 @@ pub async fn run(ctx: &AppContext, args: &ListArgs) -> Result<()> {
     }
 
     // 表格输出
-    println!(
-        "{:<10} {:<60} {:<25} {:<10}",
-        "NUMBER", "TITLE", "LastActedAt", "StaleDays"
-    );
+    let mut table = Table::new(vec![
+        Column::new("NUMBER", 10),
+        Column::new("TITLE", 60),
+        Column::new("LastActedAt", 25),
+        Column::new("StaleDays", 10),
+    ]);
     for issue in &filtered {
         let stale_days = calculate_stale_days(&issue.last_acted_at);
-        let title = truncate_str(&issue.title, 57);
-        println!(
-            "{:<10} {:<60} {:<25} {:<10}",
-            issue.number, title, issue.last_acted_at, stale_days
-        );
+        table.add_row(vec![
+            issue.number.clone(),
+            issue.title.clone(),
+            issue.last_acted_at.clone(),
+            stale_days.to_string(),
+        ]);
     }
+    table.print();
 
     Ok(())
 }
@@ -56,17 +61,6 @@ fn is_stale(last_acted_at: &str, stale_days: u32) -> bool {
     }
     let days = calculate_stale_days(last_acted_at);
     days >= stale_days
-}
-
-/// UTF-8 安全的字符串截断（按字符数而非字节数）
-fn truncate_str(s: &str, max_chars: usize) -> String {
-    let chars: Vec<char> = s.chars().collect();
-    if chars.len() > max_chars {
-        let truncated: String = chars[..max_chars].iter().collect();
-        format!("{truncated}...")
-    } else {
-        s.to_string()
-    }
 }
 
 /// 计算不活跃天数

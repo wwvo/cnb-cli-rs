@@ -3,6 +3,7 @@
 use anyhow::Result;
 use cnb_api::types::ListPullsOptions;
 use cnb_core::context::AppContext;
+use cnb_tui::{Column, Table};
 
 /// 执行 pull list 命令
 pub async fn run(ctx: &AppContext) -> Result<()> {
@@ -43,31 +44,21 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
         return Ok(());
     }
 
-    println!(
-        "{:<15} {:<55} {:<15} {:<10}",
-        "NUMBER", "TITLE", "BLOCKEDON", "TYPE"
-    );
+    let mut table = Table::new(vec![
+        Column::new("NUMBER", 15),
+        Column::new("TITLE", 55),
+        Column::new("BLOCKEDON", 15),
+        Column::new("TYPE", 10),
+    ]);
     for (number, title, blocked_on, pr_type) in &results {
-        let title = truncate_str(title, 52);
-        println!(
-            "{:<15} {:<55} {:<15} {:<10}",
+        table.add_row(vec![
             format!("#{number}"),
-            title,
-            blocked_on,
-            pr_type
-        );
+            title.to_string(),
+            blocked_on.to_string(),
+            pr_type.to_string(),
+        ]);
     }
+    table.print();
 
     Ok(())
-}
-
-/// UTF-8 安全的字符串截断
-fn truncate_str(s: &str, max_chars: usize) -> String {
-    let chars: Vec<char> = s.chars().collect();
-    if chars.len() > max_chars {
-        let truncated: String = chars[..max_chars].iter().collect();
-        format!("{truncated}...")
-    } else {
-        s.to_string()
-    }
 }
