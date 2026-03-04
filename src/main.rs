@@ -118,7 +118,7 @@ async fn async_main() -> anyhow::Result<()> {
             match cmd.subcommand {
                 AuthSubcommand::Login(ref args) => commands::auth::login::run(&ctx, args).await,
                 AuthSubcommand::Status => commands::auth::status::run(&ctx).await,
-                AuthSubcommand::Logout => todo!("auth logout"),
+                AuthSubcommand::Logout => commands::auth::logout::run(&ctx).await,
             }
         }
         Commands::Chat(ref args) => {
