@@ -193,6 +193,50 @@ impl CnbClient {
         Err(ApiError::HttpStatus { status, body })
     }
 
+    // ==================== Pull Request API ====================
+
+    /// 获取 Pull Request 列表
+    pub async fn list_pulls(&self, opts: &ListPullsOptions) -> Result<Vec<PullRequest>, ApiError> {
+        let mut url = format!("{}{}/-/pulls?page={}&page_size={}&state={}",
+            self.base_url, self.repo, opts.page, opts.page_size, opts.state);
+        if let Some(ref reviewers) = opts.reviewers {
+            url.push_str(&format!("&reviewers={reviewers}"));
+        }
+        if let Some(ref authors) = opts.authors {
+            url.push_str(&format!("&authors={authors}"));
+        }
+        let resp = self.http.get(&url).send().await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 获取仓库的 HEAD 引用（默认分支名）
+    pub async fn get_head(&self, repo_name: &str) -> Result<HeadRef, ApiError> {
+        let url = format!("{}{repo_name}/-/git/head", self.base_url);
+        let resp = self.http.get(&url).send().await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 创建 Pull Request
+    pub async fn create_pull(&self, repo_name: &str, req: &CreatePullRequest) -> Result<Pull, ApiError> {
+        let url = format!("{}{repo_name}/-/pulls", self.base_url);
+        let resp = self.http.post(&url).json(req).send().await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 更新 Pull Request
+    pub async fn update_pull(&self, number: &str, req: &UpdatePullRequest) -> Result<Pull, ApiError> {
+        let url = format!("{}{}/-/pulls/{number}", self.base_url, self.repo);
+        let resp = self.http.patch(&url).json(req).send().await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 合并 Pull Request
+    pub async fn merge_pull(&self, number: &str, req: &MergePullRequestBody) -> Result<MergePullResponse, ApiError> {
+        let url = format!("{}{}/-/pulls/{number}/merge", self.base_url, self.repo);
+        let resp = self.http.put(&url).json(req).send().await?;
+        Self::handle_response(resp).await
+    }
+
     // ==================== Internal ====================
 
     /// 处理 HTTP 响应，返回反序列化后的结果或错误
