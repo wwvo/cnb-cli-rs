@@ -101,3 +101,8 @@ windows-sys = { version = "0.59", features = ["Win32_System_Console"] }
 
 [lints]
 workspace = true
+
+[profile.release]
+strip = true
+lto = true
+codegen-units = 1
