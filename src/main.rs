@@ -39,6 +39,9 @@ enum Commands {
 
     /// Release 管理
     Release(commands::release::ReleaseCommand),
+
+    /// Commit 管理
+    Commit(commands::commit::CommitCommand),
 }
 
 fn main() {
@@ -114,6 +117,12 @@ async fn async_main() -> anyhow::Result<()> {
                 ReleaseSubcommand::AssetStats => commands::release::asset_stats::run(&ctx).await,
                 ReleaseSubcommand::AssetClean(ref args) => commands::release::asset_clean::run(&ctx, args).await,
                 ReleaseSubcommand::AssetUpload(ref args) => commands::release::asset_upload::run(&ctx, args).await,
+            }
+        }
+        Commands::Commit(cmd) => {
+            use commands::commit::CommitSubcommand;
+            match cmd.subcommand {
+                CommitSubcommand::AssetStats => commands::commit::asset_stats::run(&ctx).await,
             }
         }
     }
