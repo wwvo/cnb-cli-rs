@@ -1,0 +1,32 @@
+# cnb pull list
+
+```
+cnb pull list
+```
+
+列出与当前用户相关的所有 `open` 状态 Pull Request。
+
+同时查询两类 PR 并合并显示：
+
+- **我发起的**（`ME->`）
+- **需要我审查的**（`->ME`）
+
+输出为表格格式，包含 PR 编号、标题、阻塞状态和类型标记。
+
+## 示例
+
+```bash
+$ cnb pull list
+```
+
+## 输出示例
+
+```
+NUMBER          TITLE                                                   BLOCKEDON       TYPE
+#42             重构认证模块                                                             ME->
+#56             修复样式问题                                             ci              ->ME
+```
+
+## 另请参阅
+
+- [cnb pull](/pull/)
