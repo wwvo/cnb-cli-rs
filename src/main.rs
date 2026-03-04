@@ -54,6 +54,9 @@ enum Commands {
 
     /// 知识库管理
     Knowledge(commands::knowledge::KnowledgeCommand),
+
+    /// 组织管理
+    Group(commands::group::GroupCommand),
 }
 
 fn main() {
@@ -149,6 +152,12 @@ async fn async_main() -> anyhow::Result<()> {
                 KnowledgeSubcommand::Info => commands::knowledge::info::run(&ctx).await,
                 KnowledgeSubcommand::Clean => commands::knowledge::clean::run(&ctx).await,
                 KnowledgeSubcommand::Query(ref args) => commands::knowledge::query::run(&ctx, args).await,
+            }
+        }
+        Commands::Group(cmd) => {
+            use commands::group::GroupSubcommand;
+            match cmd.subcommand {
+                GroupSubcommand::UpdateLogo(ref args) => commands::group::update_logo::run(&ctx, args).await,
             }
         }
     }

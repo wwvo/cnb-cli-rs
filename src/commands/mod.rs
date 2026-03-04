@@ -2,6 +2,7 @@
 
 pub mod commit;
 pub mod download;
+pub mod group;
 pub mod info;
 pub mod issue;
 pub mod knowledge;

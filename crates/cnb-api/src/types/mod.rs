@@ -2,6 +2,7 @@
 
 pub mod commit;
 pub mod content;
+pub mod group;
 pub mod issue;
 pub mod knowledge;
 pub mod pull;
@@ -12,6 +13,7 @@ pub mod user;
 
 pub use commit::*;
 pub use content::*;
+pub use group::*;
 pub use issue::*;
 pub use knowledge::*;
 pub use pull::*;
