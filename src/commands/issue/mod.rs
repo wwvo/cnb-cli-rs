@@ -5,6 +5,7 @@ use clap::Parser;
 pub mod close;
 pub mod comment;
 pub mod create;
+pub mod exist;
 pub mod list;
 pub mod mine;
 
@@ -31,4 +32,7 @@ pub enum IssueSubcommand {
 
     /// 创建 Issue 评论
     Comment(comment::CommentArgs),
+
+    /// 检查 Issue 是否存在
+    Exist(exist::ExistArgs),
 }
