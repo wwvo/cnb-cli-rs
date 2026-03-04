@@ -8,18 +8,18 @@ pub enum ApiError {
     HttpStatus { status: u16, body: String },
 
     /// 认证失败（Token 无效或缺失）
-    #[error("认证失败: {0}")]
+    #[error("认证失败：{0}")]
     Auth(String),
 
     /// 网络错误
-    #[error("网络错误: {0}")]
+    #[error("网络错误：{0}")]
     Network(#[from] reqwest::Error),
 
     /// JSON 序列化/反序列化错误
-    #[error("JSON 解析错误: {0}")]
+    #[error("JSON 解析错误：{0}")]
     Json(#[from] serde_json::Error),
 
     /// URL 解析错误
-    #[error("URL 解析错误: {0}")]
+    #[error("URL 解析错误：{0}")]
     Url(#[from] url::ParseError),
 }

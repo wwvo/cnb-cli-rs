@@ -76,11 +76,19 @@ impl CnbClient {
     /// 处理 HTTP 响应，返回反序列化后的结果或错误
     async fn handle_response<T: serde::de::DeserializeOwned>(resp: reqwest::Response) -> Result<T, ApiError> {
         let status = resp.status().as_u16();
-        if status < 200 || status >= 300 {
-            let body = resp.text().await.unwrap_or_default();
-            return Err(ApiError::HttpStatus { status, body });
+        if status >= 200 && status < 300 {
+            let data = resp.json::<T>().await?;
+            return Ok(data);
         }
-        let data = resp.json::<T>().await?;
-        Ok(data)
+
+        // 401: 认证失败，给出友好提示
+        if status == 401 {
+            return Err(ApiError::Auth(
+                "CNB_TOKEN 缺失或无效。请设置：export CNB_TOKEN=\"your_token\"".to_string(),
+            ));
+        }
+
+        let body = resp.text().await.unwrap_or_default();
+        Err(ApiError::HttpStatus { status, body })
     }
 }
