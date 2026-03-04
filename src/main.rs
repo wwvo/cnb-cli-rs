@@ -33,6 +33,9 @@ enum Commands {
 
     /// Issue 管理
     Issue(commands::issue::IssueCommand),
+
+    /// Pull Request 管理
+    Pull(commands::pull::PullCommand),
 }
 
 fn main() {
@@ -89,6 +92,12 @@ async fn async_main() -> anyhow::Result<()> {
                 IssueSubcommand::Exist(ref args) => commands::issue::exist::run(&ctx, args).await,
                 IssueSubcommand::Download(ref args) => commands::issue::download::run(&ctx, args).await,
                 IssueSubcommand::Assigners(ref args) => commands::issue::assigners::run(&ctx, args).await,
+            }
+        }
+        Commands::Pull(cmd) => {
+            use commands::pull::PullSubcommand;
+            match cmd.subcommand {
+                PullSubcommand::List => commands::pull::list::run(&ctx).await,
             }
         }
     }

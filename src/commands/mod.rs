@@ -2,4 +2,5 @@
 
 pub mod info;
 pub mod issue;
+pub mod pull;
 pub mod version;
