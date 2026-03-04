@@ -4,6 +4,7 @@ pub mod commit;
 pub mod download;
 pub mod info;
 pub mod issue;
+pub mod knowledge;
 pub mod pull;
 pub mod release;
 pub mod stars;

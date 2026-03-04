@@ -51,6 +51,9 @@ enum Commands {
 
     /// Star 趋势图
     Stars,
+
+    /// 知识库管理
+    Knowledge(commands::knowledge::KnowledgeCommand),
 }
 
 fn main() {
@@ -139,5 +142,14 @@ async fn async_main() -> anyhow::Result<()> {
         Commands::Download(ref args) => commands::download::run::run(&ctx, args).await,
         Commands::Stats => commands::stats::run().await,
         Commands::Stars => commands::stars::run(&ctx).await,
+        Commands::Knowledge(cmd) => {
+            use commands::knowledge::KnowledgeSubcommand;
+            match cmd.subcommand {
+                KnowledgeSubcommand::ListModels => commands::knowledge::list_models::run(&ctx).await,
+                KnowledgeSubcommand::Info => commands::knowledge::info::run(&ctx).await,
+                KnowledgeSubcommand::Clean => commands::knowledge::clean::run(&ctx).await,
+                KnowledgeSubcommand::Query(ref args) => commands::knowledge::query::run(&ctx, args).await,
+            }
+        }
     }
 }
