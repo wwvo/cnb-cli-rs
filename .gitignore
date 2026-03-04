@@ -3,3 +3,6 @@ Cargo.lock
 .windsurf
 .agents
 skills-lock.json
+docs/node_modules
+docs/.vitepress/cache
+docs/.vitepress/dist
