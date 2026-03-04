@@ -80,6 +80,7 @@ chrono = { workspace = true }
 clap = { workspace = true }
 clap_complete = { workspace = true }
 cnb-api = { workspace = true }
+cnb-chat = { workspace = true }
 cnb-core = { workspace = true }
 cnb-tui = { workspace = true }
 crossterm = { workspace = true }
@@ -87,6 +88,7 @@ glob = { workspace = true }
 indicatif = { workspace = true }
 ratatui = { workspace = true }
 reqwest = { workspace = true }
+serde_json = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }

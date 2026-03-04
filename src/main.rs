@@ -25,6 +25,9 @@ struct Cli {
 
 #[derive(Debug, clap::Subcommand)]
 enum Commands {
+    /// 使用自然语言与 CNB OpenAPI 交互
+    Chat(commands::chat::ChatArgs),
+
     /// 显示仓库和用户信息
     Info,
 
@@ -100,6 +103,15 @@ async fn async_main() -> anyhow::Result<()> {
     let ctx = AppContext::new(cli.domain, cli.repo);
 
     match cli.command {
+        Commands::Chat(ref args) => {
+            let client = ctx.api_client()?;
+            if let Some(ref question) = args.do_ {
+                commands::chat::agent::run_agent(client, question, !args.no_stream).await
+            } else {
+                // 交互式模式（后续实现）
+                anyhow::bail!("交互式模式尚未实现，请使用 --do 参数")
+            }
+        }
         Commands::Info => commands::info::run(&ctx).await,
         Commands::Version => {
             commands::version::run();
