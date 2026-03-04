@@ -307,6 +307,68 @@ impl CnbClient {
         Self::handle_response(resp).await
     }
 
+    // ==================== Commit API ====================
+
+    /// 获取 Commit 列表
+    pub async fn list_commits(&self, page: u32, page_size: u32) -> Result<Vec<Commit>, ApiError> {
+        let url = format!("{}{}/-/git/commits?page={page}&page_size={page_size}",
+            self.base_url, self.repo);
+        let resp = self.http.get(&url).send().await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 获取所有 Commit（自动分页）
+    pub async fn list_all_commits(&self) -> Result<Vec<Commit>, ApiError> {
+        let page_size = 100u32;
+        let mut all = Vec::new();
+        let mut page = 1u32;
+        loop {
+            let commits = self.list_commits(page, page_size).await?;
+            let count = commits.len();
+            all.extend(commits);
+            if (count as u32) < page_size {
+                break;
+            }
+            page += 1;
+        }
+        Ok(all)
+    }
+
+    /// 获取指定 Commit 的附件列表
+    pub async fn get_commit_assets(&self, sha: &str) -> Result<Vec<CommitAsset>, ApiError> {
+        let url = format!("{}{}/-/git/commits/{sha}/assets", self.base_url, self.repo);
+        let resp = self.http.get(&url).send().await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 删除 Commit 附件
+    pub async fn delete_commit_asset(&self, sha: &str, asset_id: &str) -> Result<(), ApiError> {
+        let url = format!("{}{}/-/git/commits/{sha}/assets/{asset_id}", self.base_url, self.repo);
+        let resp = self.http.delete(&url).send().await?;
+        let status = resp.status().as_u16();
+        if status >= 200 && status < 300 {
+            return Ok(());
+        }
+        if status == 401 {
+            return Err(ApiError::Auth(
+                "CNB_TOKEN 缺失或无效。请设置：export CNB_TOKEN=\"your_token\"".to_string(),
+            ));
+        }
+        let body = resp.text().await.unwrap_or_default();
+        Err(ApiError::HttpStatus { status, body })
+    }
+
+    /// 获取 Commit 附件上传 URL
+    pub async fn get_commit_asset_upload_url(
+        &self,
+        sha: &str,
+        req: &PostCommitAssetUploadURLRequest,
+    ) -> Result<CommitAssetUploadURL, ApiError> {
+        let url = format!("{}{}/-/git/commits/{sha}/asset-upload-url", self.base_url, self.repo);
+        let resp = self.http.post(&url).json(req).send().await?;
+        Self::handle_response(resp).await
+    }
+
     // ==================== Internal ====================
 
     /// 处理 HTTP 响应，返回反序列化后的结果或错误
