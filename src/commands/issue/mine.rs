@@ -57,11 +57,7 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
     // 表格输出
     println!("{:<15} {:<70} {:<10}", "NUMBER", "TITLE", "TYPE");
     for (number, title, issue_type) in &results {
-        let title = if title.len() > 67 {
-            format!("{}...", &title[..67])
-        } else {
-            title.clone()
-        };
+        let title = truncate_str(title, 67);
         println!("{:<15} {:<70} {:<10}", number, title, issue_type);
     }
 
@@ -93,6 +89,17 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
     }
 
     Ok(())
+}
+
+/// UTF-8 安全的字符串截断（按字符数而非字节数）
+fn truncate_str(s: &str, max_chars: usize) -> String {
+    let chars: Vec<char> = s.chars().collect();
+    if chars.len() > max_chars {
+        let truncated: String = chars[..max_chars].iter().collect();
+        format!("{truncated}...")
+    } else {
+        s.to_string()
+    }
 }
 
 /// 获取同组织下的 feedback 仓库路径
