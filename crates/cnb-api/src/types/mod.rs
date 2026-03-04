@@ -2,10 +2,12 @@
 
 pub mod issue;
 pub mod pull;
+pub mod release;
 pub mod repo;
 pub mod user;
 
 pub use issue::*;
 pub use pull::*;
+pub use release::*;
 pub use repo::*;
 pub use user::*;
