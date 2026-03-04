@@ -124,6 +124,7 @@ async fn async_main() -> anyhow::Result<()> {
             match cmd.subcommand {
                 CommitSubcommand::AssetStats => commands::commit::asset_stats::run(&ctx).await,
                 CommitSubcommand::AssetClean(ref args) => commands::commit::asset_clean::run(&ctx, args).await,
+                CommitSubcommand::AssetUpload(ref args) => commands::commit::asset_upload::run(&ctx, args).await,
             }
         }
     }

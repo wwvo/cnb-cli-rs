@@ -4,6 +4,7 @@ use clap::Parser;
 
 pub mod asset_clean;
 pub mod asset_stats;
+pub mod asset_upload;
 
 /// Commit 管理
 #[derive(Debug, Parser)]
@@ -20,4 +21,7 @@ pub enum CommitSubcommand {
     /// 清理 Commit 附件
     #[command(name = "asset-clean")]
     AssetClean(asset_clean::AssetCleanArgs),
+    /// 上传附件到 Commit
+    #[command(name = "asset-upload")]
+    AssetUpload(asset_upload::AssetUploadArgs),
 }
