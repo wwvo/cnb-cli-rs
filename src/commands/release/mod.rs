@@ -2,6 +2,7 @@
 
 use clap::Parser;
 
+pub mod asset_clean;
 pub mod asset_stats;
 pub mod create;
 pub mod list;
@@ -22,4 +23,7 @@ pub enum ReleaseSubcommand {
     /// 统计 Release 附件大小
     #[command(name = "asset-stats")]
     AssetStats,
+    /// 清理 Release 附件
+    #[command(name = "asset-clean")]
+    AssetClean(asset_clean::AssetCleanArgs),
 }

@@ -112,6 +112,7 @@ async fn async_main() -> anyhow::Result<()> {
                 ReleaseSubcommand::List => commands::release::list::run(&ctx).await,
                 ReleaseSubcommand::Create(ref args) => commands::release::create::run(&ctx, args).await,
                 ReleaseSubcommand::AssetStats => commands::release::asset_stats::run(&ctx).await,
+                ReleaseSubcommand::AssetClean(ref args) => commands::release::asset_clean::run(&ctx, args).await,
             }
         }
     }
