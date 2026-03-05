@@ -1,76 +1,88 @@
+<div align="center">
+
 # CNB CLI
+
+**一个非官方的 [CNB](https://cnb.cool) 平台命令行工具**
+
+在终端中高效管理你的 CNB 平台资源。
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue?style=flat-square)](LICENSE)
 [![Rust](https://img.shields.io/badge/rust-edition%202024-orange?style=flat-square)](https://www.rust-lang.org/)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=flat-square)]()
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)]()
 
-An unofficial command line tool for [CNB](https://cnb.cool). Manage your CNB platform resources efficiently from the terminal.
+[功能特性](#功能特性) · [安装](#安装) · [快速开始](#快速开始) · [文档](https://cnb.wwvo.fun) · [项目结构](#项目结构)
+
+</div>
+
+---
 
 > [!NOTE]
-> This is **NOT** an official CNB product. It is a community-driven project.
+> 这 **不是** CNB 官方产品，而是一个社区驱动的开源项目。
 
-## Features
+## 功能特性
 
-- **Authentication** — Login, check status, logout
-- **AI Chat** — Interact with CNB OpenAPI using natural language
-- **Issue Management** — Create, list, close, comment, download issues
-- **Pull Request Management** — Create, update, merge pull requests
-- **Release Management** — Create releases, upload/clean assets
-- **Commit Management** — Upload/clean commit assets
-- **File Download** — Download repository files by path/branch with glob filtering
-- **Statistics Dashboard** — Commit leaderboard, commit trends, star trends (TUI)
-- **Knowledge Base** — Query and manage repository embedding knowledge base
-- **Organization** — Update organization logo
-- **Workspace** — Clean up closed cloud-native workspaces
-- **Shell Completion** — Bash, Zsh, Fish, PowerShell
+- **认证管理** — 登录、查看状态、退出登录
+- **AI 对话** — 使用自然语言与 CNB OpenAPI 交互
+- **Issue 管理** — 创建、列出、关闭、评论、下载 Issue
+- **Pull Request 管理** — 创建、更新、合并 PR
+- **Release 管理** — 创建 Release、上传/清理附件
+- **Commit 管理** — 上传/清理 Commit 附件
+- **文件下载** — 按路径、分支下载仓库文件，支持 glob 过滤
+- **统计仪表盘** — 提交排行榜、提交趋势图、Star 趋势图（TUI）
+- **知识库管理** — 查询、清除仓库 Embedding 知识库
+- **组织管理** — 更新组织 Logo
+- **工作区管理** — 清理已关闭的云原生工作区
+- **命令行补全** — 支持 Bash、Zsh、Fish、PowerShell
 
-## Installation
+## 安装
 
-Download the binary for your platform from the [Releases page](https://cnb.cool/prevailna/cnb/-/releases).
+从 [Release 页面](https://cnb.cool/prevailna/cnb/-/releases) 下载适合你平台的二进制文件。
 
-## Quick Start
+## 快速开始
 
 ```bash
-# Login to CNB
+# 登录
 cnb auth login
 
-# View repository info
+# 查看仓库信息
 cnb info
 
-# List issues
+# 查看 Issue 列表
 cnb issue list
 
-# Chat with AI
-cnb chat --do "List my repositories"
+# 使用 AI 对话
+cnb chat --do "查看我的仓库列表"
 
-# Download files
+# 下载文件
 cnb download --files README.md
 ```
 
-Also available as a Git subcommand:
+也可以通过 `git cnb` 方式调用：
 
 ```bash
 git cnb info
 git cnb issue list
 ```
 
-## Project Structure
+## 项目结构
 
 ```
 cnb/
-├── src/                  # Main binary (cnb / git-cnb)
+├── src/                  # 主程序入口 (cnb / git-cnb)
 │   ├── main.rs
-│   └── commands/         # Command implementations
+│   └── commands/         # 命令实现
 ├── crates/
-│   ├── cnb-api/          # CNB platform API client
-│   ├── cnb-chat/         # AI chat functionality
-│   ├── cnb-core/         # Core types and context
-│   └── cnb-tui/          # Terminal UI (stats, stars)
-└── docs/                 # VitePress documentation site
+│   ├── cnb-api/          # CNB 平台 API 客户端
+│   ├── cnb-chat/         # AI 对话功能
+│   ├── cnb-core/         # 核心类型与上下文
+│   └── cnb-tui/          # 终端 UI（统计、趋势图）
+└── docs/                 # VitePress 文档站点
 ```
 
-## Building from Source
+## 从源码构建
 
-**Prerequisites:** [Rust](https://www.rust-lang.org/tools/install) (edition 2024)
+**前置条件：** [Rust](https://www.rust-lang.org/tools/install)（edition 2024）
 
 ```bash
 git clone https://cnb.cool/prevailna/cnb.git
@@ -78,13 +90,13 @@ cd cnb
 cargo build --release
 ```
 
-The binary will be at `target/release/cnb` (or `target/release/cnb.exe` on Windows).
+产物路径：`target/release/cnb`（Windows 下为 `target/release/cnb.exe`）。
 
-## Documentation
+## 文档
 
 - **https://cnb.wwvo.fun**
 - **https://cnba.pages.dev**
 
-## License
+## 许可证
 
 [Apache-2.0](LICENSE)
