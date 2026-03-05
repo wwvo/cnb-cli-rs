@@ -1,59 +1,90 @@
 # CNB CLI
 
-CNB 平台专属命令行工具，在终端中高效管理你的 CNB 平台资源。
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue?style=flat-square)](LICENSE)
+[![Rust](https://img.shields.io/badge/rust-edition%202024-orange?style=flat-square)](https://www.rust-lang.org/)
 
-## 功能特性
+An unofficial command line tool for [CNB](https://cnb.cool). Manage your CNB platform resources efficiently from the terminal.
 
-- **认证管理** — 登录、查看状态、退出登录
-- **AI 对话** — 使用自然语言与 CNB OpenAPI 交互
-- **Issue 管理** — 创建、列出、关闭、评论、下载 Issue
-- **Pull Request 管理** — 创建、更新、合并 PR
-- **Release 管理** — 创建 Release、上传/清理附件
-- **Commit 管理** — 上传/清理 Commit 附件
-- **文件下载** — 按路径、分支下载仓库文件，支持 glob 过滤
-- **统计仪表盘** — 提交排行榜、提交趋势图、Star 趋势图（TUI）
-- **知识库管理** — 查询、清除仓库 Embedding 知识库
-- **组织管理** — 更新组织 Logo
-- **工作区管理** — 清理已关闭的云原生工作区
-- **命令行补全** — 支持 Bash、Zsh、Fish、PowerShell
+> [!NOTE]
+> This is **NOT** an official CNB product. It is a community-driven project.
 
-## 安装
+## Features
 
-从 [Release 页面](https://cnb.cool/prevailna/cnb/-/releases) 下载适合你平台的二进制文件。
+- **Authentication** — Login, check status, logout
+- **AI Chat** — Interact with CNB OpenAPI using natural language
+- **Issue Management** — Create, list, close, comment, download issues
+- **Pull Request Management** — Create, update, merge pull requests
+- **Release Management** — Create releases, upload/clean assets
+- **Commit Management** — Upload/clean commit assets
+- **File Download** — Download repository files by path/branch with glob filtering
+- **Statistics Dashboard** — Commit leaderboard, commit trends, star trends (TUI)
+- **Knowledge Base** — Query and manage repository embedding knowledge base
+- **Organization** — Update organization logo
+- **Workspace** — Clean up closed cloud-native workspaces
+- **Shell Completion** — Bash, Zsh, Fish, PowerShell
 
-## 快速开始
+## Installation
+
+Download the binary for your platform from the [Releases page](https://cnb.cool/prevailna/cnb/-/releases).
+
+## Quick Start
 
 ```bash
-# 登录
+# Login to CNB
 cnb auth login
 
-# 查看仓库信息
+# View repository info
 cnb info
 
-# 查看 Issue 列表
+# List issues
 cnb issue list
 
-# 使用 AI 对话
-cnb chat --do "查看我的仓库列表"
+# Chat with AI
+cnb chat --do "List my repositories"
 
-# 下载文件
+# Download files
 cnb download --files README.md
 ```
 
-CNB CLI 也可以通过 `git cnb` 方式调用：
+Also available as a Git subcommand:
 
 ```bash
 git cnb info
 git cnb issue list
 ```
 
-## 文档
+## Project Structure
 
-完整文档请访问：
+```
+cnb/
+├── src/                  # Main binary (cnb / git-cnb)
+│   ├── main.rs
+│   └── commands/         # Command implementations
+├── crates/
+│   ├── cnb-api/          # CNB platform API client
+│   ├── cnb-chat/         # AI chat functionality
+│   ├── cnb-core/         # Core types and context
+│   └── cnb-tui/          # Terminal UI (stats, stars)
+└── docs/                 # VitePress documentation site
+```
+
+## Building from Source
+
+**Prerequisites:** [Rust](https://www.rust-lang.org/tools/install) (edition 2024)
+
+```bash
+git clone https://cnb.cool/prevailna/cnb.git
+cd cnb
+cargo build --release
+```
+
+The binary will be at `target/release/cnb` (or `target/release/cnb.exe` on Windows).
+
+## Documentation
 
 - **https://cnb.wwvo.fun**
 - **https://cnba.pages.dev**
 
-## 许可证
+## License
 
 [Apache-2.0](LICENSE)
