@@ -10,13 +10,13 @@ use std::path::Path;
 /// 2. PUT 上传到 `upload_url`
 /// 3. POST 确认到 `verify_url`（带 Bearer Token 认证）
 pub async fn upload_and_confirm(
+    http: &reqwest::Client,
     file_path: &Path,
     upload_url: &str,
     verify_url: &str,
     token: &str,
 ) -> anyhow::Result<()> {
     let file_data = std::fs::read(file_path)?;
-    let http = reqwest::Client::new();
 
     let resp = http
         .put(upload_url)

@@ -59,6 +59,9 @@ impl CnbClient {
     pub fn repo(&self) -> &str { &self.repo }
     pub fn token(&self) -> &str { &self.token }
 
+    /// 获取无默认认证头的 HTTP 客户端引用（用于外部模块复用连接池）
+    pub fn http_client(&self) -> &reqwest::Client { &self.http_plain }
+
     /// 获取当前用户信息
     pub async fn me(&self) -> Result<User, ApiError> {
         let url = format!("{}user", self.base_url);
