@@ -9,7 +9,11 @@ mod commands;
 
 /// CNB CLI - CNB 平台专属命令行工具
 #[derive(Debug, Parser)]
-#[clap(name = "cnb", version, about = "CNB 平台专属命令行工具")]
+#[clap(
+    name = "cnb",
+    version = concat!(env!("CARGO_PKG_VERSION"), " (", env!("TARGET"), ")"),
+    about = "CNB 平台专属命令行工具",
+)]
 struct Cli {
     /// 指定 CNB 域名（默认：cnb.cool）
     #[arg(long, global = true)]
@@ -44,7 +48,8 @@ enum Commands {
     /// 显示仓库和用户信息
     Info,
 
-    /// 显示版本信息
+    /// 显示版本信息（建议使用 --version）
+    #[command(hide = true)]
     Version,
 
     /// Issue 管理
