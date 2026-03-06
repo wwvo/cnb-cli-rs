@@ -6,3 +6,4 @@ pub mod auth;
 pub mod config;
 pub mod context;
 pub mod git;
+pub mod upload;

@@ -4,6 +4,7 @@ use anyhow::Result;
 use clap::Parser;
 use cnb_api::types::PostCommitAssetUploadURLRequest;
 use cnb_core::context::AppContext;
+use cnb_core::upload;
 
 /// 上传附件到 Commit
 #[derive(Debug, Parser)]
@@ -20,59 +21,20 @@ pub struct AssetUploadArgs {
 /// 执行 commit asset-upload 命令
 pub async fn run(ctx: &AppContext, args: &AssetUploadArgs) -> Result<()> {
     let client = ctx.api_client()?;
+    let (file_name, file_size) = upload::validate_file(&args.file_path)?;
 
-    // 检查文件是否存在
-    let path = std::path::Path::new(&args.file_path);
-    if !path.is_file() {
-        anyhow::bail!("{} 不是有效的文件", args.file_path);
-    }
-
-    let metadata = std::fs::metadata(path)?;
-    let file_name = path
-        .file_name()
-        .and_then(|n| n.to_str())
-        .unwrap_or("file");
-
-    // 获取上传 URL
     let req = PostCommitAssetUploadURLRequest {
         asset_name: file_name.to_string(),
-        size: metadata.len() as i64,
+        size: file_size,
     };
     let upload_info = client
         .get_commit_asset_upload_url(&args.sha1, &req)
         .await?;
 
-    // 读取文件并上传到 COS
-    let file_data = std::fs::read(path)?;
-    let http = reqwest::Client::new();
-    let resp: reqwest::Response = http
-        .put(&upload_info.upload_url)
-        .header("Content-Type", "application/octet-stream")
-        .body(file_data)
-        .send()
-        .await?;
+    let path = std::path::Path::new(&args.file_path);
+    upload::upload_and_confirm(path, &upload_info.upload_url, &upload_info.verify_url, client.token()).await?;
 
-    let status = resp.status().as_u16();
-    if status < 200 || status >= 300 {
-        let body = resp.text().await.unwrap_or_default();
-        anyhow::bail!("上传失败 (HTTP {status}): {body}");
-    }
-
-    // 确认上传
-    let confirm_resp: reqwest::Response = http
-        .post(&upload_info.verify_url)
-        .header("Accept", "application/vnd.cnb.api+json")
-        .header("Authorization", format!("Bearer {}", client.token()))
-        .send()
-        .await?;
-
-    let confirm_status = confirm_resp.status().as_u16();
-    if confirm_status != 200 {
-        let body = confirm_resp.text().await.unwrap_or_default();
-        anyhow::bail!("上传确认失败 (HTTP {confirm_status}): {body}");
-    }
-
-    println!("文件 {} 已上传到 Commit {}", file_name, args.sha1);
+    println!("文件 {file_name} 已上传到 Commit {}", args.sha1);
 
     Ok(())
 }
