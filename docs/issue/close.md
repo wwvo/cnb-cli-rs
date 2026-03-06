@@ -1,25 +1,56 @@
 # cnb issue close
 
 ```
-cnb issue close [flags]
+cnb issue close <NUMBER> [flags]
 ```
 
 关闭指定编号的 Issue。
 
-将 Issue 状态设置为 `closed`，关闭原因为 `not_planned`。
+将 Issue 状态设置为 `closed`，支持通过 `--reason` 指定关闭原因。
+
+## 参数
+
+`<NUMBER>`
+: Issue 编号（必填）
 
 ## 选项
 
-`-n, --number <NUMBER>`
-: Issue 编号（必填）
+`-r, --reason <REASON>`
+: 关闭原因，可选值：`completed`（已完成）、`not-planned`（不计划处理）（默认：`completed`）
+
+**继承的全局选项：**
+
+`--repo <REPO>`
+: 指定仓库路径
 
 ## 示例
 
 ```bash
-$ cnb issue close --number 123
-Issue #123 已关闭
+# 关闭 Issue（默认原因：已完成）
+$ cnb issue close 123
+✓ Issue #123 已关闭（原因: completed）
+
+# 以"不计划处理"关闭
+$ cnb issue close 123 -r not-planned
+✓ Issue #123 已关闭（原因: not_planned）
+```
+
+## API
+
+| 步骤       | API                                     | 方法  | 说明            |
+| ---------- | --------------------------------------- | ----- | --------------- |
+| 关闭 Issue | `${API}/repos/{repo}/-/issues/{number}` | PATCH | 更新 Issue 状态 |
+
+**请求体：**
+
+```json
+{
+  "state": "closed",
+  "state_reason": "completed"
+}
 ```
 
 ## 另请参阅
 
 - [cnb issue](/issue/)
+- [cnb issue reopen](/issue/reopen)

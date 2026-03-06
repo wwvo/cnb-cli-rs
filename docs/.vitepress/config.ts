@@ -46,12 +46,16 @@ export default defineConfig({
             items: [
               { text: 'list', link: '/issue/list' },
               { text: 'mine', link: '/issue/mine' },
+              { text: 'view', link: '/issue/view' },
               { text: 'create', link: '/issue/create' },
+              { text: 'edit', link: '/issue/edit' },
               { text: 'close', link: '/issue/close' },
+              { text: 'reopen', link: '/issue/reopen' },
               { text: 'comment', link: '/issue/comment' },
               { text: 'exist', link: '/issue/exist' },
               { text: 'download', link: '/issue/download' },
               { text: 'assigners', link: '/issue/assigners' },
+              { text: 'label', link: '/issue/label' },
             ],
           },
           {

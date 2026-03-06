@@ -1,48 +1,60 @@
-# cnb pull merge
+# cnb issue mine
 
 ```
-cnb pull merge <NUMBER> [flags]
+cnb issue mine
 ```
 
-合并指定的 Pull Request。
+列出与我相关的 Issue。
 
-## 参数
+查询当前仓库中分配给我的和我创建的所有 `open` 状态 Issue，合并去重后输出。
+每条 Issue 通过 `TYPE` 列标注关系类型：
 
-`<NUMBER>`
-:   PR 编号（必填）
+- **`->ME`** — 分配给我（我是处理人）
+- **`ME->`** — 我创建的
+- **`ME->ME`** — 我创建且分配给我
+
+此外，还会尝试查询同组织下 `feedback` 仓库中分配给我的 Issue，一并展示。
 
 ## 选项
 
-`-t, --commit-title <TITLE>`
-:   合并提交标题（必填）
+无子命令特有选项。
 
-`-m, --commit-message <MESSAGE>`
-:   合并提交信息（默认：空）
+**继承的全局选项：**
 
-`-s, --merge-style <STYLE>`
-:   合并方式，可选值：`merge`、`squash`、`rebase`（默认：`merge`）
+`--repo <REPO>`
+: 指定仓库路径
+
+`--json`
+: 以 JSON 格式输出（去重后的完整 Issue 列表）
 
 ## 示例
 
 ```bash
-# 默认 merge 方式合并
-$ cnb pull merge 42 --commit-title "Merge PR #42"
+# 列出与我相关的 Issue
+$ cnb issue mine
+NUMBER          TITLE                                                            TYPE
+42              修复登录页面样式问题                                              ->ME
+58              新增导出功能                                                      ME->
+73              重构用户模块                                                      ME->ME
 
-# squash 合并
-$ cnb pull merge 42 -t "feat: 新功能" -s squash
+# JSON 格式输出
+$ cnb --json issue mine
 
-# rebase 合并，附带提交信息
-$ cnb pull merge 42 -t "fix: 修复问题" -m "详细说明" -s rebase
+# 没有相关 Issue 时
+$ cnb issue mine
+ℹ 没有找到与我相关的 Issue
 ```
+
+## API
+
+| 步骤             | API                                      | 方法 | 说明                         |
+| ---------------- | ---------------------------------------- | ---- | ---------------------------- |
+| 获取当前用户     | `${API}/user`                            | GET  | 获取当前登录用户名           |
+| 分配给我的 Issue | `${API}/repos/{repo}/-/issues`           | GET  | `assignees={username}`       |
+| 我创建的 Issue   | `${API}/repos/{repo}/-/issues`           | GET  | `authors={username}`         |
+| feedback 仓库    | `${API}/repos/{group}/feedback/-/issues` | GET  | 额外查询同组织 feedback 仓库 |
 
 ## 另请参阅
 
-- [cnb pull](/pull/)
-
-# 跨仓库 PR
-$ cnb pull create -R upstream/repo -B main -H feature-branch
-```
-
-## 另请参阅
-
-- [cnb pull](/pull/)
+- [cnb issue](/issue/)
+- [cnb issue list](/issue/list)

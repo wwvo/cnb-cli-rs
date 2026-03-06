@@ -1,0 +1,56 @@
+# cnb issue reopen
+
+```
+cnb issue reopen <NUMBER>
+```
+
+重新打开已关闭的 Issue。
+
+将 Issue 状态设置为 `open`，关闭原因设置为 `reopened`。
+
+## 参数
+
+`<NUMBER>`
+: Issue 编号（必填）
+
+## 选项
+
+无子命令特有选项。
+
+**继承的全局选项：**
+
+`--repo <REPO>`
+: 指定仓库路径
+
+## 示例
+
+```bash
+# 重新打开 Issue
+$ cnb issue reopen 42
+✓ Issue #42 已重新打开
+
+# 指定仓库
+$ cnb --repo org/repo issue reopen 42
+✓ Issue #42 已重新打开
+```
+
+## API
+
+| 步骤             | API                                      | 方法  | 说明            |
+| ---------------- | ---------------------------------------- | ----- | --------------- |
+| 重新打开 Issue   | `${API}/repos/{repo}/-/issues/{number}`  | PATCH | 更新 Issue 状态 |
+
+**请求体：**
+
+```json
+{
+  "state": "open",
+  "state_reason": "reopened"
+}
+```
+
+## 另请参阅
+
+- [cnb issue](/issue/)
+- [cnb issue close](/issue/close)
+- [cnb issue view](/issue/view)
