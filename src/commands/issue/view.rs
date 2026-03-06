@@ -71,7 +71,7 @@ pub async fn run(ctx: &AppContext, args: &ViewArgs) -> Result<()> {
         let assignees_str = issue
             .assignees
             .iter()
-            .map(|a| format_user(a))
+            .map(format_user)
             .collect::<Vec<_>>()
             .join(", ");
         table.add_row(vec!["处理人".to_string(), assignees_str]);
