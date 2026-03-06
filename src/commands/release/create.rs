@@ -21,8 +21,8 @@ pub struct CreateArgs {
     pub body: String,
 
     /// 是否为最新版本
-    #[arg(long = "make-latest", default_value = "true")]
-    pub make_latest: String,
+    #[arg(long = "make-latest", default_value_t = true)]
+    pub make_latest: bool,
 
     /// 是否为预发布版本
     #[arg(long = "prerelease", default_value_t = false)]
@@ -39,7 +39,7 @@ pub async fn run(ctx: &AppContext, args: &CreateArgs) -> Result<()> {
         body: args.body.clone(),
         draft: false,
         prerelease: args.prerelease,
-        make_latest: args.make_latest.clone(),
+        make_latest: args.make_latest.to_string(),
         target_commitish: args.tag.clone(),
     };
 
