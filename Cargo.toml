@@ -67,6 +67,7 @@ url = "2"
 urlencoding = "2"
 
 [workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
 # pedantic 中不适用于本项目的规则
 cast_possible_truncation = "allow"
 cast_possible_wrap = "allow"
