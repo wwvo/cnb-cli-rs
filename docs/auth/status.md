@@ -25,14 +25,6 @@ Token 脱敏规则：长度大于 12 时保留前 4 位和后 4 位，中间用 
 `--domain <DOMAIN>`
 : 检查指定域名的认证状态（默认：`cnb.cool`）
 
-## API
-
-| 步骤       | API                        | 方法 | 说明                    |
-| ---------- | -------------------------- | ---- | ----------------------- |
-| 获取用户名 | `${CNB_API_ENDPOINT}/user` | GET  | 验证 Token 并获取用户名 |
-
-API 详情同 [cnb auth login — API](/auth/login#api) 章节。
-
 ## Token 来源优先级
 
 CNB CLI 按以下顺序查找 Token：
@@ -80,6 +72,14 @@ $ cnb --domain example.com auth status
 未登录 (example.com)
 使用 `cnb auth login` 登录，或设置环境变量 CNB_TOKEN
 ```
+
+## API
+
+| 步骤       | API                        | 方法 | 说明                    |
+| ---------- | -------------------------- | ---- | ----------------------- |
+| 获取用户名 | `${CNB_API_ENDPOINT}/user` | GET  | 验证 Token 并获取用户名 |
+
+API 详情同 [cnb auth login — API](/auth/login#api) 章节。
 
 ## 另请参阅
 
