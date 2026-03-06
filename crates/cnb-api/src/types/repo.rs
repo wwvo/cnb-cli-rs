@@ -108,6 +108,158 @@ pub struct UpdateRepoRequest {
     pub topics: Option<Vec<String>>,
 }
 
+/// 贡献者趋势响应
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ContributorTrend {
+    #[serde(default)]
+    pub user_total: u64,
+    #[serde(default)]
+    pub week_total: u64,
+    #[serde(default)]
+    pub users_data: Vec<ContributorData>,
+    #[serde(default)]
+    pub with_line_counts: bool,
+}
+
+/// 贡献者数据
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ContributorData {
+    #[serde(default)]
+    pub author: ContributorAuthor,
+    #[serde(default)]
+    pub commit_count: u64,
+    #[serde(default)]
+    pub weeks: Vec<ContributorWeek>,
+}
+
+/// 贡献者作者信息
+#[derive(Debug, Default, Deserialize, Serialize)]
+pub struct ContributorAuthor {
+    #[serde(default)]
+    pub email: String,
+    #[serde(default)]
+    pub user_name: String,
+}
+
+/// 贡献者周数据
+#[derive(Debug, Deserialize, Serialize)]
+pub struct ContributorWeek {
+    #[serde(default)]
+    pub a: u64,
+    #[serde(default)]
+    pub c: u64,
+    #[serde(default)]
+    pub d: u64,
+    #[serde(default)]
+    pub w: u64,
+}
+
+/// 安全概览响应
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SecurityOverview {
+    #[serde(default)]
+    pub risk_cnt: Option<SecurityRiskCount>,
+    #[serde(default)]
+    pub code_sensitive: Option<SecurityModule>,
+    #[serde(default)]
+    pub code_vulnerability: Option<SecurityVulnerability>,
+    #[serde(default)]
+    pub code_issue: Option<SecurityModule>,
+}
+
+/// 安全风险计数
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SecurityRiskCount {
+    #[serde(default)]
+    pub enable: bool,
+    #[serde(default)]
+    pub total: u64,
+    #[serde(default)]
+    pub code_sensitive_enable: bool,
+    #[serde(default)]
+    pub code_sensitive_risk_cnt: u64,
+    #[serde(default)]
+    pub code_vulnerability_enable: bool,
+    #[serde(default)]
+    pub code_vulnerability_risk_cnt: u64,
+    #[serde(default)]
+    pub code_issue_enable: bool,
+    #[serde(default)]
+    pub code_issue_risk_cnt: u64,
+}
+
+/// 安全模块（敏感信息 / 代码问题）
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SecurityModule {
+    #[serde(default)]
+    pub enable: bool,
+    #[serde(default)]
+    pub open: u64,
+    #[serde(default)]
+    pub ignored: u64,
+    #[serde(default)]
+    pub high_count: u64,
+    #[serde(default)]
+    pub medium_count: u64,
+    #[serde(default)]
+    pub low_count: u64,
+    #[serde(default)]
+    pub critical_count: u64,
+}
+
+/// 安全漏洞模块
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SecurityVulnerability {
+    #[serde(default)]
+    pub enable: bool,
+    #[serde(default)]
+    pub open: u64,
+    #[serde(default)]
+    pub ignored: u64,
+    #[serde(default)]
+    pub critical_vul_open_cnt: u64,
+    #[serde(default)]
+    pub high_vul_open_cnt: u64,
+    #[serde(default)]
+    pub medium_vul_open_cnt: u64,
+    #[serde(default)]
+    pub low_vul_open_cnt: u64,
+}
+
+/// 活跃用户信息
+#[derive(Debug, Deserialize, Serialize)]
+pub struct TopContributor {
+    #[serde(default)]
+    pub username: String,
+    #[serde(default)]
+    pub nickname: String,
+    #[serde(default)]
+    pub avatar: String,
+    #[serde(default)]
+    pub bio: String,
+    #[serde(default)]
+    pub repo_count: u64,
+    #[serde(default)]
+    pub stars_count: u64,
+}
+
+/// 仓库资产记录
+#[derive(Debug, Deserialize, Serialize)]
+pub struct AssetRecord {
+    #[serde(default)]
+    pub id: String,
+    #[serde(default)]
+    pub path: String,
+    #[serde(default)]
+    pub origin_path: String,
+    #[serde(default)]
+    pub record_type: Option<serde_json::Value>,
+    #[serde(default)]
+    pub referer: String,
+    #[serde(default)]
+    pub size_in_byte: u64,
+}
+
 /// 仓库列表查询选项
 #[derive(Debug)]
 pub struct ListReposOptions {

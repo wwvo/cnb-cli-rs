@@ -113,4 +113,74 @@ impl CnbClient {
         let resp = self.http.put(&url).json(&repos).send().await?;
         Self::handle_response(resp).await
     }
+
+    /// 获取贡献者趋势（GET /{slug}/-/contributor/trend）
+    pub async fn get_contributor_trend(
+        &self,
+        repo_path: &str,
+        limit: u32,
+        exclude_external: bool,
+    ) -> Result<ContributorTrend, ApiError> {
+        let url = format!(
+            "{}{}/-/contributor/trend?limit={limit}&exclude_external_users={exclude_external}",
+            self.base_url, repo_path
+        );
+        let resp = self.send_with_retry(|| self.http.get(&url)).await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 获取安全概览（GET /{repo}/-/security/overview）
+    pub async fn get_security_overview(
+        &self,
+        repo_path: &str,
+        types: Option<&str>,
+        tab: Option<&str>,
+    ) -> Result<SecurityOverview, ApiError> {
+        let mut url = format!("{}{}/-/security/overview", self.base_url, repo_path);
+        let mut params = Vec::new();
+        if let Some(t) = types {
+            params.push(format!("types={t}"));
+        }
+        if let Some(t) = tab {
+            params.push(format!("tab={t}"));
+        }
+        if !params.is_empty() {
+            url.push('?');
+            url.push_str(&params.join("&"));
+        }
+        let resp = self.send_with_retry(|| self.http.get(&url)).await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 获取活跃用户排名（GET /{repo}/-/top-activity-users）
+    pub async fn get_top_contributors(
+        &self,
+        repo_path: &str,
+        top: u32,
+    ) -> Result<Vec<TopContributor>, ApiError> {
+        let url = format!("{}{}/-/top-activity-users?top={top}", self.base_url, repo_path);
+        let resp = self.send_with_retry(|| self.http.get(&url)).await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 获取仓库动态（GET /events/{repo}/-/{date}）
+    pub async fn get_events(&self, repo_path: &str, date: &str) -> Result<serde_json::Value, ApiError> {
+        let url = format!("{}events/{}/-/{}", self.base_url, repo_path, date);
+        let resp = self.send_with_retry(|| self.http.get(&url)).await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 列出仓库资产（GET /{slug}/-/list-assets）
+    pub async fn list_assets(&self, repo_path: &str) -> Result<Vec<AssetRecord>, ApiError> {
+        let url = format!("{}{}/-/list-assets", self.base_url, repo_path);
+        let resp = self.send_with_retry(|| self.http.get(&url)).await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 删除仓库资产（DELETE /{repo}/-/assets/{assetID}）
+    pub async fn delete_asset(&self, repo_path: &str, asset_id: &str) -> Result<(), ApiError> {
+        let url = format!("{}{}/-/assets/{}", self.base_url, repo_path, asset_id);
+        let resp = self.http.delete(&url).send().await?;
+        Self::handle_empty_response(resp).await
+    }
 }
