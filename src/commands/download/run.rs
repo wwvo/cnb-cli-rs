@@ -3,6 +3,7 @@
 use anyhow::Result;
 use base64::Engine;
 use cnb_core::context::AppContext;
+use futures::future::try_join_all;
 use indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 use std::path::Path;
 use std::sync::Arc;
@@ -131,17 +132,22 @@ pub async fn run(ctx: &AppContext, args: &DownloadArgs) -> Result<()> {
     Ok(())
 }
 
-/// 收集需要下载的文件列表
+/// 收集需要下载的文件列表（两阶段并行获取）
 async fn collect_files(
     client: &cnb_api::client::CnbClient,
     files: &[String],
     git_ref: &str,
 ) -> Result<Vec<DownFile>> {
+    // 阶段 1：并行获取所有顶层路径的 content
+    let top_contents = try_join_all(
+        files.iter().map(|path| client.get_content(path, git_ref)),
+    )
+    .await?;
+
     let mut download_files: Vec<DownFile> = Vec::new();
+    let mut sub_paths: Vec<String> = Vec::new();
 
-    for file_path in files {
-        let content = client.get_content(file_path, git_ref).await?;
-
+    for content in top_contents {
         match content.content_type {
             ContentType::Blob | ContentType::Lfs => {
                 download_files.push(DownFile {
@@ -155,17 +161,28 @@ async fn collect_files(
             ContentType::Tree => {
                 for entry in &content.entries {
                     if entry.entry_type == ContentType::Blob || entry.entry_type == ContentType::Lfs {
-                        let sub = client.get_content(&entry.path, git_ref).await?;
-                        download_files.push(DownFile {
-                            path: sub.path,
-                            file_type: sub.content_type,
-                            content: sub.content,
-                            lfs_download_url: sub.lfs_download_url,
-                            size: sub.size,
-                        });
+                        sub_paths.push(entry.path.clone());
                     }
                 }
             }
+        }
+    }
+
+    // 阶段 2：并行获取所有 Tree 子文件的 content
+    if !sub_paths.is_empty() {
+        let sub_contents = try_join_all(
+            sub_paths.iter().map(|path| client.get_content(path, git_ref)),
+        )
+        .await?;
+
+        for sub in sub_contents {
+            download_files.push(DownFile {
+                path: sub.path,
+                file_type: sub.content_type,
+                content: sub.content,
+                lfs_download_url: sub.lfs_download_url,
+                size: sub.size,
+            });
         }
     }
 

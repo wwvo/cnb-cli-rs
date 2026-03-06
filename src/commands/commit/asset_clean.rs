@@ -6,6 +6,7 @@ use cnb_core::context::AppContext;
 use cnb_tui::confirm::confirm_action;
 use cnb_tui::fmt::format_rfc3339;
 use cnb_tui::{info, success, fail};
+use futures::future::try_join_all;
 
 /// 清理 Commit 附件
 #[derive(Debug, Parser)]
@@ -53,28 +54,41 @@ pub async fn run(ctx: &AppContext, args: &AssetCleanArgs) -> Result<()> {
     let mut assets_to_delete: Vec<AssetToDelete> = Vec::new();
 
     if let Some(keep_days) = args.keep_days {
+        // 先同步过滤出超期 commit，再并行获取 assets
         let now = chrono::Utc::now();
-        for commit in &commits {
-            if let Ok(committed) = chrono::DateTime::parse_from_rfc3339(&commit.commit.committer.date) {
-                let committed_utc: chrono::DateTime<chrono::Utc> = committed.into();
-                let days = (now - committed_utc).num_days();
-                if days > keep_days as i64 {
-                    let assets = client.get_commit_assets(&commit.sha).await?;
-                    for asset in &assets {
-                        assets_to_delete.push(AssetToDelete {
-                            sha: commit.sha.clone(),
-                            asset_id: asset.id.clone(),
-                            asset_name: asset.name.clone(),
-                            created_at: asset.created_at.clone(),
-                        });
-                    }
-                }
+        let expired: Vec<_> = commits
+            .iter()
+            .filter(|c| {
+                chrono::DateTime::parse_from_rfc3339(&c.commit.committer.date)
+                    .map(|dt| (now - dt.with_timezone(&chrono::Utc)).num_days() > keep_days as i64)
+                    .unwrap_or(false)
+            })
+            .collect();
+
+        let asset_lists = try_join_all(
+            expired.iter().map(|c| client.get_commit_assets(&c.sha)),
+        )
+        .await?;
+
+        for (commit, assets) in expired.iter().zip(asset_lists) {
+            for asset in &assets {
+                assets_to_delete.push(AssetToDelete {
+                    sha: commit.sha.clone(),
+                    asset_id: asset.id.clone(),
+                    asset_name: asset.name.clone(),
+                    created_at: asset.created_at.clone(),
+                });
             }
         }
     } else if let Some(keep_num) = args.keep_num {
+        // 并行获取所有 commit 的 assets，再顺序计数筛选
+        let asset_lists = try_join_all(
+            commits.iter().map(|c| client.get_commit_assets(&c.sha)),
+        )
+        .await?;
+
         let mut count = 0u32;
-        for commit in &commits {
-            let assets = client.get_commit_assets(&commit.sha).await?;
+        for (commit, assets) in commits.iter().zip(asset_lists) {
             if !assets.is_empty() {
                 count += 1;
             }

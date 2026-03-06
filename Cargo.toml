@@ -30,6 +30,7 @@ cnb-tui = { path = "crates/cnb-tui" }
 anyhow = "1"
 base64 = "0.22"
 chrono = "0.4"
+futures = "0.3"
 clap = { version = "4", features = ["derive"] }
 clap_complete = "4"
 crossterm = "0.28"
@@ -86,6 +87,7 @@ cnb-api = { workspace = true }
 cnb-chat = { workspace = true }
 cnb-core = { workspace = true }
 cnb-tui = { workspace = true }
+futures = { workspace = true }
 crossterm = { workspace = true }
 dirs = { workspace = true }
 glob = { workspace = true }
