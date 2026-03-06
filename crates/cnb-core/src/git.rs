@@ -4,6 +4,12 @@
 
 use anyhow::{Context, Result, bail};
 use std::process::Command;
+use std::sync::LazyLock;
+
+static HTTPS_RE: LazyLock<regex_lite::Regex> = LazyLock::new(|| {
+    regex_lite::Regex::new(r"^(https?)://([^/]+)/(.+?)(?:\.git)?$")
+        .unwrap_or_else(|e| panic!("正则表达式编译失败: {e}"))
+});
 
 /// 从当前 Git 仓库解析出的信息
 #[derive(Debug, Clone)]
@@ -65,10 +71,7 @@ pub fn parse_git_info_from_current_dir() -> Result<GitInfo> {
 /// - `https://cnb.cool/looc/git-cnb.git`
 /// - `https://user:token@cnb.cool/looc/git-cnb.git`
 pub fn parse_git_url(url: &str) -> Result<GitInfo> {
-    let re = regex_lite::Regex::new(r"^(https?)://([^/]+)/(.+?)(?:\.git)?$")
-        .context("正则表达式编译失败")?;
-
-    let caps = re.captures(url).context("URL 格式不匹配 CNB HTTPS 格式")?;
+    let caps = HTTPS_RE.captures(url).context("URL 格式不匹配 CNB HTTPS 格式")?;
 
     let scheme = caps.get(1).map_or("", |m| m.as_str()).to_string();
     let host_part = caps.get(2).map_or("", |m| m.as_str());
