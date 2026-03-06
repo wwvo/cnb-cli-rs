@@ -4,6 +4,7 @@
 
 pub mod confirm;
 pub mod fmt;
+pub mod output;
 pub mod table;
 pub mod terminal;
 pub mod time;
