@@ -109,12 +109,17 @@ pub async fn run(ctx: &AppContext, args: &ListArgs) -> Result<()> {
     let from_me = from_me.unwrap_or_default();
     let to_me = to_me.unwrap_or_default();
 
-    let mut results: Vec<(&str, &str, &str, &str)> = Vec::new();
+    // 合并并去重：同一 PR 既是我创建的又需要我评审时标记为 ME->ME
+    let mut results: Vec<(String, String, String, &str)> = Vec::new();
     for pr in &from_me {
-        results.push((&pr.number, &pr.title, &pr.blocked_on, "ME->"));
+        results.push((pr.number.clone(), pr.title.clone(), pr.blocked_on.clone(), "ME->"));
     }
     for pr in &to_me {
-        results.push((&pr.number, &pr.title, &pr.blocked_on, "->ME"));
+        if let Some(existing) = results.iter_mut().find(|(n, _, _, _)| *n == pr.number) {
+            existing.3 = "ME->ME";
+        } else {
+            results.push((pr.number.clone(), pr.title.clone(), pr.blocked_on.clone(), "->ME"));
+        }
     }
 
     if results.is_empty() {
@@ -125,6 +130,9 @@ pub async fn run(ctx: &AppContext, args: &ListArgs) -> Result<()> {
     if ctx.json() {
         let mut all_pulls = from_me;
         all_pulls.extend(to_me);
+        // 去重
+        let mut seen = std::collections::HashSet::new();
+        all_pulls.retain(|p| seen.insert(p.number.clone()));
         println!("{}", serde_json::to_string_pretty(&all_pulls)?);
         return Ok(());
     }
