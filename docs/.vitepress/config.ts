@@ -105,6 +105,7 @@ export default defineConfig({
               { text: 'list', link: '/repo/list' },
               { text: 'pin', link: '/repo/pin' },
               { text: 'security', link: '/repo/security' },
+              { text: 'settings', link: '/repo/settings' },
               { text: 'top-contributors', link: '/repo/top-contributors' },
               { text: 'transfer', link: '/repo/transfer' },
               { text: 'unarchive', link: '/repo/unarchive' },

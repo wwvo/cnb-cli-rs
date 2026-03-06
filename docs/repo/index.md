@@ -20,6 +20,7 @@ cnb repo <subcommand>
 - [cnb repo list](/repo/list) — 列出仓库
 - [cnb repo pin](/repo/pin) — 管理仓库墙（置顶仓库）
 - [cnb repo security](/repo/security) — 查看安全概览
+- [cnb repo settings](/repo/settings) — 仓库设置管理
 - [cnb repo top-contributors](/repo/top-contributors) — 查看活跃用户排名
 - [cnb repo transfer](/repo/transfer) — 转移仓库
 - [cnb repo unarchive](/repo/unarchive) — 解除仓库归档
