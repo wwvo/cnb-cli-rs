@@ -46,4 +46,11 @@ impl CnbClient {
         let resp = self.http.patch(&url).json(req).send().await?;
         Self::handle_empty_response(resp).await
     }
+
+    /// 删除仓库（DELETE /{repo}）
+    pub async fn delete_repo(&self, repo_path: &str) -> Result<(), ApiError> {
+        let url = format!("{}{}", self.base_url, repo_path);
+        let resp = self.http.delete(&url).send().await?;
+        Self::handle_empty_response(resp).await
+    }
 }
