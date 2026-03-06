@@ -16,6 +16,7 @@ members = [
 [workspace.package]
 version = "0.1.0"
 edition = "2024"
+rust-version = "1.85"
 repository = "https://cnb.cool/prevailna/cnb"
 license = "Apache-2.0"
 
@@ -66,11 +67,31 @@ url = "2"
 urlencoding = "2"
 
 [workspace.lints.clippy]
+# pedantic 中不适用于本项目的规则
+cast_possible_truncation = "allow"
+cast_possible_wrap = "allow"
+cast_precision_loss = "allow"
+cast_sign_loss = "allow"
+doc_markdown = "allow"
+# 项目自定义的 deny 级别规则
 expect_used = "deny"
+format_push_string = "allow"
+implicit_hasher = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+module_name_repetitions = "allow"
+must_use_candidate = "allow"
 needless_borrow = "deny"
+pedantic = { level = "warn", priority = -1 }
 redundant_clone = "deny"
+too_many_lines = "allow"
 uninlined_format_args = "deny"
+unused_async = "allow"
 unwrap_used = "deny"
+wildcard_imports = "allow"
+
+[workspace.lints.rust]
+unsafe_code = "warn"
 
 [[bin]]
 name = "cnb"
