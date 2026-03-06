@@ -61,6 +61,11 @@ pub async fn run(ctx: &AppContext, args: &ListArgs) -> Result<()> {
             return Ok(());
         }
 
+        if ctx.json() {
+            println!("{}", serde_json::to_string_pretty(&pulls)?);
+            return Ok(());
+        }
+
         let mut table = Table::new(vec![
             Column::new("NUMBER", 15),
             Column::new("TITLE", 55),
@@ -114,6 +119,13 @@ pub async fn run(ctx: &AppContext, args: &ListArgs) -> Result<()> {
 
     if results.is_empty() {
         info!("没有找到与我相关的 Pull Request");
+        return Ok(());
+    }
+
+    if ctx.json() {
+        let mut all_pulls = from_me;
+        all_pulls.extend(to_me);
+        println!("{}", serde_json::to_string_pretty(&all_pulls)?);
         return Ok(());
     }
 

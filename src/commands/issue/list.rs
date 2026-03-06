@@ -33,7 +33,11 @@ pub async fn run(ctx: &AppContext, args: &ListArgs) -> Result<()> {
         return Ok(());
     }
 
-    // 表格输出
+    if ctx.json() {
+        println!("{}", serde_json::to_string_pretty(&filtered)?);
+        return Ok(());
+    }
+
     let mut table = Table::new(vec![
         Column::new("NUMBER", 10),
         Column::new("TITLE", 60),

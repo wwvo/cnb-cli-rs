@@ -15,6 +15,11 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
         return Ok(());
     }
 
+    if ctx.json() {
+        println!("{}", serde_json::to_string_pretty(&releases)?);
+        return Ok(());
+    }
+
     let mut table = Table::new(vec![
         Column::new("Name", 15),
         Column::new("TAG NAME", 15),

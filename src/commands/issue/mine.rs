@@ -57,7 +57,16 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
         return Ok(());
     }
 
-    // 表格输出
+    if ctx.json() {
+        let mut all_issues = to_me;
+        all_issues.extend(from_me);
+        // 去重
+        let mut seen = std::collections::HashSet::new();
+        all_issues.retain(|i| seen.insert(i.number.clone()));
+        println!("{}", serde_json::to_string_pretty(&all_issues)?);
+        return Ok(());
+    }
+
     let mut table = Table::new(vec![
         Column::new("NUMBER", 15),
         Column::new("TITLE", 65),
