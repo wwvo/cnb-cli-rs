@@ -22,17 +22,21 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
     }
 
     // 解析第一个 Star 的时间，确定起始周
-    let first_star_time = parse_star_time(&star_users.users[0].stared_at);
+    let Some(first_star_time) = parse_star_time(&star_users.users[0].stared_at) else {
+        println!("无法解析 Star 时间数据");
+        return Ok(());
+    };
     let first_week = start_of_week(first_star_time);
 
     // 生成从第一个 Star 到现在的所有周
     let mut weekly_map = generate_weeks(first_week);
 
-    // 按周聚合
+    // 按周聚合（跳过解析失败的记录）
     for user in &star_users.users {
-        let star_time = parse_star_time(&user.stared_at);
-        let week_key = start_of_week(star_time);
-        *weekly_map.entry(week_key).or_insert(0) += 1;
+        if let Some(star_time) = parse_star_time(&user.stared_at) {
+            let week_key = start_of_week(star_time);
+            *weekly_map.entry(week_key).or_insert(0) += 1;
+        }
     }
 
     // 排序并计算累积值
@@ -52,16 +56,15 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
     Ok(())
 }
 
-/// 解析 Star 时间字符串
-fn parse_star_time(s: &str) -> NaiveDate {
-    // 格式: "2006-01-02 15:04:05"
+/// 解析 Star 时间字符串，解析失败返回 None
+fn parse_star_time(s: &str) -> Option<NaiveDate> {
     NaiveDateTime::parse_from_str(s, "%Y-%m-%d %H:%M:%S")
         .map(|dt| dt.date())
-        .unwrap_or_else(|_| {
-            // 尝试 RFC3339
+        .ok()
+        .or_else(|| {
             chrono::DateTime::parse_from_rfc3339(s)
                 .map(|dt| dt.naive_utc().date())
-                .unwrap_or_default()
+                .ok()
         })
 }
 
