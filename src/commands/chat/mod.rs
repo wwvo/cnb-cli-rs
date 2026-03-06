@@ -14,9 +14,9 @@ pub mod stream;
 /// Chat 命令参数
 #[derive(Debug, Args)]
 pub struct ChatArgs {
-    /// 一次性模式：执行单个请求后退出（如 --do "查看 issue 列表"）
-    #[arg(long, value_name = "问题")]
-    pub do_: Option<String>,
+    /// 一次性模式：执行单个请求后退出（如 --ask "查看 issue 列表"）
+    #[arg(long = "ask", value_name = "问题")]
+    pub ask: Option<String>,
 
     /// 禁用流式输出（适合 CI 环境）
     #[arg(long)]

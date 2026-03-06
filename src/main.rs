@@ -121,7 +121,7 @@ async fn async_main() -> anyhow::Result<()> {
         Commands::Auth(cmd) => cmd.execute(&ctx).await,
         Commands::Chat(ref args) => {
             let client = ctx.api_client()?;
-            if let Some(ref question) = args.do_ {
+            if let Some(ref question) = args.ask {
                 commands::chat::agent::run_agent(client, question, !args.no_stream).await
             } else {
                 commands::chat::interactive_chat(client).await
