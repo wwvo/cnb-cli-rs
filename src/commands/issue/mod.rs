@@ -13,6 +13,7 @@ pub mod exist;
 pub mod edit;
 pub mod list;
 pub mod mine;
+pub mod reopen;
 pub mod view;
 
 /// Issue 管理
@@ -53,6 +54,9 @@ pub enum IssueSubcommand {
 
     /// 编辑 Issue
     Edit(edit::EditArgs),
+
+    /// 重新打开 Issue
+    Reopen(reopen::ReopenArgs),
 }
 
 impl IssueCommand {
@@ -68,6 +72,7 @@ impl IssueCommand {
             IssueSubcommand::Assigners(args) => assigners::run(ctx, args).await,
             IssueSubcommand::View(args) => view::run(ctx, args).await,
             IssueSubcommand::Edit(args) => edit::run(ctx, args).await,
+            IssueSubcommand::Reopen(args) => reopen::run(ctx, args).await,
         }
     }
 }
