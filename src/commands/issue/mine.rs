@@ -13,7 +13,7 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
     let me = client.me().await?;
     let repo = client.repo();
 
-    // 获取分配给我的 Issue
+    // 并行获取分配给我的 Issue 和我创建的 Issue
     let to_me_opts = ListIssuesOptions {
         state: "open".to_string(),
         page: 1,
@@ -21,9 +21,6 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
         assignees: Some(me.username.clone()),
         ..Default::default()
     };
-    let to_me = client.list_issues(&to_me_opts).await.unwrap_or_default();
-
-    // 获取我创建的 Issue
     let from_me_opts = ListIssuesOptions {
         state: "open".to_string(),
         page: 1,
@@ -31,7 +28,12 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
         authors: Some(me.username.clone()),
         ..Default::default()
     };
-    let from_me = client.list_issues(&from_me_opts).await.unwrap_or_default();
+    let (to_me, from_me) = tokio::join!(
+        client.list_issues(&to_me_opts),
+        client.list_issues(&from_me_opts)
+    );
+    let to_me = to_me.unwrap_or_default();
+    let from_me = from_me.unwrap_or_default();
 
     // 合并并标记类型
     let mut results: Vec<(String, String, &str)> = Vec::new();
