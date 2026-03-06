@@ -2,6 +2,7 @@
 //!
 //! 从 SKILL.md 提取精简 API 索引，构建两阶段检索的 System Prompt。
 
+use std::sync::LazyLock;
 use regex_lite::Regex;
 
 /// 嵌入 SKILL.md 内容
@@ -22,10 +23,18 @@ pub fn get_api_endpoint() -> String {
 ///
 /// 格式: "- APIName: 描述 [service/apiname]"
 pub fn get_compact_index() -> String {
-    let service_re = Regex::new(r"^### (.+?) 服务$").unwrap_or_else(|_| unreachable!());
-    let api_re = Regex::new(r"^#### (.+)$").unwrap_or_else(|_| unreachable!());
-    let desc_re = Regex::new(r"^\*\*描述：\*\* (.+)$").unwrap_or_else(|_| unreachable!());
-    let doc_re = Regex::new(r"^\*\*详细文档：\*\*").unwrap_or_else(|_| unreachable!());
+    static SERVICE_RE: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(r"^### (.+?) 服务$").unwrap_or_else(|_| unreachable!())
+    });
+    static API_RE: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(r"^#### (.+)$").unwrap_or_else(|_| unreachable!())
+    });
+    static DESC_RE: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(r"^\*\*描述：\*\* (.+)$").unwrap_or_else(|_| unreachable!())
+    });
+    static DOC_RE: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(r"^\*\*详细文档：\*\*").unwrap_or_else(|_| unreachable!())
+    });
 
     let mut current_service = String::new();
     let mut result: Vec<String> = Vec::new();
@@ -33,7 +42,7 @@ pub fn get_compact_index() -> String {
     let mut description = String::new();
 
     for line in SKILL_CONTENT.lines() {
-        if let Some(caps) = service_re.captures(line) {
+        if let Some(caps) = SERVICE_RE.captures(line) {
             if !current_service.is_empty() {
                 result.push(String::new());
             }
@@ -41,16 +50,16 @@ pub fn get_compact_index() -> String {
             result.push(format!("### {current_service}"));
             continue;
         }
-        if let Some(caps) = api_re.captures(line) {
+        if let Some(caps) = API_RE.captures(line) {
             api_name = caps[1].to_string();
             continue;
         }
-        if let Some(caps) = desc_re.captures(line) {
+        if let Some(caps) = DESC_RE.captures(line) {
             // 只取第一句（句号前）
             description = caps[1].splitn(2, '。').next().unwrap_or("").to_string();
             continue;
         }
-        if doc_re.is_match(line) && !api_name.is_empty() {
+        if DOC_RE.is_match(line) && !api_name.is_empty() {
             result.push(format!(
                 "- {api_name}: {description} [{}/{}]",
                 current_service,

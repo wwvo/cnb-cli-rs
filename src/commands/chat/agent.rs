@@ -100,7 +100,7 @@ pub async fn run_agent(
                 messages.push(ChatMessage::assistant(ai_content));
 
                 // 执行 curl 命令
-                let result = exec_curl(&curl_cmd, &curl_vars).await;
+                let result = exec_curl(client.http_client(), &curl_cmd, &curl_vars).await;
 
                 if result.success {
                     eprintln!("\x1b[90m[执行结果] 成功\x1b[0m");

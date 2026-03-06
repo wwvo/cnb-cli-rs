@@ -2,6 +2,7 @@
 //!
 //! 从 AI 响应内容中解析 `get_api_doc` 或 `curl` 动作指令。
 
+use std::sync::LazyLock;
 use regex_lite::Regex;
 
 /// AI 响应中的动作指令
@@ -18,20 +19,25 @@ pub enum Action {
 /// 返回 `None` 表示 AI 已给出最终回答（无需继续循环）
 pub fn parse_action(content: &str) -> Option<Action> {
     // 匹配 ```get_api_doc\n...\n```
-    let doc_re = Regex::new(r"(?s)```get_api_doc\s*(.*?)```").unwrap_or_else(|_| unreachable!());
-    if let Some(caps) = doc_re.captures(content) {
+    static DOC_RE: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(r"(?s)```get_api_doc\s*(.*?)```").unwrap_or_else(|_| unreachable!())
+    });
+    if let Some(caps) = DOC_RE.captures(content) {
         let value = caps[1].trim().to_string();
         return Some(Action::GetApiDoc(value));
     }
 
     // 匹配 ```bash\ncurl ...\n```
-    let curl_re = Regex::new(r"(?s)```bash\s*(curl.*?)```").unwrap_or_else(|_| unreachable!());
-    if let Some(caps) = curl_re.captures(content) {
+    static CURL_RE: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(r"(?s)```bash\s*(curl.*?)```").unwrap_or_else(|_| unreachable!())
+    });
+    if let Some(caps) = CURL_RE.captures(content) {
         let mut value = caps[1].trim().to_string();
         // 合并续行符（\ + 换行 + 可选空白）
-        let line_cont_re =
-            Regex::new(r"\\\n\s*").unwrap_or_else(|_| unreachable!());
-        value = line_cont_re.replace_all(&value, " ").to_string();
+        static LINE_CONT_RE: LazyLock<Regex> = LazyLock::new(|| {
+            Regex::new(r"\\\n\s*").unwrap_or_else(|_| unreachable!())
+        });
+        value = LINE_CONT_RE.replace_all(&value, " ").to_string();
         return Some(Action::Curl(value));
     }
 

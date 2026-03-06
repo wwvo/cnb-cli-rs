@@ -3,6 +3,7 @@
 //! 将 AI 生成的 curl 命令解析为 HTTP 请求参数，用 reqwest 直接发请求，
 //! 无需依赖外部 curl/shell。
 
+use std::sync::LazyLock;
 use regex_lite::Regex;
 use serde::Serialize;
 use std::collections::HashMap;
@@ -93,7 +94,11 @@ fn parse_curl(cmd: &str) -> Result<CurlCommand, String> {
 /// 执行 curl 命令（通过 reqwest 直接发 HTTP 请求）
 ///
 /// `vars` 为占位符替换映射，如 `{"<CNB_TOKEN>": "xxx"}`
-pub async fn exec_curl(curl_cmd: &str, vars: &HashMap<String, String>) -> CurlResult {
+pub async fn exec_curl(
+    http: &reqwest::Client,
+    curl_cmd: &str,
+    vars: &HashMap<String, String>,
+) -> CurlResult {
     // 替换占位符
     let mut cmd = curl_cmd.to_string();
     for (placeholder, value) in vars {
@@ -112,8 +117,6 @@ pub async fn exec_curl(curl_cmd: &str, vars: &HashMap<String, String>) -> CurlRe
         }
     };
 
-    // 构建 reqwest 请求
-    let client = reqwest::Client::new();
     let method = match parsed.method.as_str() {
         "GET" => reqwest::Method::GET,
         "POST" => reqwest::Method::POST,
@@ -129,7 +132,7 @@ pub async fn exec_curl(curl_cmd: &str, vars: &HashMap<String, String>) -> CurlRe
         }
     };
 
-    let mut req = client.request(method, &parsed.url);
+    let mut req = http.request(method, &parsed.url);
 
     for (key, value) in &parsed.headers {
         req = req.header(key.as_str(), value.as_str());
@@ -173,8 +176,14 @@ pub async fn exec_curl(curl_cmd: &str, vars: &HashMap<String, String>) -> CurlRe
 
 /// 将命令行字符串拆分为 token 列表，保留引号内内容为完整 token
 fn tokenize(cmd: &str) -> Vec<String> {
-    let re = Regex::new(r#"'[^']*'|"[^"]*"|\S+"#).unwrap_or_else(|_| unreachable!());
-    re.find_iter(cmd).map(|m| m.as_str().to_string()).collect()
+    static TOKENIZE_RE: LazyLock<Regex> = LazyLock::new(|| {
+        Regex::new(r#"'[^']*'|"[^"]*"|\S+"#).unwrap_or_else(|_| unreachable!())
+    });
+
+    TOKENIZE_RE
+        .find_iter(cmd)
+        .map(|m| m.as_str().to_string())
+        .collect()
 }
 
 /// 去除字符串两端的引号（单引号或双引号）
