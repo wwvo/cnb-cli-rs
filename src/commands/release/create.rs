@@ -21,7 +21,7 @@ pub struct CreateArgs {
     pub body: String,
 
     /// 是否为最新版本
-    #[arg(long = "make-latest", default_value = "false")]
+    #[arg(long = "make-latest", default_value = "true")]
     pub make_latest: String,
 
     /// 是否为预发布版本

@@ -81,6 +81,8 @@ enum Commands {
 fn main() {
     // Windows: 设置控制台编码为 UTF-8，避免中文乱码
     #[cfg(windows)]
+    // SAFETY: SetConsoleOutputCP/SetConsoleCP 是线程安全的 Windows API，
+    // 在程序启动时调用一次，参数 65001 (UTF-8) 是合法的代码页值。
     unsafe {
         windows_sys::Win32::System::Console::SetConsoleOutputCP(65001);
         windows_sys::Win32::System::Console::SetConsoleCP(65001);
