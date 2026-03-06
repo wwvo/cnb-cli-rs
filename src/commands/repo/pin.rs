@@ -52,22 +52,19 @@ pub async fn run(ctx: &AppContext, args: &PinArgs) -> Result<()> {
 async fn run_list(ctx: &AppContext, args: &PinListArgs) -> Result<()> {
     let client = ctx.api_client()?;
 
-    let repos = match &args.owner {
-        Some(owner) => {
-            // 尝试作为组织查询，如果 404 则作为用户查询
-            match client.get_pinned_repos_by_group(owner).await {
-                Ok(repos) => repos,
-                Err(cnb_api::error::ApiError::NotFound(_)) => {
-                    client.get_pinned_repos_by_user(owner).await?
-                }
-                Err(e) => return Err(e.into()),
+    let repos = if let Some(owner) = &args.owner {
+        // 尝试作为组织查询，如果 404 则作为用户查询
+        match client.get_pinned_repos_by_group(owner).await {
+            Ok(repos) => repos,
+            Err(cnb_api::error::ApiError::NotFound(_)) => {
+                client.get_pinned_repos_by_user(owner).await?
             }
+            Err(e) => return Err(e.into()),
         }
-        None => {
-            // 获取当前用户的仓库墙
-            let user = client.me().await?;
-            client.get_pinned_repos_by_user(&user.username).await?
-        }
+    } else {
+        // 获取当前用户的仓库墙
+        let user = client.me().await?;
+        client.get_pinned_repos_by_user(&user.username).await?
     };
 
     if repos.is_empty() {

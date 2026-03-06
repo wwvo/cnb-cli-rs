@@ -42,12 +42,11 @@ pub async fn run(ctx: &AppContext, args: &CreateArgs) -> Result<()> {
     let client = ctx.api_client()?;
 
     // 确定组织路径：优先使用 --group，否则使用当前用户名
-    let slug = match &args.group {
-        Some(g) => g.clone(),
-        None => {
-            let user = client.me().await?;
-            user.username
-        }
+    let slug = if let Some(g) = &args.group {
+        g.clone()
+    } else {
+        let user = client.me().await?;
+        user.username
     };
 
     let visibility = if args.secret {

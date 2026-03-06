@@ -60,6 +60,7 @@ pub struct BpGetArgs {
 }
 
 /// 创建分支保护规则
+#[allow(clippy::struct_excessive_bools)]
 #[derive(Debug, Parser)]
 pub struct BpCreateArgs {
     /// 仓库路径（如 org/repo），不指定则使用当前仓库

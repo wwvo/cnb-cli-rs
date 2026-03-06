@@ -167,7 +167,8 @@ pub struct SecurityOverview {
     pub code_issue: Option<SecurityModule>,
 }
 
-/// 安全风险计数
+/// 安全风险统计
+#[allow(clippy::struct_excessive_bools)]
 #[derive(Debug, Deserialize, Serialize)]
 pub struct SecurityRiskCount {
     #[serde(default)]
@@ -312,6 +313,7 @@ impl ListReposOptions {
 // ============================
 
 /// 分支保护规则
+#[allow(clippy::struct_excessive_bools)]
 #[derive(Debug, Deserialize, Serialize)]
 pub struct BranchProtection {
     #[serde(default)]
@@ -396,6 +398,7 @@ pub struct BranchProtectionRequest {
 }
 
 /// 合并请求设置
+#[allow(clippy::struct_excessive_bools)]
 #[derive(Debug, Deserialize, Serialize)]
 pub struct PullRequestSettings {
     #[serde(default)]

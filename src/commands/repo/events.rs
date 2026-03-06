@@ -27,12 +27,11 @@ pub async fn run(ctx: &AppContext, args: &EventsArgs) -> Result<()> {
     };
 
     // 确定查询日期
-    let date_str = match &args.date {
-        Some(d) => d.clone(),
-        None => {
-            let now = chrono::Local::now();
-            now.format("%Y-%m-%d").to_string()
-        }
+    let date_str = if let Some(d) = &args.date {
+        d.clone()
+    } else {
+        let now = chrono::Local::now();
+        now.format("%Y-%m-%d").to_string()
     };
 
     // 拼接日期参数（可附加小时）
@@ -50,7 +49,7 @@ pub async fn run(ctx: &AppContext, args: &EventsArgs) -> Result<()> {
     }
 
     // 动态内容直接输出
-    if events.is_null() || (events.is_array() && events.as_array().is_some_and(|a| a.is_empty())) {
+    if events.is_null() || (events.is_array() && events.as_array().is_some_and(Vec::is_empty)) {
         info!("没有动态数据 ({date_str})");
         return Ok(());
     }
