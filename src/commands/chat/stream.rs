@@ -2,6 +2,7 @@
 
 use anyhow::Result;
 use cnb_api::types::ChatStreamChunk;
+use cnb_tui::style::dim;
 
 /// 从 SSE 响应逐行读取并输出内容
 ///
@@ -55,8 +56,8 @@ fn process_sse_data(data: &str) {
     // 处理 ModelResponse 状态
     if let Some(ref mr) = chunk.model_response {
         match mr.resp_type {
-            1 => eprint!("\x1b[90mThinking...\n\x1b[0m"),
-            3 => eprint!("\x1b[90m...Done thinking.\n\x1b[0m"),
+            1 => eprintln!("{}", dim("Thinking...")),
+            3 => eprintln!("{}", dim("...Done thinking.")),
             _ => {}
         }
     }
@@ -64,7 +65,7 @@ fn process_sse_data(data: &str) {
     for choice in &chunk.choices {
         // 推理过程（灰色输出到 stderr）
         if !choice.delta.reasoning_content.is_empty() {
-            eprint!("\x1b[90m{}\x1b[0m", choice.delta.reasoning_content);
+            eprint!("{}", dim(&choice.delta.reasoning_content));
         }
 
         // 正文内容（输出到 stdout）

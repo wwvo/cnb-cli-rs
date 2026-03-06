@@ -12,6 +12,8 @@ use cnb_chat::curl::exec_curl;
 use cnb_chat::docs::get_api_doc;
 use cnb_chat::prompt::build_system_prompt;
 
+use cnb_tui::style::{dim, clear_line};
+
 use super::stream::print_stream;
 
 /// Agent 最大循环轮次
@@ -39,7 +41,7 @@ pub async fn run_agent(
 
     for _turn in 0..MAX_TURNS {
         // 显示等待提示
-        eprint!("\x1b[90m⠋ 正在思考...\x1b[0m");
+        eprint!("{}", dim("⠀⠁ 正在思考..."));
 
         // 非流式调用 AI（用于 Agent 中间轮次）
         let req = ChatCompletionsRequest {
@@ -51,7 +53,7 @@ pub async fn run_agent(
         let resp = client.ai_chat(&req).await?;
 
         // 清除等待提示
-        eprint!("\r\x1b[K");
+        eprint!("{}", clear_line());
 
         let Some(choice) = resp.choices.first() else {
             anyhow::bail!("AI 返回空响应");
@@ -73,7 +75,7 @@ pub async fn run_agent(
                 return Ok(());
             }
             Some(Action::GetApiDoc(doc_ref)) => {
-                eprintln!("\x1b[90m[获取文档] {doc_ref}\x1b[0m");
+                eprintln!("{}", dim(&format!("[获取文档] {doc_ref}")));
 
                 // 将 AI 响应加入消息历史
                 messages.push(ChatMessage::assistant(ai_content));
@@ -94,7 +96,7 @@ pub async fn run_agent(
                 } else {
                     curl_cmd.clone()
                 };
-                eprintln!("\x1b[90m[执行] {display}\x1b[0m");
+                eprintln!("{}", dim(&format!("[执行] {display}")));
 
                 // 将 AI 响应加入消息历史
                 messages.push(ChatMessage::assistant(ai_content));
@@ -103,9 +105,9 @@ pub async fn run_agent(
                 let result = exec_curl(client.http_client(), &curl_cmd, &curl_vars).await;
 
                 if result.success {
-                    eprintln!("\x1b[90m[执行结果] 成功\x1b[0m");
+                    eprintln!("{}", dim("[执行结果] 成功"));
                 } else if let Some(ref err) = result.error {
-                    eprintln!("\x1b[90m[执行结果] 失败: {err}\x1b[0m");
+                    eprintln!("{}", dim(&format!("[执行结果] 失败：{err}")));
                 }
 
                 let result_json = serde_json::to_string_pretty(&result.data)
