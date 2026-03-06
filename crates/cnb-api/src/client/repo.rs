@@ -183,4 +183,85 @@ impl CnbClient {
         let resp = self.http.delete(&url).send().await?;
         Self::handle_empty_response(resp).await
     }
+
+    // ============================
+    // 仓库设置 API
+    // ============================
+
+    /// 列出分支保护规则（GET /{repo}/-/settings/branch-protections）
+    pub async fn list_branch_protections(&self, repo_path: &str) -> Result<Vec<BranchProtection>, ApiError> {
+        let url = format!("{}{}/-/settings/branch-protections", self.base_url, repo_path);
+        let resp = self.send_with_retry(|| self.http.get(&url)).await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 获取分支保护规则详情（GET /{repo}/-/settings/branch-protections/{id}）
+    pub async fn get_branch_protection(&self, repo_path: &str, id: &str) -> Result<BranchProtection, ApiError> {
+        let url = format!("{}{}/-/settings/branch-protections/{}", self.base_url, repo_path, id);
+        let resp = self.send_with_retry(|| self.http.get(&url)).await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 创建分支保护规则（POST /{repo}/-/settings/branch-protections）
+    pub async fn create_branch_protection(&self, repo_path: &str, req: &BranchProtectionRequest) -> Result<BranchProtection, ApiError> {
+        let url = format!("{}{}/-/settings/branch-protections", self.base_url, repo_path);
+        let resp = self.http.post(&url).json(req).send().await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 更新分支保护规则（PATCH /{repo}/-/settings/branch-protections/{id}）
+    pub async fn update_branch_protection(&self, repo_path: &str, id: &str, req: &BranchProtectionRequest) -> Result<BranchProtection, ApiError> {
+        let url = format!("{}{}/-/settings/branch-protections/{}", self.base_url, repo_path, id);
+        let resp = self.http.patch(&url).json(req).send().await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 删除分支保护规则（DELETE /{repo}/-/settings/branch-protections/{id}）
+    pub async fn delete_branch_protection(&self, repo_path: &str, id: &str) -> Result<(), ApiError> {
+        let url = format!("{}{}/-/settings/branch-protections/{}", self.base_url, repo_path, id);
+        let resp = self.http.delete(&url).send().await?;
+        Self::handle_empty_response(resp).await
+    }
+
+    /// 获取合并请求设置（GET /{repo}/-/settings/pull-request）
+    pub async fn get_pull_request_settings(&self, repo_path: &str) -> Result<PullRequestSettings, ApiError> {
+        let url = format!("{}{}/-/settings/pull-request", self.base_url, repo_path);
+        let resp = self.send_with_retry(|| self.http.get(&url)).await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 更新合并请求设置（PUT /{repo}/-/settings/pull-request）
+    pub async fn set_pull_request_settings(&self, repo_path: &str, req: &PullRequestSettingsRequest) -> Result<(), ApiError> {
+        let url = format!("{}{}/-/settings/pull-request", self.base_url, repo_path);
+        let resp = self.http.put(&url).json(req).send().await?;
+        Self::handle_empty_response(resp).await
+    }
+
+    /// 获取推送限制设置（GET /{repo}/-/settings/push-limit）
+    pub async fn get_push_limit_settings(&self, repo_path: &str) -> Result<PushLimitSettings, ApiError> {
+        let url = format!("{}{}/-/settings/push-limit", self.base_url, repo_path);
+        let resp = self.send_with_retry(|| self.http.get(&url)).await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 更新推送限制设置（PUT /{repo}/-/settings/push-limit）
+    pub async fn set_push_limit_settings(&self, repo_path: &str, req: &PushLimitSettingsRequest) -> Result<(), ApiError> {
+        let url = format!("{}{}/-/settings/push-limit", self.base_url, repo_path);
+        let resp = self.http.put(&url).json(req).send().await?;
+        Self::handle_empty_response(resp).await
+    }
+
+    /// 获取流水线构建设置（GET /{repo}/-/settings/cloud-native-build）
+    pub async fn get_pipeline_settings(&self, repo_path: &str) -> Result<PipelineSettings, ApiError> {
+        let url = format!("{}{}/-/settings/cloud-native-build", self.base_url, repo_path);
+        let resp = self.send_with_retry(|| self.http.get(&url)).await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 更新流水线构建设置（PUT /{repo}/-/settings/cloud-native-build）
+    pub async fn set_pipeline_settings(&self, repo_path: &str, req: &PipelineSettingsRequest) -> Result<(), ApiError> {
+        let url = format!("{}{}/-/settings/cloud-native-build", self.base_url, repo_path);
+        let resp = self.http.put(&url).json(req).send().await?;
+        Self::handle_empty_response(resp).await
+    }
 }

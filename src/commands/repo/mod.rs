@@ -16,6 +16,7 @@ pub mod fork;
 pub mod list;
 pub mod pin;
 pub mod security;
+pub mod settings;
 pub mod top_contributors;
 pub mod transfer;
 pub mod unarchive;
@@ -67,6 +68,9 @@ pub enum RepoSubcommand {
     /// 查看安全概览
     Security(security::SecurityArgs),
 
+    /// 仓库设置管理
+    Settings(settings::SettingsCommand),
+
     /// 查看活跃用户排名
     TopContributors(top_contributors::TopContributorsArgs),
 
@@ -98,6 +102,7 @@ impl RepoCommand {
             RepoSubcommand::List(args) => list::run(ctx, args).await,
             RepoSubcommand::Pin(args) => pin::run(ctx, args).await,
             RepoSubcommand::Security(args) => security::run(ctx, args).await,
+            RepoSubcommand::Settings(cmd) => cmd.execute(ctx).await,
             RepoSubcommand::TopContributors(args) => top_contributors::run(ctx, args).await,
             RepoSubcommand::Transfer(args) => transfer::run(ctx, args).await,
             RepoSubcommand::Unarchive(args) => unarchive::run(ctx, args).await,

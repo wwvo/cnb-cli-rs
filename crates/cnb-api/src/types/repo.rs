@@ -306,3 +306,169 @@ impl ListReposOptions {
         params.join("&")
     }
 }
+
+// ============================
+// 仓库设置相关类型
+// ============================
+
+/// 分支保护规则
+#[derive(Debug, Deserialize, Serialize)]
+pub struct BranchProtection {
+    #[serde(default)]
+    pub id: String,
+    #[serde(default)]
+    pub rule: String,
+    #[serde(default)]
+    pub allow_pushes: bool,
+    #[serde(default)]
+    pub allow_master_pushes: bool,
+    #[serde(default)]
+    pub allow_force_pushes: bool,
+    #[serde(default)]
+    pub allow_master_force_pushes: bool,
+    #[serde(default)]
+    pub allow_creation: bool,
+    #[serde(default)]
+    pub allow_master_creation: bool,
+    #[serde(default)]
+    pub allow_deletions: bool,
+    #[serde(default)]
+    pub allow_master_deletions: bool,
+    #[serde(default)]
+    pub allow_master_manual_merge: bool,
+    #[serde(default)]
+    pub required_must_auto_merge: bool,
+    #[serde(default)]
+    pub required_must_push_via_pull_request: bool,
+    #[serde(default)]
+    pub required_pull_request_reviews: bool,
+    #[serde(default)]
+    pub required_approved_review_count: u8,
+    #[serde(default)]
+    pub required_approved_review_ratio: u8,
+    #[serde(default)]
+    pub required_master_approve: bool,
+    #[serde(default)]
+    pub required_linear_history: bool,
+    #[serde(default)]
+    pub required_status_checks: bool,
+}
+
+/// 创建/更新分支保护规则请求体
+#[derive(Debug, Default, Serialize)]
+pub struct BranchProtectionRequest {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub rule: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_pushes: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_master_pushes: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_force_pushes: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_master_force_pushes: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_creation: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_master_creation: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_deletions: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_master_deletions: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_master_manual_merge: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub required_must_auto_merge: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub required_must_push_via_pull_request: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub required_pull_request_reviews: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub required_approved_review_count: Option<u8>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub required_approved_review_ratio: Option<u8>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub required_master_approve: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub required_linear_history: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub required_status_checks: Option<bool>,
+}
+
+/// 合并请求设置
+#[derive(Debug, Deserialize, Serialize)]
+pub struct PullRequestSettings {
+    #[serde(default)]
+    pub allow_merge_commit_merge: bool,
+    #[serde(default)]
+    pub allow_rebase_merge: bool,
+    #[serde(default)]
+    pub allow_squash_merge: bool,
+    #[serde(default)]
+    pub master_auto_as_reviewer: bool,
+    #[serde(default)]
+    pub merge_commit_message_style: String,
+    #[serde(default)]
+    pub squash_commit_message_style: String,
+}
+
+/// 更新合并请求设置请求体
+#[derive(Debug, Default, Serialize)]
+pub struct PullRequestSettingsRequest {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_merge_commit_merge: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_rebase_merge: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_squash_merge: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub master_auto_as_reviewer: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub merge_commit_message_style: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub squash_commit_message_style: Option<String>,
+}
+
+/// 推送限制设置
+#[derive(Debug, Deserialize, Serialize)]
+pub struct PushLimitSettings {
+    #[serde(default)]
+    pub check_single_push_number: bool,
+    #[serde(default)]
+    pub allow_single_push_number: u32,
+    #[serde(default)]
+    pub only_master_can_push_tag: bool,
+    #[serde(default)]
+    pub push_commit_must_be: String,
+}
+
+/// 更新推送限制设置请求体
+#[derive(Debug, Default, Serialize)]
+pub struct PushLimitSettingsRequest {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub check_single_push_number: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allow_single_push_number: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub only_master_can_push_tag: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub push_commit_must_be: Option<String>,
+}
+
+/// 流水线构建设置
+#[derive(Debug, Deserialize, Serialize)]
+pub struct PipelineSettings {
+    #[serde(default)]
+    pub auto_trigger: bool,
+    #[serde(default)]
+    pub forked_repo_auto_trigger: bool,
+}
+
+/// 更新流水线构建设置请求体
+#[derive(Debug, Default, Serialize)]
+pub struct PipelineSettingsRequest {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub auto_trigger: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub forked_repo_auto_trigger: Option<bool>,
+}
