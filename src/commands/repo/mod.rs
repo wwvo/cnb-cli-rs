@@ -11,6 +11,7 @@ pub mod delete;
 pub mod edit;
 pub mod fork;
 pub mod list;
+pub mod pin;
 pub mod transfer;
 pub mod unarchive;
 pub mod view;
@@ -46,6 +47,9 @@ pub enum RepoSubcommand {
     /// 列出仓库
     List(list::ListArgs),
 
+    /// 管理仓库墙（置顶仓库）
+    Pin(pin::PinArgs),
+
     /// 转移仓库
     Transfer(transfer::TransferArgs),
 
@@ -69,6 +73,7 @@ impl RepoCommand {
             RepoSubcommand::Edit(args) => edit::run(ctx, args).await,
             RepoSubcommand::Fork(args) => fork::run(ctx, args).await,
             RepoSubcommand::List(args) => list::run(ctx, args).await,
+            RepoSubcommand::Pin(args) => pin::run(ctx, args).await,
             RepoSubcommand::Transfer(args) => transfer::run(ctx, args).await,
             RepoSubcommand::Unarchive(args) => unarchive::run(ctx, args).await,
             RepoSubcommand::View(args) => view::run(ctx, args).await,

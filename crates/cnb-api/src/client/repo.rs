@@ -92,4 +92,25 @@ impl CnbClient {
         let resp = self.http.post(&url).json(&body).send().await?;
         Self::handle_empty_response(resp).await
     }
+
+    /// 获取组织的仓库墙（GET /{slug}/-/pinned-repos）
+    pub async fn get_pinned_repos_by_group(&self, slug: &str) -> Result<Vec<Repo>, ApiError> {
+        let url = format!("{}{}/-/pinned-repos", self.base_url, slug);
+        let resp = self.send_with_retry(|| self.http.get(&url)).await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 获取用户的仓库墙（GET /users/{username}/pinned-repos）
+    pub async fn get_pinned_repos_by_user(&self, username: &str) -> Result<Vec<Repo>, ApiError> {
+        let url = format!("{}users/{}/pinned-repos", self.base_url, username);
+        let resp = self.send_with_retry(|| self.http.get(&url)).await?;
+        Self::handle_response(resp).await
+    }
+
+    /// 设置组织的仓库墙（PUT /{slug}/-/pinned-repos）
+    pub async fn set_pinned_repos_by_group(&self, slug: &str, repos: &[String]) -> Result<Vec<Repo>, ApiError> {
+        let url = format!("{}{}/-/pinned-repos", self.base_url, slug);
+        let resp = self.http.put(&url).json(&repos).send().await?;
+        Self::handle_response(resp).await
+    }
 }
