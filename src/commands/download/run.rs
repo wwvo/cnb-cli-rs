@@ -42,7 +42,7 @@ pub async fn run(ctx: &AppContext, args: &DownloadArgs) -> Result<()> {
     };
 
     // 收集需要下载的文件
-    let all_files = collect_files(&client, &args.files, &git_ref).await?;
+    let all_files = collect_files(client, &args.files, &git_ref).await?;
 
     // 应用 include/exclude glob 过滤
     let download_files = filter_files(all_files, &args.include, &args.exclude);
@@ -231,7 +231,7 @@ async fn download_lfs(
         .await?;
 
     let status = resp.status().as_u16();
-    if status < 200 || status >= 300 {
+    if !(200..300).contains(&status) {
         anyhow::bail!("HTTP {status}");
     }
 

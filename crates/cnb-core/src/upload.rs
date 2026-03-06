@@ -31,7 +31,7 @@ pub async fn upload_and_confirm(
         .await?;
 
     let status = resp.status().as_u16();
-    if status < 200 || status >= 300 {
+    if !(200..300).contains(&status) {
         let body = resp.text().await.unwrap_or_default();
         anyhow::bail!("上传失败 (HTTP {status}): {body}");
     }

@@ -36,10 +36,10 @@ pub async fn print_stream(mut resp: reqwest::Response) -> Result<()> {
 
     // 处理缓冲区中剩余的最后一行
     let line = buf.trim().to_string();
-    if let Some(data) = line.strip_prefix("data: ") {
-        if data != "[DONE]" {
-            process_sse_data(data);
-        }
+    if let Some(data) = line.strip_prefix("data: ")
+        && data != "[DONE]"
+    {
+        process_sse_data(data);
     }
 
     println!();

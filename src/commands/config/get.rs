@@ -22,7 +22,7 @@ pub fn run(ctx: &AppContext, args: &GetArgs) -> anyhow::Result<()> {
     let config = ctx.config();
     match config.get_value(key) {
         Some(val) => println!("{val}"),
-        None => println!(""),
+        None => println!(),
     }
 
     Ok(())

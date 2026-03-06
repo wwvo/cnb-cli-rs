@@ -23,30 +23,28 @@ pub fn get_token_with_source(domain: &str, config: &Config) -> Option<(String, T
     // 优先级 1: 域名特定环境变量
     let env_key = format!(
         "CNB_TOKEN_{}",
-        domain.replace('.', "").replace('-', "")
+        domain.replace(['.', '-'], "")
     );
-    if let Ok(token) = std::env::var(&env_key) {
-        if !token.is_empty() {
-            return Some((token, TokenSource::EnvDomain(env_key)));
-        }
+    if let Ok(token) = std::env::var(&env_key)
+        && !token.is_empty()
+    {
+        return Some((token, TokenSource::EnvDomain(env_key)));
     }
 
     // 优先级 2: 通用环境变量
-    if let Ok(token) = std::env::var("CNB_TOKEN") {
-        if !token.is_empty() {
-            return Some((token, TokenSource::EnvGeneric));
-        }
+    if let Ok(token) = std::env::var("CNB_TOKEN")
+        && !token.is_empty()
+    {
+        return Some((token, TokenSource::EnvGeneric));
     }
 
     // 优先级 3: 配置文件
-    if let Some(auth) = &config.auth {
-        if let Some(host_auth) = auth.hosts.get(domain) {
-            if let Some(token) = &host_auth.token {
-                if !token.is_empty() {
-                    return Some((token.clone(), TokenSource::ConfigFile));
-                }
-            }
-        }
+    if let Some(auth) = &config.auth
+        && let Some(host_auth) = auth.hosts.get(domain)
+        && let Some(token) = &host_auth.token
+        && !token.is_empty()
+    {
+        return Some((token.clone(), TokenSource::ConfigFile));
     }
 
     None
