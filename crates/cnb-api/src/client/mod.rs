@@ -223,7 +223,7 @@ mod tests {
     fn new_client_with_token() {
         let client = CnbClient::new("https://api.cnb.cool/", "https://cnb.cool/", "test_token", "org/repo");
         assert!(client.is_ok());
-        let client = client.unwrap_or_else(|e| panic!("创建客户端失败: {e}"));
+        let client = client.unwrap_or_else(|e| panic!("创建客户端失败：{e}"));
         assert_eq!(client.base_url(), "https://api.cnb.cool/");
         assert_eq!(client.base_web_url(), "https://cnb.cool/");
         assert_eq!(client.repo(), "org/repo");

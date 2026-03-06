@@ -21,7 +21,7 @@ pub fn get_api_endpoint() -> String {
 
 /// 从 SKILL.md 生成精简索引（每个 API 一行）
 ///
-/// 格式: "- APIName: 描述 [service/apiname]"
+/// 格式："- APIName: 描述 [service/apiname]"
 pub fn get_compact_index() -> String {
     static SERVICE_RE: LazyLock<Regex> = LazyLock::new(|| {
         Regex::new(r"^### (.+?) 服务$").unwrap_or_else(|_| unreachable!())
@@ -83,13 +83,13 @@ pub fn build_system_prompt() -> String {
 
 ## API 基础配置
 
-- API 基础地址: {endpoint}
-- 认证方式: Bearer Token
-- 请求头: Accept: application/vnd.cnb.api+json, Authorization: Bearer <CNB_TOKEN>
+- API 基础地址：{endpoint}
+- 认证方式：Bearer Token
+- 请求头：Accept: application/vnd.cnb.api+json, Authorization: Bearer <CNB_TOKEN>
 
 ## API 接口索引
 
-以下是所有可用的 API 列表。每行格式: `API名称: 描述 [文档引用]`
+以下是所有可用的 API 列表。每行格式：`API 名称：描述 [文档引用]`
 方括号中的 `[service/apiname]` 是文档引用标识，用于获取详细文档。
 
 {compact_index}

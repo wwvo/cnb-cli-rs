@@ -100,7 +100,7 @@ mod tests {
     fn issue_deserialize() {
         let json = r#"{"number": "42", "title": "Bug report", "state": "open", "last_acted_at": "2025-01-01T00:00:00Z"}"#;
         let issue: Issue = serde_json::from_str(json)
-            .unwrap_or_else(|e| panic!("反序列化失败: {e}"));
+            .unwrap_or_else(|e| panic!("反序列化失败：{e}"));
         assert_eq!(issue.number, "42");
         assert_eq!(issue.title, "Bug report");
         assert_eq!(issue.state, "open");
@@ -111,7 +111,7 @@ mod tests {
     fn issue_deserialize_defaults() {
         let json = r#"{"number": "1", "title": "test", "state": "closed"}"#;
         let issue: Issue = serde_json::from_str(json)
-            .unwrap_or_else(|e| panic!("反序列化失败: {e}"));
+            .unwrap_or_else(|e| panic!("反序列化失败：{e}"));
         assert_eq!(issue.last_acted_at, "");
     }
 
@@ -119,7 +119,7 @@ mod tests {
     fn issue_detail_deserialize() {
         let json = r#"{"number": "1", "title": "test", "body": "description", "state": "open"}"#;
         let detail: IssueDetail = serde_json::from_str(json)
-            .unwrap_or_else(|e| panic!("反序列化失败: {e}"));
+            .unwrap_or_else(|e| panic!("反序列化失败：{e}"));
         assert_eq!(detail.body, "description");
     }
 
@@ -135,7 +135,7 @@ mod tests {
             end_date: None,
         };
         let json = serde_json::to_string(&req)
-            .unwrap_or_else(|e| panic!("序列化失败: {e}"));
+            .unwrap_or_else(|e| panic!("序列化失败：{e}"));
         // 空字段应被 skip
         assert!(!json.contains("body"));
         assert!(!json.contains("priority"));
@@ -156,7 +156,7 @@ mod tests {
             end_date: Some("2025-12-31".to_string()),
         };
         let json = serde_json::to_string(&req)
-            .unwrap_or_else(|e| panic!("序列化失败: {e}"));
+            .unwrap_or_else(|e| panic!("序列化失败：{e}"));
         assert!(json.contains("body"));
         assert!(json.contains("priority"));
         assert!(json.contains("labels"));
@@ -170,7 +170,7 @@ mod tests {
             state_reason: None,
         };
         let json = serde_json::to_string(&req)
-            .unwrap_or_else(|e| panic!("序列化失败: {e}"));
+            .unwrap_or_else(|e| panic!("序列化失败：{e}"));
         assert_eq!(json, "{}");
     }
 
@@ -181,7 +181,7 @@ mod tests {
             state_reason: Some("completed".to_string()),
         };
         let json = serde_json::to_string(&req)
-            .unwrap_or_else(|e| panic!("序列化失败: {e}"));
+            .unwrap_or_else(|e| panic!("序列化失败：{e}"));
         assert!(json.contains(r#""state":"closed""#));
         assert!(json.contains(r#""state_reason":"completed""#));
     }
@@ -190,7 +190,7 @@ mod tests {
     fn issue_comment_deserialize() {
         let json = r#"{"body": "comment text", "created_at": "2025-01-01T00:00:00Z", "updated_at": "2025-01-02T00:00:00Z", "author": {"username": "user1", "nickname": "User One"}}"#;
         let comment: IssueComment = serde_json::from_str(json)
-            .unwrap_or_else(|e| panic!("反序列化失败: {e}"));
+            .unwrap_or_else(|e| panic!("反序列化失败：{e}"));
         assert_eq!(comment.body, "comment text");
         assert_eq!(comment.author.username, "user1");
     }

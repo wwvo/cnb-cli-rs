@@ -13,6 +13,7 @@ requires:
 本技能提供 CNB (Cloud Native Build) Open API 的完整调用能力，支持所有 API 接口的调用和操作。每个 API 都有详细的文档说明，包含请求参数、响应格式和调用示例。
 
 > **重要规则（必须遵守）：**
+>
 > 1. **必须实际执行**：访问 CNB API 时，必须通过 exec_command 工具实际执行 curl 命令，**不要只在回复中描述或展示 curl 命令**。用户需要的是 API 返回的结果，不是命令本身。
 > 2. **使用 curl + Authorization**：不要使用 web_fetch 工具，因为 web_fetch 无法携带认证信息。
 > 3. **使用环境变量**：始终使用 $CNB_TOKEN 和 $CNB_API_ENDPOINT 环境变量引用，不要使用 <CNB_TOKEN> 占位符。
@@ -22,15 +23,16 @@ requires:
 
 当用户提供 CNB 平台的页面链接时，需要从 URL 中提取参数来构造 API 请求：
 
-| 页面 URL 格式 | 提取参数 | 对应 API |
-|---|---|---|
-| https://{host}/{repo}/-/build/logs/{sn} | repo, sn | GET /{repo}/-/build/status/{sn} 查状态，GET /{repo}/-/build/logs?sn={sn} 查日志列表 |
-| https://{host}/{repo}/-/issues/{number} | repo, number | GET /{repo}/-/issues/{number} |
-| https://{host}/{repo}/-/pulls/{number} | repo, number | GET /{repo}/-/pulls/{number} |
-| https://{host}/{repo}/-/git/commits/{ref} | repo, ref | GET /{repo}/-/git/commits/{ref} |
-| https://{host}/{repo} | repo | GET /{repo} |
+| 页面 URL 格式                             | 提取参数     | 对应 API                                                                            |
+| ----------------------------------------- | ------------ | ----------------------------------------------------------------------------------- |
+| https://{host}/{repo}/-/build/logs/{sn}   | repo, sn     | GET /{repo}/-/build/status/{sn} 查状态，GET /{repo}/-/build/logs?sn={sn} 查日志列表 |
+| https://{host}/{repo}/-/issues/{number}   | repo, number | GET /{repo}/-/issues/{number}                                                       |
+| https://{host}/{repo}/-/pulls/{number}    | repo, number | GET /{repo}/-/pulls/{number}                                                        |
+| https://{host}/{repo}/-/git/commits/{ref} | repo, ref    | GET /{repo}/-/git/commits/{ref}                                                     |
+| https://{host}/{repo}                     | repo         | GET /{repo}                                                                         |
 
 **示例**：用户给了 https://{host}/{org}/{repo}/-/build/logs/{sn}
+
 - 提取 repo = {org}/{repo}，sn = {sn}
 - 先执行：curl ... "${CNB_API_ENDPOINT}/{org}/{repo}/-/build/status/{sn}" 获取构建状态
 - 如需详细日志，再调用 stage 接口
@@ -42,10 +44,12 @@ requires:
 **认证方式：** Bearer Token
 
 **环境变量：**
+
 - CNB_TOKEN：身份认证令牌（必须）
 - CNB_API_ENDPOINT：API 请求基础地址（可选，默认为 https://api.cnb.cool）
 
 **请求头要求：**
+
 - Accept: application/vnd.cnb.api+json
 - Authorization: Bearer $CNB_TOKEN
 
@@ -143,7 +147,7 @@ requires:
 
 #### BuildCrontabSync
 
-**描述：** 同步仓库分支下的定时任务。 Synchronize the content under the repository branch.
+**描述：** 同步仓库分支下的定时任务。Synchronize the content under the repository branch.
 
 **详细文档：** [BuildCrontabSync.md](./references/build/buildcrontabsync.md)
 
@@ -159,7 +163,7 @@ requires:
 
 #### BuildRunnerDownloadLog
 
-**描述：** 流水线runner日志下载。Pipeline runner log download.
+**描述：** 流水线 runner 日志下载。Pipeline runner log download.
 
 **详细文档：** [BuildRunnerDownloadLog.md](./references/build/buildrunnerdownloadlog.md)
 
@@ -175,7 +179,7 @@ requires:
 
 #### GetBuildStage
 
-**描述：** 查询流水线Stage详情。Get pipeline build stage detail.
+**描述：** 查询流水线 Stage 详情。Get pipeline build stage detail.
 
 **详细文档：** [GetBuildStage.md](./references/build/getbuildstage.md)
 
@@ -199,7 +203,7 @@ requires:
 
 #### StopBuild
 
-**描述：** 停止一个构建。 Stop a build.
+**描述：** 停止一个构建。Stop a build.
 
 **详细文档：** [StopBuild.md](./references/build/stopbuild.md)
 
@@ -383,7 +387,7 @@ requires:
 
 #### GetCommitAssets
 
-**描述：** 发起一个获取 commits 附件的请求， 302到有一定效期的下载地址。Get a request to fetch a commit assets and returns 302 redirect to the assets URL with specific valid time.
+**描述：** 发起一个获取 commits 附件的请求，302 到有一定效期的下载地址。Get a request to fetch a commit assets and returns 302 redirect to the assets URL with specific valid time.
 
 **详细文档：** [GetCommitAssets.md](./references/git/getcommitassets.md)
 
@@ -529,7 +533,7 @@ requires:
 
 #### DeleteBranchProtection
 
-**描述：** 删除仓库保护分支规则。 Delete branch protection rule.
+**描述：** 删除仓库保护分支规则。Delete branch protection rule.
 
 **详细文档：** [DeleteBranchProtection.md](./references/gitsettings/deletebranchprotection.md)
 
@@ -619,7 +623,7 @@ requires:
 
 #### CanUserBeAssignedToIssue
 
-**描述：** 检查用户是否可以被添加到 issue 的处理人中。 Checks if a user can be assigned to an issue.
+**描述：** 检查用户是否可以被添加到 issue 的处理人中。Checks if a user can be assigned to an issue.
 
 **详细文档：** [CanUserBeAssignedToIssue.md](./references/issues/canuserbeassignedtoissue.md)
 
@@ -635,7 +639,7 @@ requires:
 
 #### DeleteIssueAssignees
 
-**描述：** 删除 issue 中的处理人。 Removes one or more assignees from an issue.
+**描述：** 删除 issue 中的处理人。Removes one or more assignees from an issue.
 
 **详细文档：** [DeleteIssueAssignees.md](./references/issues/deleteissueassignees.md)
 
@@ -675,7 +679,7 @@ requires:
 
 #### ListIssueAssignees
 
-**描述：** 查询指定 issue 的处理人。 List repository issue assignees.
+**描述：** 查询指定 issue 的处理人。List repository issue assignees.
 
 **详细文档：** [ListIssueAssignees.md](./references/issues/listissueassignees.md)
 
@@ -707,7 +711,7 @@ requires:
 
 #### PatchIssueAssignees
 
-**描述：** 更新 issue 中的处理人。 Updates the assignees of an issue.
+**描述：** 更新 issue 中的处理人。Updates the assignees of an issue.
 
 **详细文档：** [PatchIssueAssignees.md](./references/issues/patchissueassignees.md)
 
@@ -723,7 +727,7 @@ requires:
 
 #### PostIssueAssignees
 
-**描述：** 添加处理人到指定的 issue。  Adds up to assignees to a issue, Users already assigned to an issue are not replaced.
+**描述：** 添加处理人到指定的 issue。Adds up to assignees to a issue, Users already assigned to an issue are not replaced.
 
 **详细文档：** [PostIssueAssignees.md](./references/issues/postissueassignees.md)
 
@@ -747,7 +751,7 @@ requires:
 
 #### PutIssueLabels
 
-**描述：** 设置 issue 标签。 Set the new labels for an issue.
+**描述：** 设置 issue 标签。Set the new labels for an issue.
 
 **详细文档：** [PutIssueLabels.md](./references/issues/putissuelabels.md)
 
@@ -763,7 +767,7 @@ requires:
 
 #### UpdateIssueProperties
 
-**描述：** 批量更新Issue自定义属性值
+**描述：** 批量更新 Issue 自定义属性值
 
 **详细文档：** [UpdateIssueProperties.md](./references/issues/updateissueproperties.md)
 
@@ -863,7 +867,7 @@ requires:
 
 #### GetMemberAccessLevelOfGroup
 
-**描述：** 获取指定组织内, 访问成员在当前层级内的权限信息。Get permission information for accessing members at current level.
+**描述：** 获取指定组织内，访问成员在当前层级内的权限信息。Get permission information for accessing members at current level.
 
 **详细文档：** [GetMemberAccessLevelOfGroup.md](./references/members/getmemberaccesslevelofgroup.md)
 
@@ -871,7 +875,7 @@ requires:
 
 #### GetMemberAccessLevelOfRepo
 
-**描述：** 获取指定仓库内, 访问成员在当前层级内的权限信息。Get permission information for accessing members at current level.
+**描述：** 获取指定仓库内，访问成员在当前层级内的权限信息。Get permission information for accessing members at current level.
 
 **详细文档：** [GetMemberAccessLevelOfRepo.md](./references/members/getmemberaccesslevelofrepo.md)
 
@@ -903,7 +907,7 @@ requires:
 
 #### ListMemberAccessLevelOfGroup
 
-**描述：** 获取指定组织内指定成员的权限信息, 结果按组织层级来展示, 包含上层组织的权限继承信息。Get specified member's permissions with organizational hierarchy.
+**描述：** 获取指定组织内指定成员的权限信息，结果按组织层级来展示，包含上层组织的权限继承信息。Get specified member's permissions with organizational hierarchy.
 
 **详细文档：** [ListMemberAccessLevelOfGroup.md](./references/members/listmemberaccesslevelofgroup.md)
 
@@ -911,7 +915,7 @@ requires:
 
 #### ListMemberAccessLevelOfRepo
 
-**描述：** 获取指定仓库内指定成员的权限信息, 结果按组织层级来展示, 包含上层组织的权限继承信息。Get specified member's permissions with organizational hierarchy.
+**描述：** 获取指定仓库内指定成员的权限信息，结果按组织层级来展示，包含上层组织的权限继承信息。Get specified member's permissions with organizational hierarchy.
 
 **详细文档：** [ListMemberAccessLevelOfRepo.md](./references/members/listmemberaccesslevelofrepo.md)
 
@@ -959,7 +963,7 @@ requires:
 
 #### UpdateOutsideCollaborators
 
-**描述：** 更新指定仓库的外部贡献者权限信息。 Update permission information for external contributors in specified repository.
+**描述：** 更新指定仓库的外部贡献者权限信息。Update permission information for external contributors in specified repository.
 
 **详细文档：** [UpdateOutsideCollaborators.md](./references/members/updateoutsidecollaborators.md)
 
@@ -1075,7 +1079,7 @@ requires:
 
 #### GetGroupsByUserID
 
-**描述：** 获取指定用户拥有权限的顶层组织列表。 Get a list of top-level organizations that the specified user has permissions to access.
+**描述：** 获取指定用户拥有权限的顶层组织列表。Get a list of top-level organizations that the specified user has permissions to access.
 
 **详细文档：** [GetGroupsByUserID.md](./references/organizations/getgroupsbyuserid.md)
 
@@ -1123,7 +1127,7 @@ requires:
 
 #### UpdateOrganization
 
-**描述：** 更新组织信息, 可更新的内容为: 组织描述, 组织展示名称, 组织网站, 组织联系邮箱。Updates organization information including: description, display name, website URL and contact email.
+**描述：** 更新组织信息，可更新的内容为：组织描述，组织展示名称，组织网站，组织联系邮箱。Updates organization information including: description, display name, website URL and contact email.
 
 **详细文档：** [UpdateOrganization.md](./references/organizations/updateorganization.md)
 
@@ -1131,7 +1135,7 @@ requires:
 
 #### UploadLogos
 
-**描述：** 发起一个上传 logo 的请求，返回上传文件的url，请使用 put 发起流式上传。Initiate a request to upload logo,returns upload URL.Use PUT to initiate a stream upload.
+**描述：** 发起一个上传 logo 的请求，返回上传文件的 url，请使用 put 发起流式上传。Initiate a request to upload logo,returns upload URL.Use PUT to initiate a stream upload.
 
 **详细文档：** [UploadLogos.md](./references/organizations/uploadlogos.md)
 
@@ -1141,7 +1145,7 @@ requires:
 
 #### CanUserBeAssignedToPull
 
-**描述：** 检查用户是否可以被添加到合并请求的处理人中。 Checks if a user can be assigned to a pull request.
+**描述：** 检查用户是否可以被添加到合并请求的处理人中。Checks if a user can be assigned to a pull request.
 
 **详细文档：** [CanUserBeAssignedToPull.md](./references/pulls/canuserbeassignedtopull.md)
 
@@ -1317,7 +1321,7 @@ requires:
 
 #### PostPullAssignees
 
-**描述：** 添加处理人到指定的合并请求。 Adds up to assignees to a pull request. Users already assigned to an issue are not replaced.
+**描述：** 添加处理人到指定的合并请求。Adds up to assignees to a pull request. Users already assigned to an issue are not replaced.
 
 **详细文档：** [PostPullAssignees.md](./references/pulls/postpullassignees.md)
 
@@ -1365,7 +1369,7 @@ requires:
 
 #### UploadFiles
 
-**描述：** 发起一个上传 files 的请求，返回上传文件的url，请使用 put 发起流式上传。Initiate a request to upload files,returns upload URL.Use PUT to initiate a stream upload.
+**描述：** 发起一个上传 files 的请求，返回上传文件的 url，请使用 put 发起流式上传。Initiate a request to upload files,returns upload URL.Use PUT to initiate a stream upload.
 
 **详细文档：** [UploadFiles.md](./references/pulls/uploadfiles.md)
 
@@ -1373,7 +1377,7 @@ requires:
 
 #### UploadImgs
 
-**描述：** 发起一个上传 imgs 的请求，返回上传文件的url，请使用 put 发起流式上传。Initiate a request to upload images,returns upload URL.Use PUT to initiate a stream upload.
+**描述：** 发起一个上传 imgs 的请求，返回上传文件的 url，请使用 put 发起流式上传。Initiate a request to upload images,returns upload URL.Use PUT to initiate a stream upload.
 
 **详细文档：** [UploadImgs.md](./references/pulls/uploadimgs.md)
 
@@ -1383,7 +1387,7 @@ requires:
 
 #### DeletePackage
 
-**描述：** 删除制品。 Delete the specific package.
+**描述：** 删除制品。Delete the specific package.
 
 **详细文档：** [DeletePackage.md](./references/registries/deletepackage.md)
 
@@ -1391,7 +1395,7 @@ requires:
 
 #### DeletePackageTag
 
-**描述：** 删除制品标签。 Delete the specific tag under specific package
+**描述：** 删除制品标签。Delete the specific tag under specific package
 
 **详细文档：** [DeletePackageTag.md](./references/registries/deletepackagetag.md)
 
@@ -1415,7 +1419,7 @@ requires:
 
 #### GetPackage
 
-**描述：** 获取指定制品的详细信息。 Get the package detail.
+**描述：** 获取指定制品的详细信息。Get the package detail.
 
 **详细文档：** [GetPackage.md](./references/registries/getpackage.md)
 
@@ -1423,7 +1427,7 @@ requires:
 
 #### GetPackageTagDetail
 
-**描述：** 获取制品标签详情。 Get the specific tag under specific package.
+**描述：** 获取制品标签详情。Get the specific tag under specific package.
 
 **详细文档：** [GetPackageTagDetail.md](./references/registries/getpackagetagdetail.md)
 
@@ -1431,7 +1435,7 @@ requires:
 
 #### ListPackageTags
 
-**描述：** 查询制品标签列表。 List all tags under specific package.
+**描述：** 查询制品标签列表。List all tags under specific package.
 
 **详细文档：** [ListPackageTags.md](./references/registries/listpackagetags.md)
 
@@ -1439,7 +1443,7 @@ requires:
 
 #### ListPackages
 
-**描述：** 查询制品列表。 List all packages.
+**描述：** 查询制品列表。List all packages.
 
 **详细文档：** [ListPackages.md](./references/registries/listpackages.md)
 
@@ -1489,7 +1493,7 @@ requires:
 
 #### GetReleaseByID
 
-**描述：** 根据 id	查询指定 release, 包含附件信息。Get a release by id, include assets information.
+**描述：** 根据 id 查询指定 release, 包含附件信息。Get a release by id, include assets information.
 
 **详细文档：** [GetReleaseByID.md](./references/releases/getreleasebyid.md)
 
@@ -1497,7 +1501,7 @@ requires:
 
 #### GetReleaseByTag
 
-**描述：** 通过 tag 查询指定 release,包含附件信息。Get a release by tag, include assets information.
+**描述：** 通过 tag 查询指定 release，包含附件信息。Get a release by tag, include assets information.
 
 **详细文档：** [GetReleaseByTag.md](./references/releases/getreleasebytag.md)
 
@@ -1505,7 +1509,7 @@ requires:
 
 #### GetReleasesAsset
 
-**描述：** 发起一个获取 release 附件的请求， 302到有一定效期的下载地址。Get a request to fetch a release assets and returns 302 redirect to the assets URL with specific valid time.
+**描述：** 发起一个获取 release 附件的请求，302 到有一定效期的下载地址。Get a request to fetch a release assets and returns 302 redirect to the assets URL with specific valid time.
 
 **详细文档：** [GetReleasesAsset.md](./references/releases/getreleasesasset.md)
 
@@ -1537,7 +1541,7 @@ requires:
 
 #### PostReleaseAssetUploadConfirmation
 
-**描述：** 确认  release 附件上传完成。Confirm release asset upload.
+**描述：** 确认 release 附件上传完成。Confirm release asset upload.
 
 **详细文档：** [PostReleaseAssetUploadConfirmation.md](./references/releases/postreleaseassetuploadconfirmation.md)
 
@@ -1647,7 +1651,7 @@ requires:
 
 #### GetPinnedRepoByID
 
-**描述：** 获取指定用户的用户仓库墙。 Get a list of repositories that the specified user has pinned.
+**描述：** 获取指定用户的用户仓库墙。Get a list of repositories that the specified user has pinned.
 
 **详细文档：** [GetPinnedRepoByID.md](./references/repositories/getpinnedrepobyid.md)
 
@@ -1711,7 +1715,7 @@ requires:
 
 #### UpdateRepo
 
-**描述：** 更新仓库信息, 可更新的内容为: 仓库简介, 仓库站点, 仓库主题, 开源许可证。updates repository details including description, website URL,topics and license type.
+**描述：** 更新仓库信息，可更新的内容为：仓库简介，仓库站点，仓库主题，开源许可证。updates repository details including description, website URL,topics and license type.
 
 **详细文档：** [UpdateRepo.md](./references/repositories/updaterepo.md)
 
@@ -1747,7 +1751,7 @@ requires:
 
 #### ListStarUsers
 
-**描述：** 获取指定仓库的star用户列表。Get the list of users who starred the specified repository.
+**描述：** 获取指定仓库的 star 用户列表。Get the list of users who starred the specified repository.
 
 **详细文档：** [ListStarUsers.md](./references/starring/liststarusers.md)
 
@@ -1807,7 +1811,7 @@ requires:
 
 #### GetWorkspaceDetail
 
-**描述：** 根据流水线sn查询云原生开发访问地址。Query cloud-native development access address by pipeline SN.
+**描述：** 根据流水线 sn 查询云原生开发访问地址。Query cloud-native development access address by pipeline SN.
 
 **详细文档：** [GetWorkspaceDetail.md](./references/workspace/getworkspacedetail.md)
 
@@ -1898,4 +1902,4 @@ curl -X POST \
 
 ---
 
-*本文档基于 Swagger 文件自动生成：https://api.cnb.cool/swagger.json*
+_本文档基于 Swagger 文件自动生成：https://api.cnb.cool/swagger.json_

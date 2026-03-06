@@ -8,12 +8,12 @@ use std::sync::{LazyLock, OnceLock};
 
 static HTTPS_RE: LazyLock<regex_lite::Regex> = LazyLock::new(|| {
     regex_lite::Regex::new(r"^(https?)://([^/]+)/(.+?)(?:\.git)?$")
-        .unwrap_or_else(|e| panic!("HTTPS 正则编译失败: {e}"))
+        .unwrap_or_else(|e| panic!("HTTPS 正则编译失败：{e}"))
 });
 
 static SSH_RE: LazyLock<regex_lite::Regex> = LazyLock::new(|| {
     regex_lite::Regex::new(r"^git@([^:]+):(.+?)(?:\.git)?$")
-        .unwrap_or_else(|e| panic!("SSH 正则编译失败: {e}"))
+        .unwrap_or_else(|e| panic!("SSH 正则编译失败：{e}"))
 });
 
 /// 从当前 Git 仓库解析出的信息
@@ -74,7 +74,7 @@ pub fn parse_git_info_from_current_dir() -> Result<GitInfo> {
 
 /// 解析 Git remote URL（支持 HTTPS 和 SSH 格式）
 ///
-/// 支持格式:
+/// 支持格式：
 /// - `https://cnb.cool/looc/git-cnb`
 /// - `https://cnb.cool/looc/git-cnb.git`
 /// - `https://user:token@cnb.cool/looc/git-cnb.git`
@@ -107,7 +107,7 @@ pub fn parse_git_url(url: &str) -> Result<GitInfo> {
         });
     }
 
-    bail!("URL 格式不匹配 CNB HTTPS 或 SSH 格式: {url}")
+    bail!("URL 格式不匹配 CNB HTTPS 或 SSH 格式：{url}")
 }
 
 /// 获取最新一次提交的标题和正文
@@ -130,7 +130,7 @@ pub fn latest_commit_message() -> Result<(String, String)> {
 
 /// 获取所有非合并提交的时间戳和作者
 ///
-/// 返回格式: `["timestamp;author", ...]`
+/// 返回格式：`["timestamp;author", ...]`
 pub fn get_commits() -> Result<Vec<String>> {
     if !is_git_dir() {
         bail!("当前目录不是 Git 仓库");

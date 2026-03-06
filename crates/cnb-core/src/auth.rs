@@ -1,8 +1,8 @@
 //! 认证管理
 //!
-//! Token 解析优先级:
-//! 1. 环境变量: CNB_TOKEN_{domain去掉点和横杠} / CNB_TOKEN
-//! 2. 配置文件: ~/.cnb/config.toml [auth.{hostname}] token
+//! Token 解析优先级：
+//! 1. 环境变量：CNB_TOKEN_{domain 去掉点和横杠} / CNB_TOKEN
+//! 2. 配置文件：~/.cnb/config.toml [auth.{hostname}] token
 //! 3. (未来) 系统 keyring
 
 use crate::config::Config;
@@ -54,7 +54,7 @@ pub fn get_token_with_source(domain: &str, config: &Config) -> Option<(String, T
 
 /// 获取指定域名的认证 Token
 ///
-/// 按优先级依次尝试:
+/// 按优先级依次尝试：
 /// 1. 域名特定的环境变量 (如 CNB_TOKEN_cnbcool)
 /// 2. 通用环境变量 CNB_TOKEN
 /// 3. 配置文件中的 token

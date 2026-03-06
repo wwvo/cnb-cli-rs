@@ -127,7 +127,7 @@ pub async fn exec_curl(
             return CurlResult {
                 success: false,
                 data: None,
-                error: Some(format!("不支持的 HTTP 方法: {other}")),
+                error: Some(format!("不支持的 HTTP 方法：{other}")),
             };
         }
     };
@@ -169,7 +169,7 @@ pub async fn exec_curl(
         Err(e) => CurlResult {
             success: false,
             data: None,
-            error: Some(format!("请求失败: {e}")),
+            error: Some(format!("请求失败：{e}")),
         },
     }
 }

@@ -49,7 +49,7 @@ impl AppContext {
         self.config.get_or_init(|| match Config::load() {
             Ok(c) => c,
             Err(e) => {
-                tracing::warn!("加载配置文件失败，使用默认配置: {e}");
+                tracing::warn!("加载配置文件失败，使用默认配置：{e}");
                 Config::default()
             }
         })
@@ -90,8 +90,8 @@ impl AppContext {
     /// 构造仓库的 Web URL（用于浏览器打开）
     ///
     /// `path` 为空时返回仓库首页，否则拼接子路径。
-    /// 例: `web_url("")` → `https://cnb.cool/org/repo`
-    /// 例: `web_url("-/issues")` → `https://cnb.cool/org/repo/-/issues`
+    /// 例：`web_url("")` → `https://cnb.cool/org/repo`
+    /// 例：`web_url("-/issues")` → `https://cnb.cool/org/repo/-/issues`
     pub fn web_url(&self, path: &str) -> Result<String> {
         let domain = self.domain();
         let scheme = self
@@ -109,7 +109,7 @@ impl AppContext {
 
     /// 在浏览器中打开指定 URL
     pub fn open_in_browser(url: &str) -> Result<()> {
-        open::that(url).map_err(|e| anyhow::anyhow!("无法打开浏览器: {e}"))
+        open::that(url).map_err(|e| anyhow::anyhow!("无法打开浏览器：{e}"))
     }
 
     /// 获取 API 客户端（懒加载）
