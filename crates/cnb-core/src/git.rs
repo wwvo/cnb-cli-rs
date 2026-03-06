@@ -4,7 +4,7 @@
 
 use anyhow::{Context, Result, bail};
 use std::process::Command;
-use std::sync::LazyLock;
+use std::sync::{LazyLock, OnceLock};
 
 static HTTPS_RE: LazyLock<regex_lite::Regex> = LazyLock::new(|| {
     regex_lite::Regex::new(r"^(https?)://([^/]+)/(.+?)(?:\.git)?$")
@@ -24,15 +24,18 @@ pub struct GitInfo {
     pub repo: String,
 }
 
-/// 检查当前目录是否为 Git 仓库
+/// 检查当前目录是否为 Git 仓库（结果缓存，CLI 执行期间不会变化）
 pub fn is_git_dir() -> bool {
-    Command::new("git")
-        .args(["rev-parse", "-q", "--git-dir"])
-        .stdout(std::process::Stdio::null())
-        .stderr(std::process::Stdio::null())
-        .status()
-        .map(|s| s.success())
-        .unwrap_or(false)
+    static CACHED: OnceLock<bool> = OnceLock::new();
+    *CACHED.get_or_init(|| {
+        Command::new("git")
+            .args(["rev-parse", "-q", "--git-dir"])
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .status()
+            .map(|s| s.success())
+            .unwrap_or(false)
+    })
 }
 
 /// 从当前目录的 Git remote 解析仓库信息
