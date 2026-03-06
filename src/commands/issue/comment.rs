@@ -10,7 +10,7 @@ use cnb_tui::success;
 #[derive(Debug, Parser)]
 pub struct CommentArgs {
     /// Issue 编号
-    #[arg(short = 'n', long = "number")]
+    #[arg(value_name = "NUMBER")]
     pub number: String,
 
     /// 评论内容

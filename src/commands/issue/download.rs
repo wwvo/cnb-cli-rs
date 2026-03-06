@@ -17,7 +17,7 @@ pub struct DownloadArgs {
     pub all: bool,
 
     /// 指定下载的 Issue 编号
-    #[arg(short = 'n', long = "number")]
+    #[arg(value_name = "NUMBER")]
     pub number: Option<String>,
 }
 

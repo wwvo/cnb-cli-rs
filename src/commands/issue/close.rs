@@ -10,7 +10,7 @@ use cnb_tui::success;
 #[derive(Debug, Parser)]
 pub struct CloseArgs {
     /// Issue 编号
-    #[arg(short = 'n', long = "number")]
+    #[arg(value_name = "NUMBER")]
     pub number: String,
 
     /// 关闭原因（completed 或 not_planned）

@@ -26,7 +26,7 @@ pub enum AssignersAction {
 #[derive(Debug, Parser)]
 pub struct GetAssignersArgs {
     /// Issue 编号
-    #[arg(short = 'n', long = "number")]
+    #[arg(value_name = "NUMBER")]
     pub number: String,
 }
 
@@ -34,7 +34,7 @@ pub struct GetAssignersArgs {
 #[derive(Debug, Parser)]
 pub struct AddAssignersArgs {
     /// Issue 编号
-    #[arg(short = 'n', long = "number")]
+    #[arg(value_name = "NUMBER")]
     pub number: String,
 
     /// 处理人用户名（逗号分隔）

@@ -9,7 +9,7 @@ use cnb_core::context::AppContext;
 #[derive(Debug, Parser)]
 pub struct ExistArgs {
     /// Issue 编号
-    #[arg(short = 'n', long = "number")]
+    #[arg(value_name = "NUMBER")]
     pub number: String,
 }
 
