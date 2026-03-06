@@ -131,17 +131,7 @@ impl CnbClient {
     pub async fn update_issue(&self, number: &str, req: &UpdateIssueRequest) -> Result<(), ApiError> {
         let url = format!("{}{}/-/issues/{number}", self.base_url, self.repo);
         let resp = self.http.patch(&url).json(req).send().await?;
-        let status = resp.status().as_u16();
-        if status >= 200 && status < 300 {
-            return Ok(());
-        }
-        if status == 401 {
-            return Err(ApiError::Auth(
-                "CNB_TOKEN 缺失或无效。请设置：export CNB_TOKEN=\"your_token\"".to_string(),
-            ));
-        }
-        let body = resp.text().await.unwrap_or_default();
-        Err(ApiError::HttpStatus { status, body })
+        Self::handle_empty_response(resp).await
     }
 
     /// 获取 Issue 评论列表
@@ -156,17 +146,7 @@ impl CnbClient {
     pub async fn create_issue_comment(&self, number: &str, req: &CreateCommentRequest) -> Result<(), ApiError> {
         let url = format!("{}{}/-/issues/{number}/comments", self.base_url, self.repo);
         let resp = self.http.post(&url).json(req).send().await?;
-        let status = resp.status().as_u16();
-        if status >= 200 && status < 300 {
-            return Ok(());
-        }
-        if status == 401 {
-            return Err(ApiError::Auth(
-                "CNB_TOKEN 缺失或无效。请设置：export CNB_TOKEN=\"your_token\"".to_string(),
-            ));
-        }
-        let body = resp.text().await.unwrap_or_default();
-        Err(ApiError::HttpStatus { status, body })
+        Self::handle_empty_response(resp).await
     }
 
     /// 获取 Issue 处理人列表
@@ -180,17 +160,7 @@ impl CnbClient {
     pub async fn add_issue_assignees(&self, number: &str, req: &AddAssigneesRequest) -> Result<(), ApiError> {
         let url = format!("{}{}/-/issues/{number}/assignees", self.base_url, self.repo);
         let resp = self.http.post(&url).json(req).send().await?;
-        let status = resp.status().as_u16();
-        if status >= 200 && status < 300 {
-            return Ok(());
-        }
-        if status == 401 {
-            return Err(ApiError::Auth(
-                "CNB_TOKEN 缺失或无效。请设置：export CNB_TOKEN=\"your_token\"".to_string(),
-            ));
-        }
-        let body = resp.text().await.unwrap_or_default();
-        Err(ApiError::HttpStatus { status, body })
+        Self::handle_empty_response(resp).await
     }
 
     // ==================== Pull Request API ====================
@@ -282,17 +252,7 @@ impl CnbClient {
     pub async fn delete_release_asset(&self, release_id: &str, asset_id: &str) -> Result<(), ApiError> {
         let url = format!("{}{}/-/releases/{release_id}/assets/{asset_id}", self.base_url, self.repo);
         let resp = self.http.delete(&url).send().await?;
-        let status = resp.status().as_u16();
-        if status >= 200 && status < 300 {
-            return Ok(());
-        }
-        if status == 401 {
-            return Err(ApiError::Auth(
-                "CNB_TOKEN 缺失或无效。请设置：export CNB_TOKEN=\"your_token\"".to_string(),
-            ));
-        }
-        let body = resp.text().await.unwrap_or_default();
-        Err(ApiError::HttpStatus { status, body })
+        Self::handle_empty_response(resp).await
     }
 
     /// 获取 Release 附件上传 URL
@@ -372,11 +332,7 @@ impl CnbClient {
         if status == 404 {
             return Err(ApiError::NotFound("知识库不存在".to_string()));
         }
-        if status >= 200 && status < 300 {
-            return Ok(());
-        }
-        let text = resp.text().await.unwrap_or_default();
-        Err(ApiError::Api(format!("HTTP {status}: {text}")))
+        Self::handle_empty_response(resp).await
     }
 
     /// 查询知识库
@@ -425,12 +381,7 @@ impl CnbClient {
     pub async fn delete_workspace(&self, pipeline_id: &str) -> Result<(), ApiError> {
         let url = format!("{}user/workspaces/{pipeline_id}", self.base_url);
         let resp = self.http.delete(&url).send().await?;
-        let status = resp.status().as_u16();
-        if status >= 200 && status < 300 {
-            return Ok(());
-        }
-        let text = resp.text().await.unwrap_or_default();
-        Err(ApiError::Api(format!("删除工作区失败 HTTP {status}: {text}")))
+        Self::handle_empty_response(resp).await
     }
 
     // ==================== Content API ====================
@@ -480,17 +431,7 @@ impl CnbClient {
     pub async fn delete_commit_asset(&self, sha: &str, asset_id: &str) -> Result<(), ApiError> {
         let url = format!("{}{}/-/git/commits/{sha}/assets/{asset_id}", self.base_url, self.repo);
         let resp = self.http.delete(&url).send().await?;
-        let status = resp.status().as_u16();
-        if status >= 200 && status < 300 {
-            return Ok(());
-        }
-        if status == 401 {
-            return Err(ApiError::Auth(
-                "CNB_TOKEN 缺失或无效。请设置：export CNB_TOKEN=\"your_token\"".to_string(),
-            ));
-        }
-        let body = resp.text().await.unwrap_or_default();
-        Err(ApiError::HttpStatus { status, body })
+        Self::handle_empty_response(resp).await
     }
 
     /// 获取 Commit 附件上传 URL
@@ -525,7 +466,7 @@ impl CnbClient {
         let url = format!("{}{}/-/ai/chat/completions", self.base_url, self.repo);
         let resp = self.http.post(&url).json(req).send().await?;
         let status = resp.status().as_u16();
-        if status >= 200 && status < 300 {
+        if (200..300).contains(&status) {
             return Ok(resp);
         }
         if status == 401 {
@@ -538,6 +479,21 @@ impl CnbClient {
     }
 
     // ==================== Internal ====================
+
+    /// 处理返回空 body 的 HTTP 响应（用于 update/delete 等操作）
+    async fn handle_empty_response(resp: reqwest::Response) -> Result<(), ApiError> {
+        let status = resp.status().as_u16();
+        if (200..300).contains(&status) {
+            return Ok(());
+        }
+        if status == 401 {
+            return Err(ApiError::Auth(
+                "CNB_TOKEN 缺失或无效。请设置：export CNB_TOKEN=\"your_token\"".to_string(),
+            ));
+        }
+        let body = resp.text().await.unwrap_or_default();
+        Err(ApiError::HttpStatus { status, body })
+    }
 
     /// 处理 HTTP 响应，返回反序列化后的结果或错误
     async fn handle_response<T: serde::de::DeserializeOwned>(resp: reqwest::Response) -> Result<T, ApiError> {
