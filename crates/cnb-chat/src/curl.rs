@@ -150,7 +150,7 @@ pub async fn exec_curl(
 
             // 尝试解析为 JSON
             let data: serde_json::Value = serde_json::from_str(&text)
-                .unwrap_or_else(|_| serde_json::Value::String(text));
+                .unwrap_or(serde_json::Value::String(text));
 
             if (200..300).contains(&status) {
                 CurlResult {

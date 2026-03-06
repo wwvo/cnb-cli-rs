@@ -56,7 +56,7 @@ pub fn get_compact_index() -> String {
         }
         if let Some(caps) = DESC_RE.captures(line) {
             // 只取第一句（句号前）
-            description = caps[1].splitn(2, '。').next().unwrap_or("").to_string();
+            description = caps[1].split('。').next().unwrap_or("").to_string();
             continue;
         }
         if DOC_RE.is_match(line) && !api_name.is_empty() {
