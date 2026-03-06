@@ -3,8 +3,8 @@
 use anyhow::Result;
 use clap::Parser;
 use cnb_core::context::AppContext;
+use cnb_tui::confirm::confirm_action;
 use cnb_tui::fmt::format_rfc3339;
-use std::io::{self, BufRead, Write};
 
 /// 清理 Commit 附件
 #[derive(Debug, Parser)]
@@ -102,15 +102,9 @@ pub async fn run(ctx: &AppContext, args: &AssetCleanArgs) -> Result<()> {
     println!();
 
     // 确认删除
-    if !args.yes {
-        print!("确认删除以上 {} 个附件？(yes/no): ", assets_to_delete.len());
-        io::stdout().flush()?;
-        let mut input = String::new();
-        io::stdin().lock().read_line(&mut input)?;
-        if input.trim() != "yes" {
-            println!("已取消");
-            return Ok(());
-        }
+    if !confirm_action(&format!("确认删除以上 {} 个附件？", assets_to_delete.len()), args.yes)? {
+        println!("已取消");
+        return Ok(());
     }
 
     // 执行删除
