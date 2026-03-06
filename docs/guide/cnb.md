@@ -14,6 +14,7 @@
 
 ## 仓库命令
 
+- [cnb repo](/repo/) — 仓库管理
 - [cnb download](/download) — 下载仓库文件
 - [cnb info](/info) — 显示仓库和用户信息
 - [cnb stats](/stats) — 提交统计仪表盘
