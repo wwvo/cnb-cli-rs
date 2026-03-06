@@ -32,8 +32,8 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
         client.list_issues(&to_me_opts),
         client.list_issues(&from_me_opts)
     );
-    let to_me = to_me.unwrap_or_default();
-    let from_me = from_me.unwrap_or_default();
+    let to_me = to_me?;
+    let from_me = from_me?;
 
     // 合并并标记类型
     let mut results: Vec<(String, String, &str)> = Vec::new();
