@@ -100,6 +100,7 @@ export default defineConfig({
               { text: 'edit', link: '/repo/edit' },
               { text: 'fork', link: '/repo/fork' },
               { text: 'list', link: '/repo/list' },
+              { text: 'pin', link: '/repo/pin' },
               { text: 'transfer', link: '/repo/transfer' },
               { text: 'unarchive', link: '/repo/unarchive' },
               { text: 'view', link: '/repo/view' },

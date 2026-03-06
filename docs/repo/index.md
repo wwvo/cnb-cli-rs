@@ -15,6 +15,7 @@ cnb repo <subcommand>
 - [cnb repo edit](/repo/edit) — 编辑仓库信息
 - [cnb repo fork](/repo/fork) — 查看 Fork 列表
 - [cnb repo list](/repo/list) — 列出仓库
+- [cnb repo pin](/repo/pin) — 管理仓库墙（置顶仓库）
 - [cnb repo transfer](/repo/transfer) — 转移仓库
 - [cnb repo unarchive](/repo/unarchive) — 解除仓库归档
 - [cnb repo view](/repo/view) — 查看仓库详情
