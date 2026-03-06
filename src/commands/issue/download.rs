@@ -65,7 +65,7 @@ pub async fn run(ctx: &AppContext, args: &DownloadArgs) -> Result<()> {
             client.list_all_issue_comments(&issue.number)
         );
         let detail = detail_result?;
-        let comments = comments_result.unwrap_or_default();
+        let comments = comments_result?;
 
         // 写入 Issue 标题和内容
         writeln!(file, "# {}\n", issue.title)?;
