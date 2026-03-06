@@ -59,7 +59,7 @@ pub async fn run(ctx: &AppContext, args: &DownloadArgs) -> Result<()> {
     let semaphore = Arc::new(Semaphore::new(args.concurrency));
     let local_dir = args.local_dir.clone();
     let token = client.token().to_string();
-    let http = Arc::new(reqwest::Client::new());
+    let http = client.http_client().clone();
 
     let mut handles = Vec::new();
 
