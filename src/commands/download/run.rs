@@ -57,6 +57,7 @@ pub async fn run(ctx: &AppContext, args: &DownloadArgs) -> Result<()> {
     let semaphore = Arc::new(Semaphore::new(args.concurrency));
     let local_dir = args.local_dir.clone();
     let token = client.token().to_string();
+    let http = Arc::new(reqwest::Client::new());
 
     let mut handles = Vec::new();
 
@@ -65,6 +66,7 @@ pub async fn run(ctx: &AppContext, args: &DownloadArgs) -> Result<()> {
         let mp = mp.clone();
         let local_dir = local_dir.clone();
         let token = token.clone();
+        let http = http.clone();
 
         let handle = tokio::spawn(async move {
             let _permit = sem.acquire().await;
@@ -82,7 +84,7 @@ pub async fn run(ctx: &AppContext, args: &DownloadArgs) -> Result<()> {
 
             let result = match file.file_type.as_str() {
                 "blob" => download_blob(&file, &local_dir, &pb),
-                "lfs" => download_lfs(&file, &local_dir, &token, &pb).await,
+                "lfs" => download_lfs(&http, &file, &local_dir, &token, &pb).await,
                 _ => Ok(()),
             };
 
@@ -194,6 +196,7 @@ fn download_blob(file: &DownFile, local_dir: &str, pb: &ProgressBar) -> Result<(
 
 /// 下载 LFS 类型文件（HTTP 流式下载）
 async fn download_lfs(
+    http: &reqwest::Client,
     file: &DownFile,
     local_dir: &str,
     token: &str,
@@ -205,7 +208,6 @@ async fn download_lfs(
         std::fs::create_dir_all(parent)?;
     }
 
-    let http = reqwest::Client::new();
     let mut resp = http
         .get(&file.lfs_download_url)
         .header("Accept", "application/vnd.cnb.api+json")
