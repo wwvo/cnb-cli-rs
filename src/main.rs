@@ -119,14 +119,7 @@ async fn async_main() -> anyhow::Result<()> {
 
     match cli.command {
         Commands::Auth(cmd) => cmd.execute(&ctx).await,
-        Commands::Chat(ref args) => {
-            let client = ctx.api_client()?;
-            if let Some(ref question) = args.ask {
-                commands::chat::agent::run_agent(client, question, !args.no_stream).await
-            } else {
-                commands::chat::interactive_chat(client).await
-            }
-        }
+        Commands::Chat(ref args) => args.execute(&ctx).await,
         Commands::Config(cmd) => cmd.execute(&ctx),
         Commands::Completion { shell } => {
             commands::completion::run(shell);
@@ -141,7 +134,7 @@ async fn async_main() -> anyhow::Result<()> {
         Commands::Pull(cmd) => cmd.execute(&ctx).await,
         Commands::Release(cmd) => cmd.execute(&ctx).await,
         Commands::Commit(cmd) => cmd.execute(&ctx).await,
-        Commands::Download(ref args) => commands::download::run::run(&ctx, args).await,
+        Commands::Download(ref args) => args.execute(&ctx).await,
         Commands::Stats => commands::stats::run().await,
         Commands::Stars => commands::stars::run(&ctx).await,
         Commands::Knowledge(cmd) => cmd.execute(&ctx).await,

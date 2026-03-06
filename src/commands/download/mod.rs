@@ -1,6 +1,8 @@
 //! Download 子命令 - 从仓库下载文件
 
+use anyhow::Result;
 use clap::Parser;
+use cnb_core::context::AppContext;
 
 pub mod run;
 
@@ -31,4 +33,10 @@ pub struct DownloadArgs {
     /// 最大并发下载数
     #[arg(short = 'c', long = "concurrency", default_value_t = 4)]
     pub concurrency: usize,
+}
+
+impl DownloadArgs {
+    pub async fn execute(&self, ctx: &AppContext) -> Result<()> {
+        run::run(ctx, self).await
+    }
 }

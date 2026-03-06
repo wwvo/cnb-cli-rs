@@ -4,6 +4,7 @@
 
 use anyhow::Result;
 use cnb_api::client::CnbClient;
+use cnb_core::context::AppContext;
 use clap::Args;
 use rustyline::error::ReadlineError;
 use rustyline::DefaultEditor;
@@ -21,6 +22,17 @@ pub struct ChatArgs {
     /// 禁用流式输出（适合 CI 环境）
     #[arg(long)]
     pub no_stream: bool,
+}
+
+impl ChatArgs {
+    pub async fn execute(&self, ctx: &AppContext) -> Result<()> {
+        let client = ctx.api_client()?;
+        if let Some(ref question) = self.ask {
+            agent::run_agent(client, question, !self.no_stream).await
+        } else {
+            interactive_chat(client).await
+        }
+    }
 }
 
 /// 交互式 REPL 模式
