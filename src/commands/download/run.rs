@@ -8,13 +8,14 @@ use std::path::Path;
 use std::sync::Arc;
 use tokio::sync::Semaphore;
 
+use cnb_api::types::ContentType;
+
 use super::DownloadArgs;
 
 /// 待下载文件信息
 pub struct DownFile {
     pub path: String,
-    /// blob / lfs
-    pub file_type: String,
+    pub file_type: ContentType,
     /// base64 编码内容（blob 类型）
     pub content: String,
     /// LFS 下载 URL（lfs 类型）
@@ -82,10 +83,10 @@ pub async fn run(ctx: &AppContext, args: &DownloadArgs) -> Result<()> {
             let display_name = truncate_filename(&file.path, 30);
             pb.set_prefix(display_name);
 
-            let result = match file.file_type.as_str() {
-                "blob" => download_blob(&file, &local_dir, &pb),
-                "lfs" => download_lfs(&http, &file, &local_dir, &token, &pb).await,
-                _ => Ok(()),
+            let result = match file.file_type {
+                ContentType::Blob => download_blob(&file, &local_dir, &pb),
+                ContentType::Lfs => download_lfs(&http, &file, &local_dir, &token, &pb).await,
+                ContentType::Tree => Ok(()),
             };
 
             match &result {
@@ -141,8 +142,8 @@ async fn collect_files(
     for file_path in files {
         let content = client.get_content(file_path, git_ref).await?;
 
-        match content.content_type.as_str() {
-            "blob" | "lfs" => {
+        match content.content_type {
+            ContentType::Blob | ContentType::Lfs => {
                 download_files.push(DownFile {
                     path: content.path,
                     file_type: content.content_type,
@@ -151,9 +152,9 @@ async fn collect_files(
                     size: content.size,
                 });
             }
-            "tree" => {
+            ContentType::Tree => {
                 for entry in &content.entries {
-                    if entry.entry_type == "blob" || entry.entry_type == "lfs" {
+                    if entry.entry_type == ContentType::Blob || entry.entry_type == ContentType::Lfs {
                         let sub = client.get_content(&entry.path, git_ref).await?;
                         download_files.push(DownFile {
                             path: sub.path,
@@ -164,9 +165,6 @@ async fn collect_files(
                         });
                     }
                 }
-            }
-            _ => {
-                eprintln!("跳过未知类型: {} ({})", file_path, content.content_type);
             }
         }
     }
