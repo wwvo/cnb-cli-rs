@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 /// 知识库 Embedding 模型
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct KnowledgeModel {
     /// 模型名称
     pub name: String,
