@@ -96,10 +96,9 @@ impl CnbClient {
 
     /// 获取所有 Issue（自动分页）
     pub async fn list_all_issues(&self, state: &str) -> Result<Vec<Issue>, ApiError> {
-        let page_size = 100;
-        let mut all_issues = Vec::new();
+        let page_size = 100u32;
+        let mut all = Vec::new();
         let mut page = 1u32;
-
         loop {
             let opts = ListIssuesOptions {
                 state: state.to_string(),
@@ -107,15 +106,15 @@ impl CnbClient {
                 page_size,
                 ..Default::default()
             };
-            let issues = self.list_issues(&opts).await?;
-            let count = issues.len();
-            all_issues.extend(issues);
+            let items = self.list_issues(&opts).await?;
+            let count = items.len();
+            all.extend(items);
             if (count as u32) < page_size {
                 break;
             }
             page += 1;
         }
-        Ok(all_issues)
+        Ok(all)
     }
 
     /// 获取单个 Issue 详情
@@ -224,19 +223,7 @@ impl CnbClient {
 
     /// 获取所有 Release（自动分页）
     pub async fn list_all_releases(&self) -> Result<Vec<Release>, ApiError> {
-        let page_size = 100u32;
-        let mut all = Vec::new();
-        let mut page = 1u32;
-        loop {
-            let releases = self.list_releases(page, page_size).await?;
-            let count = releases.len();
-            all.extend(releases);
-            if (count as u32) < page_size {
-                break;
-            }
-            page += 1;
-        }
-        Ok(all)
+        self.paginate(|page, page_size| self.list_releases(page, page_size)).await
     }
 
     /// 根据 Tag 获取 Release
@@ -410,19 +397,7 @@ impl CnbClient {
 
     /// 获取所有 Commit（自动分页）
     pub async fn list_all_commits(&self) -> Result<Vec<Commit>, ApiError> {
-        let page_size = 100u32;
-        let mut all = Vec::new();
-        let mut page = 1u32;
-        loop {
-            let commits = self.list_commits(page, page_size).await?;
-            let count = commits.len();
-            all.extend(commits);
-            if (count as u32) < page_size {
-                break;
-            }
-            page += 1;
-        }
-        Ok(all)
+        self.paginate(|page, page_size| self.list_commits(page, page_size)).await
     }
 
     /// 获取指定 Commit 的附件列表
@@ -484,6 +459,27 @@ impl CnbClient {
     }
 
     // ==================== Internal ====================
+
+    /// 通用自动分页：重复调用 fetch(page, page_size) 直到返回不足一页
+    async fn paginate<T, F, Fut>(&self, fetch: F) -> Result<Vec<T>, ApiError>
+    where
+        F: Fn(u32, u32) -> Fut,
+        Fut: std::future::Future<Output = Result<Vec<T>, ApiError>>,
+    {
+        let page_size = 100u32;
+        let mut all = Vec::new();
+        let mut page = 1u32;
+        loop {
+            let items = fetch(page, page_size).await?;
+            let count = items.len();
+            all.extend(items);
+            if (count as u32) < page_size {
+                break;
+            }
+            page += 1;
+        }
+        Ok(all)
+    }
 
     /// 处理返回空 body 的 HTTP 响应（用于 update/delete 等操作）
     async fn handle_empty_response(resp: reqwest::Response) -> Result<(), ApiError> {
