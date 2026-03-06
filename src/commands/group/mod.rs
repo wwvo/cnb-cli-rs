@@ -4,6 +4,7 @@ use anyhow::Result;
 use clap::Parser;
 use cnb_core::context::AppContext;
 
+pub mod list;
 pub mod update_logo;
 
 /// 组织管理
@@ -15,6 +16,8 @@ pub struct GroupCommand {
 
 #[derive(Debug, clap::Subcommand)]
 pub enum GroupSubcommand {
+    /// 列出我的组织
+    List(list::ListArgs),
     /// 更新组织 Logo
     #[command(name = "update-logo")]
     UpdateLogo(update_logo::UpdateLogoArgs),
@@ -23,6 +26,7 @@ pub enum GroupSubcommand {
 impl GroupCommand {
     pub async fn execute(&self, ctx: &AppContext) -> Result<()> {
         match &self.subcommand {
+            GroupSubcommand::List(args) => list::run(ctx, args).await,
             GroupSubcommand::UpdateLogo(args) => update_logo::run(ctx, args).await,
         }
     }
