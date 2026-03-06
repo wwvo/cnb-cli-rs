@@ -18,6 +18,8 @@ pub struct AppContext {
     cli_domain: Option<String>,
     /// CLI 传入的 repo 参数
     cli_repo: Option<String>,
+    /// 是否以 JSON 格式输出
+    json: bool,
 
     config: OnceLock<Config>,
     git_info: OnceLock<Option<GitInfo>>,
@@ -26,14 +28,20 @@ pub struct AppContext {
 
 impl AppContext {
     /// 创建新的上下文
-    pub fn new(cli_domain: Option<String>, cli_repo: Option<String>) -> Self {
+    pub fn new(cli_domain: Option<String>, cli_repo: Option<String>, json: bool) -> Self {
         Self {
             cli_domain,
             cli_repo,
+            json,
             config: OnceLock::new(),
             git_info: OnceLock::new(),
             api_client: OnceLock::new(),
         }
+    }
+
+    /// 是否以 JSON 格式输出
+    pub fn json(&self) -> bool {
+        self.json
     }
 
     /// 获取配置（懒加载）

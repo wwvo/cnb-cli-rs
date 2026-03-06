@@ -23,6 +23,10 @@ struct Cli {
     #[arg(long, global = true)]
     repo: Option<String>,
 
+    /// 以 JSON 格式输出结果
+    #[arg(long, global = true)]
+    json: bool,
+
     #[command(subcommand)]
     command: Commands,
 }
@@ -120,7 +124,7 @@ async fn async_main() -> anyhow::Result<()> {
         .init();
 
     let cli = Cli::parse();
-    let ctx = AppContext::new(cli.domain, cli.repo);
+    let ctx = AppContext::new(cli.domain, cli.repo, cli.json);
 
     match cli.command {
         Commands::Auth(cmd) => cmd.execute(&ctx).await,
