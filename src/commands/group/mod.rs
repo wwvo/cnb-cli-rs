@@ -4,6 +4,7 @@ use anyhow::Result;
 use clap::Parser;
 use cnb_core::context::AppContext;
 
+pub mod create;
 pub mod list;
 pub mod update_logo;
 pub mod view;
@@ -21,6 +22,8 @@ pub enum GroupSubcommand {
     List(list::ListArgs),
     /// 查看组织详情
     View(view::ViewArgs),
+    /// 创建组织
+    Create(create::CreateArgs),
     /// 更新组织 Logo
     #[command(name = "update-logo")]
     UpdateLogo(update_logo::UpdateLogoArgs),
@@ -31,6 +34,7 @@ impl GroupCommand {
         match &self.subcommand {
             GroupSubcommand::List(args) => list::run(ctx, args).await,
             GroupSubcommand::View(args) => view::run(ctx, args).await,
+            GroupSubcommand::Create(args) => create::run(ctx, args).await,
             GroupSubcommand::UpdateLogo(args) => update_logo::run(ctx, args).await,
         }
     }
