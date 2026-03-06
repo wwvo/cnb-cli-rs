@@ -10,6 +10,11 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
     let client = ctx.api_client()?;
     let releases = client.list_all_releases().await?;
 
+    if ctx.json() {
+        println!("{}", serde_json::to_string_pretty(&releases)?);
+        return Ok(());
+    }
+
     let mut total_size: i64 = 0;
 
     let mut table = Table::new(vec![

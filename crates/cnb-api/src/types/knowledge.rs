@@ -10,7 +10,7 @@ pub struct KnowledgeModel {
 }
 
 /// 知识库信息
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct KnowledgeBaseInfo {
     /// 知识库 ID
     #[serde(default)]
@@ -30,7 +30,7 @@ pub struct KnowledgeBaseInfo {
 }
 
 /// Embedding 模型信息
-#[derive(Debug, Default, Deserialize)]
+#[derive(Debug, Default, Deserialize, Serialize)]
 pub struct KnowledgeEmbeddingModel {
     /// 模型名称
     #[serde(default)]
@@ -51,7 +51,7 @@ pub struct QueryKnowledgeBaseRequest {
 }
 
 /// 知识库查询结果条目
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct KnowledgeQueryResult {
     /// 分数
     #[serde(default)]

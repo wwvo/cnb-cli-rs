@@ -33,6 +33,11 @@ pub async fn run(ctx: &AppContext, args: &QueryArgs) -> Result<()> {
 
     let results = client.query_knowledge_base(&req).await?;
 
+    if ctx.json() {
+        println!("{}", serde_json::to_string_pretty(&results)?);
+        return Ok(());
+    }
+
     for r in &results {
         let url = r.metadata.get("url").map(|s| s.as_str()).unwrap_or("-");
         let file_type = r.metadata.get("type").map(|s| s.as_str()).unwrap_or("-");

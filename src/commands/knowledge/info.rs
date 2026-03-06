@@ -8,6 +8,11 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
     let client = ctx.api_client()?;
     let info = client.get_knowledge_base_info().await?;
 
+    if ctx.json() {
+        println!("{}", serde_json::to_string_pretty(&info)?);
+        return Ok(());
+    }
+
     println!("{:<20} {}", "ID", info.id);
     println!("{:<20} {}", "LastCommitSha", info.last_commit_sha);
     println!("{:<20} {}", "Model", info.embedding_model.name);
