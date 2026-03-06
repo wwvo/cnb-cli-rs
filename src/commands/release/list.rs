@@ -8,7 +8,7 @@ use cnb_tui::{Column, Table};
 /// 执行 release list 命令
 pub async fn run(ctx: &AppContext) -> Result<()> {
     let client = ctx.api_client()?;
-    let releases = client.list_releases(1, 100).await?;
+    let releases = client.list_all_releases().await?;
 
     if releases.is_empty() {
         println!("没有找到 Release");
