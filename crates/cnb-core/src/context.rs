@@ -87,6 +87,31 @@ impl AppContext {
         bail!("无法确定仓库名。请使用 --repo 参数指定，或在 Git 仓库目录下运行。")
     }
 
+    /// 构造仓库的 Web URL（用于浏览器打开）
+    ///
+    /// `path` 为空时返回仓库首页，否则拼接子路径。
+    /// 例: `web_url("")` → `https://cnb.cool/org/repo`
+    /// 例: `web_url("-/issues")` → `https://cnb.cool/org/repo/-/issues`
+    pub fn web_url(&self, path: &str) -> Result<String> {
+        let domain = self.domain();
+        let scheme = self
+            .git_info()
+            .map(|i| i.scheme.as_str())
+            .unwrap_or(DEFAULT_SCHEME);
+        let repo = self.repo()?;
+
+        if path.is_empty() {
+            Ok(format!("{scheme}://{domain}/{repo}"))
+        } else {
+            Ok(format!("{scheme}://{domain}/{repo}/{path}"))
+        }
+    }
+
+    /// 在浏览器中打开指定 URL
+    pub fn open_in_browser(url: &str) -> Result<()> {
+        open::that(url).map_err(|e| anyhow::anyhow!("无法打开浏览器: {e}"))
+    }
+
     /// 获取 API 客户端（懒加载）
     pub fn api_client(&self) -> Result<&CnbClient> {
         if let Some(client) = self.api_client.get() {

@@ -8,6 +8,7 @@ license.workspace = true
 anyhow = { workspace = true }
 cnb-api = { workspace = true }
 dirs = { workspace = true }
+open = { workspace = true }
 regex-lite = { workspace = true }
 reqwest = { workspace = true }
 serde = { workspace = true }
