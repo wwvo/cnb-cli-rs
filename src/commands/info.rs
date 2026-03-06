@@ -7,8 +7,19 @@ use cnb_core::context::AppContext;
 pub async fn run(ctx: &AppContext) -> Result<()> {
     let client = ctx.api_client()?;
 
-    let user = client.me().await?;
-    let repo = client.get_repo().await?;
+    // 并行获取用户和仓库信息
+    let (user, repo) = tokio::join!(client.me(), client.get_repo());
+    let user = user?;
+    let repo = repo?;
+
+    if ctx.json() {
+        let json = serde_json::json!({
+            "user": user,
+            "repo": repo,
+        });
+        println!("{}", serde_json::to_string_pretty(&json)?);
+        return Ok(());
+    }
 
     println!("  {:<16} {}", "MyID", user.id);
     println!("  {:<16} {}", "MyUserName", user.username);

@@ -1,9 +1,9 @@
 //! 仓库相关类型
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// 仓库信息
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Repo {
     pub id: String,
     pub path: String,
