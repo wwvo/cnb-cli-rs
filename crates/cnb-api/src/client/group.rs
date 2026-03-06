@@ -6,6 +6,7 @@ impl CnbClient {
     pub async fn upload_logo_info(
         &self, group_name: &str, req: &UploadLogoRequest,
     ) -> Result<UploadLogoResponse, ApiError> {
+        let group_name = Self::encode_path(group_name);
         let url = format!("{}{}/-/upload/logos", self.base_url, group_name);
         let resp = self.http.post(&url).json(req).send().await?;
         Self::handle_response(resp).await

@@ -13,6 +13,7 @@ mod workspace;
 use crate::error::ApiError;
 use crate::types::*;
 use reqwest::header::{ACCEPT, AUTHORIZATION, HeaderMap, HeaderValue};
+use urlencoding::encode;
 
 /// CNB API 客户端
 pub struct CnbClient {
@@ -74,12 +75,19 @@ impl CnbClient {
 
     /// 获取仓库文件/目录内容
     pub async fn get_content(&self, path: &str, git_ref: &str) -> Result<Content, ApiError> {
-        let url = format!("{}{}/-/git/contents/{}?ref={git_ref}", self.base_url, self.repo, path);
+        let path = Self::encode_path(path);
+        let git_ref = encode(git_ref);
+        let url = format!("{}{}/-/git/contents/{path}?ref={git_ref}", self.base_url, self.repo);
         let resp = self.http.get(&url).send().await?;
         Self::handle_response(resp).await
     }
 
     // ==================== Internal ====================
+
+    /// 对含 `/` 的路径做 URL 编码，保留 `/` 分隔符
+    pub(crate) fn encode_path(path: &str) -> String {
+        path.split('/').map(|seg| encode(seg)).collect::<Vec<_>>().join("/")
+    }
 
     pub(crate) async fn paginate<T, F, Fut>(&self, fetch: F) -> Result<Vec<T>, ApiError>
     where

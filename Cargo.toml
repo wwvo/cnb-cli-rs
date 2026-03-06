@@ -59,6 +59,7 @@ toml = "0.8"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 url = "2"
+urlencoding = "2"
 
 [workspace.lints.clippy]
 expect_used = "deny"

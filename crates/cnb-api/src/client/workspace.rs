@@ -1,6 +1,7 @@
 use crate::error::ApiError;
 use crate::types::*;
 use super::CnbClient;
+use urlencoding::encode;
 
 impl CnbClient {
     pub async fn list_workspaces(
@@ -11,13 +12,14 @@ impl CnbClient {
             self.base_url
         );
         if !status.is_empty() {
-            url.push_str(&format!("&status={status}"));
+            url.push_str(&format!("&status={}", encode(status)));
         }
         let resp = self.http.get(&url).send().await?;
         Self::handle_response(resp).await
     }
 
     pub async fn delete_workspace(&self, pipeline_id: &str) -> Result<(), ApiError> {
+        let pipeline_id = encode(pipeline_id);
         let url = format!("{}user/workspaces/{pipeline_id}", self.base_url);
         let resp = self.http.delete(&url).send().await?;
         Self::handle_empty_response(resp).await
