@@ -5,7 +5,7 @@
 //! - 过去 80 周提交趋势折线图
 
 use anyhow::Result;
-use chrono::{DateTime, Datelike, Duration, NaiveDate, Utc};
+use chrono::{DateTime, Duration, NaiveDate, Utc};
 use cnb_tui::TerminalGuard;
 use ratatui::layout::{Constraint, Direction, Layout};
 use ratatui::style::{Color, Modifier, Style};
@@ -68,9 +68,7 @@ pub async fn run() -> Result<()> {
 
 /// 获取某一天所在周的周一日期
 fn get_start_of_week<Tz: chrono::TimeZone>(dt: DateTime<Tz>) -> NaiveDate {
-    let naive = dt.naive_utc().date();
-    let weekday = naive.weekday().num_days_from_monday();
-    naive - Duration::days(weekday as i64)
+    cnb_tui::time::start_of_week(dt.naive_utc().date())
 }
 
 /// 生成过去 N 周的映射

@@ -3,7 +3,7 @@
 //! 获取仓库所有 Star 用户数据，按周聚合生成累积趋势图。
 
 use anyhow::Result;
-use chrono::{Datelike, Duration, NaiveDate, NaiveDateTime};
+use chrono::{Duration, NaiveDate, NaiveDateTime};
 use cnb_core::context::AppContext;
 use cnb_tui::TerminalGuard;
 use ratatui::layout::{Constraint, Layout};
@@ -23,7 +23,7 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
 
     // 解析第一个 Star 的时间，确定起始周
     let first_star_time = parse_star_time(&star_users.users[0].stared_at);
-    let first_week = get_start_of_week(first_star_time);
+    let first_week = start_of_week(first_star_time);
 
     // 生成从第一个 Star 到现在的所有周
     let mut weekly_map = generate_weeks(first_week);
@@ -31,7 +31,7 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
     // 按周聚合
     for user in &star_users.users {
         let star_time = parse_star_time(&user.stared_at);
-        let week_key = get_start_of_week(star_time);
+        let week_key = start_of_week(star_time);
         *weekly_map.entry(week_key).or_insert(0) += 1;
     }
 
@@ -65,11 +65,7 @@ fn parse_star_time(s: &str) -> NaiveDate {
         })
 }
 
-/// 获取某天所在周的周一
-fn get_start_of_week(date: NaiveDate) -> NaiveDate {
-    let weekday = date.weekday().num_days_from_monday();
-    date - Duration::days(weekday as i64)
-}
+use cnb_tui::time::start_of_week;
 
 /// 生成从 start 到现在的所有周
 fn generate_weeks(start: NaiveDate) -> HashMap<NaiveDate, i64> {

@@ -6,6 +6,7 @@ pub mod confirm;
 pub mod fmt;
 pub mod table;
 pub mod terminal;
+pub mod time;
 
 pub use table::{Column, Table};
 pub use terminal::TerminalGuard;
