@@ -2,6 +2,7 @@
 
 pub mod auth;
 pub mod browse;
+pub mod build;
 pub mod chat;
 pub mod commit;
 pub mod completion;

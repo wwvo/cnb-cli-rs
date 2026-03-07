@@ -39,6 +39,9 @@ enum Commands {
     /// 在浏览器中打开仓库页面
     Browse(commands::browse::BrowseArgs),
 
+    /// 构建管理
+    Build(commands::build::BuildCommand),
+
     /// 使用自然语言与 CNB OpenAPI 交互
     Chat(commands::chat::ChatArgs),
 
@@ -139,6 +142,7 @@ async fn async_main() -> anyhow::Result<()> {
     match cli.command {
         Commands::Auth(cmd) => cmd.execute(&ctx).await,
         Commands::Browse(ref args) => commands::browse::run(&ctx, args).await,
+        Commands::Build(cmd) => cmd.execute(&ctx).await,
         Commands::Chat(ref args) => args.execute(&ctx).await,
         Commands::Config(cmd) => cmd.execute(&ctx),
         Commands::Completion { shell } => {
