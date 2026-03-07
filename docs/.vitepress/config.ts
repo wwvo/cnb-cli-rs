@@ -163,7 +163,14 @@ export default defineConfig({
           {
             text: 'cnb workspace',
             link: '/workspace/',
-            items: [{ text: 'closed-clean', link: '/workspace/closed-clean' }],
+            items: [
+              { text: 'list', link: '/workspace/list' },
+              { text: 'start', link: '/workspace/start' },
+              { text: 'stop', link: '/workspace/stop' },
+              { text: 'delete', link: '/workspace/delete' },
+              { text: 'detail', link: '/workspace/detail' },
+              { text: 'closed-clean', link: '/workspace/closed-clean' },
+            ],
           },
           { text: 'cnb version', link: '/version' },
         ],
