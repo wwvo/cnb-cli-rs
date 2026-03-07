@@ -1,6 +1,7 @@
 //! CNB API 数据类型定义
 
 pub mod ai;
+pub mod badge;
 pub mod build;
 pub mod commit;
 pub mod content;
@@ -17,6 +18,7 @@ pub mod user;
 pub mod workspace;
 
 pub use ai::*;
+pub use badge::*;
 pub use build::*;
 pub use commit::*;
 pub use content::*;

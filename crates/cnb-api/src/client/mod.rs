@@ -1,6 +1,7 @@
 //! CNB API HTTP 客户端
 
 mod ai;
+mod badge;
 mod build;
 mod commit;
 mod gpg_key;
