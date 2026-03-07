@@ -17,6 +17,7 @@ main:
         cpus: 2
       ifModify:
         - ".cnb/docker/rust-cross.Dockerfile"
+        - "Cargo.lock"
       services:
         - docker
       stages:
