@@ -82,6 +82,9 @@ RUN cargo zigbuild --release --target aarch64-unknown-linux-musl
 # macOS 交叉编译需要禁用 jitterentropy（缺少 CoreServices 框架头文件）
 ENV AWS_LC_SYS_NO_JITTER_ENTROPY=1
 RUN cargo zigbuild --release --target x86_64-apple-darwin
+# aarch64-apple-darwin: Zig 交叉编译器不会自动定义 ARM NEON/Crypto 宏，
+# 但 Apple Silicon 架构必定支持这些扩展，手动定义以通过 aws-lc-sys 编译检查
+ENV CFLAGS_aarch64_apple_darwin="-D__ARM_NEON=1 -D__ARM_FEATURE_CRYPTO=1"
 RUN cargo zigbuild --release --target aarch64-apple-darwin
 
 # 清理临时项目文件（保留 /cargo-target 中的编译缓存）
