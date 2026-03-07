@@ -17,6 +17,7 @@ pub mod label;
 pub mod knowledge;
 pub mod member;
 pub mod mission;
+pub mod registry;
 pub mod pull;
 pub mod release;
 pub mod repo;

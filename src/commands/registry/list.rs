@@ -68,7 +68,7 @@ pub async fn run(ctx: &AppContext, args: &ListArgs) -> Result<()> {
             r.name.clone(),
             r.kind.clone(),
             r.pkg_count.to_string(),
-            format_bytes(r.used_size),
+            format_bytes(r.used_size as i64),
             visibility,
             last_push,
         ]);

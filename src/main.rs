@@ -105,6 +105,9 @@ enum Commands {
     /// 任务集管理
     Mission(commands::mission::MissionCommand),
 
+    /// 制品库管理
+    Registry(commands::registry::RegistryCommand),
+
     /// 组织管理
     Group(commands::group::GroupCommand),
 
@@ -184,6 +187,7 @@ async fn async_main() -> anyhow::Result<()> {
         Commands::Knowledge(cmd) => cmd.execute(&ctx).await,
         Commands::Member(cmd) => cmd.execute(&ctx).await,
         Commands::Mission(cmd) => cmd.execute(&ctx).await,
+        Commands::Registry(cmd) => cmd.execute(&ctx).await,
         Commands::Group(cmd) => cmd.execute(&ctx).await,
         Commands::User(cmd) => cmd.execute(&ctx).await,
         Commands::Workspace(cmd) => cmd.execute(&ctx).await,
