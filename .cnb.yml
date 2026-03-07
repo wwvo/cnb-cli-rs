@@ -2,6 +2,7 @@ include:
   - .cnb/workflows/deploy-docs.yml
   - .cnb/workflows/release.yml
   - .cnb/workflows/build-image.yml
+  - .cnb/workflows/test-macos.yml
 
 $:
   vscode:
