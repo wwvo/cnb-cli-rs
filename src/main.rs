@@ -36,6 +36,9 @@ enum Commands {
     /// 认证管理
     Auth(commands::auth::AuthCommand),
 
+    /// 徽章管理
+    Badge(commands::badge::BadgeCommand),
+
     /// 在浏览器中打开仓库页面
     Browse(commands::browse::BrowseArgs),
 
@@ -145,6 +148,7 @@ async fn async_main() -> anyhow::Result<()> {
 
     match cli.command {
         Commands::Auth(cmd) => cmd.execute(&ctx).await,
+        Commands::Badge(cmd) => cmd.execute(&ctx).await,
         Commands::Browse(ref args) => commands::browse::run(&ctx, args).await,
         Commands::Build(cmd) => cmd.execute(&ctx).await,
         Commands::Chat(ref args) => args.execute(&ctx).await,

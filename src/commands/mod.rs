@@ -1,6 +1,7 @@
 //! 子命令实现
 
 pub mod auth;
+pub mod badge;
 pub mod browse;
 pub mod build;
 pub mod chat;
