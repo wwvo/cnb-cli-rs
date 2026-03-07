@@ -157,6 +157,15 @@ export default defineConfig({
               { text: 'crontab-sync', link: '/build/crontab-sync' },
             ],
           },
+          {
+            text: 'cnb badge',
+            link: '/badge/',
+            items: [
+              { text: 'get', link: '/badge/get' },
+              { text: 'list', link: '/badge/list' },
+              { text: 'upload', link: '/badge/upload' },
+            ],
+          },
           { text: 'cnb download', link: '/download' },
           { text: 'cnb info', link: '/info' },
           { text: 'cnb stats', link: '/stats' },
