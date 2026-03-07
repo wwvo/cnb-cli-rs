@@ -13,6 +13,7 @@ mod pull;
 mod release;
 mod repo;
 mod star;
+mod user;
 mod workspace;
 
 use crate::error::ApiError;
