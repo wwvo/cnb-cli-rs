@@ -6,21 +6,25 @@ cnb label pull-add <number> -l <labels>
 
 为指定 Pull Request 添加标签。
 
-## 参数
+## 选项
 
-| 参数              | 缩写 | 说明                           |
-|-------------------|------|--------------------------------|
-| `<number>`        |      | Pull 编号                      |
-| `--labels <list>` | `-l` | 标签名称（逗号分隔或多次指定） |
+- `<number>`: Pull 编号（必填）
+- `-l, --labels <LABELS>`: 标签名称，逗号分隔或多次指定（必填）
+
+**继承的全局选项：**
+
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
 ```bash
-cnb label pull-add 10 -l "approved" -l "ready-to-merge"
-# ✓ 已为 Pull #10 添加标签: approved, ready-to-merge
+$ cnb label pull-add 10 -l "approved" -l "ready-to-merge"
+✓ 已为 Pull #10 添加标签: approved, ready-to-merge
 ```
 
 ## 另请参阅
 
+- [cnb label](/label/)
 - [cnb label pull-list](/label/pull-list)
 - [cnb label pull-remove](/label/pull-remove)
