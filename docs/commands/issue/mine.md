@@ -17,15 +17,11 @@ cnb issue mine
 
 ## 选项
 
-无子命令特有选项。
-
 **继承的全局选项：**
 
-`--repo <REPO>`
-: 指定仓库路径
-
-`--json`
-: 以 JSON 格式输出（去重后的完整 Issue 列表）
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--json`: 以 JSON 格式输出
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 

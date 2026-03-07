@@ -8,20 +8,15 @@ cnb issue close <NUMBER> [flags]
 
 将 Issue 状态设置为 `closed`，支持通过 `--reason` 指定关闭原因。
 
-## 参数
-
-`<NUMBER>`
-: Issue 编号（必填）
-
 ## 选项
 
-`-r, --reason <REASON>`
-: 关闭原因，可选值：`completed`（已完成）、`not-planned`（不计划处理）（默认：`completed`）
+- `<NUMBER>`: Issue 编号（必填）
+- `-r, --reason <REASON>`: 关闭原因，可选值：`completed`（已完成）、`not-planned`（不计划处理）（默认：`completed`）
 
 **继承的全局选项：**
 
-`--repo <REPO>`
-: 指定仓库路径
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 

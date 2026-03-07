@@ -11,20 +11,15 @@ cnb issue download [NUMBER] [flags]
 
 必须指定 Issue 编号或使用 `--all` 下载全部。
 
-## 参数
-
-`[NUMBER]`
-: 指定下载的 Issue 编号（与 `--all` 二选一）
-
 ## 选项
 
-`--all`
-: 下载所有 Issue（同时获取 `open` 和 `closed` 状态，自动分页）
+- `[NUMBER]`: 指定下载的 Issue 编号（与 `--all` 二选一）
+- `--all`: 下载所有 Issue（同时获取 `open` 和 `closed` 状态，自动分页）
 
 **继承的全局选项：**
 
-`--repo <REPO>`
-: 指定仓库路径
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 输出格式
 

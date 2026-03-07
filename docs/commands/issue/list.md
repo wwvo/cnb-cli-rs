@@ -11,40 +11,21 @@ cnb issue list [flags]
 
 ## 选项
 
-`-s, --state <STATE>`
-: 状态过滤，可选值：`open`、`closed`（默认：`open`）
-
-`-k, --keyword <KEYWORD>`
-: 关键词搜索，匹配 Issue 标题和描述
-
-`-p, --priority <PRIORITY>`
-: 优先级过滤，如 `P0`、`P1`（多个用逗号分隔）
-
-`-l, --labels <LABELS>`
-: 标签过滤（多个用逗号分隔）
-
-`--author <AUTHOR>`
-: 创建者用户名过滤
-
-`-a, --assignee <ASSIGNEE>`
-: 处理人过滤（`-` 表示未分配）
-
-`--sort <SORT>`
-: 排序字段，支持 `created_at`、`-created_at`、`-updated_at`、`-last_acted_at`（前缀 `-` 表示倒序）
-
-`-L, --limit <N>`
-: 最大返回数量（默认：`30`，最大 `100`）
-
-`-d, --stale-days <N>`
-: 仅显示超过 N 天没有活动的 Issue（默认：`0`，即不过滤）
+- `-s, --state <STATE>`: 状态过滤，可选值：`open`、`closed`（默认：`open`）
+- `-k, --keyword <KEYWORD>`: 关键词搜索，匹配 Issue 标题和描述
+- `-p, --priority <PRIORITY>`: 优先级过滤，如 `P0`、`P1`（多个用逗号分隔）
+- `-l, --labels <LABELS>`: 标签过滤（多个用逗号分隔）
+- `--author <AUTHOR>`: 创建者用户名过滤
+- `-a, --assignee <ASSIGNEE>`: 处理人过滤（`-` 表示未分配）
+- `--sort <SORT>`: 排序字段，支持 `created_at`、`-created_at`、`-updated_at`、`-last_acted_at`（前缀 `-` 表示倒序）
+- `-L, --limit <N>`: 最大返回数量（默认：`30`，最大 `100`）
+- `-d, --stale-days <N>`: 仅显示超过 N 天没有活动的 Issue（默认：`0`，即不过滤）
 
 **继承的全局选项：**
 
-`--repo <REPO>`
-: 指定仓库路径
-
-`--json`
-: 以 JSON 格式输出
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--json`: 以 JSON 格式输出
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 

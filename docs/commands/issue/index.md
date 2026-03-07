@@ -24,19 +24,6 @@ Issue 管理，查看、创建和管理仓库的 Issue。
 - [cnb issue assigners](/issue/assigners) — Issue 处理人管理
 - [cnb issue label](/issue/label) — Issue 标签管理
 
-## 全局选项
-
-以下全局选项适用于所有 `cnb issue` 子命令：
-
-`--repo <REPO>`
-: 指定仓库路径（格式：`group/repo`），不指定则从当前 git 目录自动推断
-
-`--json`
-: 以 JSON 格式输出结果
-
-`--domain <DOMAIN>`
-: 指定目标域名（默认：`cnb.cool`）
-
 ## 示例
 
 ```bash

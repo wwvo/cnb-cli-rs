@@ -9,19 +9,14 @@ cnb issue exist <NUMBER>
 如果 Issue 存在，输出其标题；如果不存在，输出 `false`。
 适合在脚本中用于条件判断。
 
-## 参数
-
-`<NUMBER>`
-: Issue 编号（必填）
-
 ## 选项
 
-无子命令特有选项。
+- `<NUMBER>`: Issue 编号（必填）
 
 **继承的全局选项：**
 
-`--repo <REPO>`
-: 指定仓库路径
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 

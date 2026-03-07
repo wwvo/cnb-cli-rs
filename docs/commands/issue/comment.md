@@ -8,20 +8,15 @@ cnb issue comment <NUMBER> [flags]
 
 评论内容通过 `--comment` 参数传入，支持 Markdown 格式。
 
-## 参数
-
-`<NUMBER>`
-: Issue 编号（必填）
-
 ## 选项
 
-`-c, --comment <COMMENT>`
-: 评论内容（必填），支持 Markdown 格式
+- `<NUMBER>`: Issue 编号（必填）
+- `-c, --comment <COMMENT>`: 评论内容（必填），支持 Markdown 格式
 
 **继承的全局选项：**
 
-`--repo <REPO>`
-: 指定仓库路径
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 

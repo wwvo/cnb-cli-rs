@@ -8,19 +8,14 @@ cnb issue reopen <NUMBER>
 
 将 Issue 状态设置为 `open`，关闭原因设置为 `reopened`。
 
-## 参数
-
-`<NUMBER>`
-: Issue 编号（必填）
-
 ## 选项
 
-无子命令特有选项。
+- `<NUMBER>`: Issue 编号（必填）
 
 **继承的全局选项：**
 
-`--repo <REPO>`
-: 指定仓库路径
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
@@ -36,9 +31,9 @@ $ cnb --repo org/repo issue reopen 42
 
 ## API
 
-| 步骤             | API                                      | 方法  | 说明            |
-| ---------------- | ---------------------------------------- | ----- | --------------- |
-| 重新打开 Issue   | `${API}/repos/{repo}/-/issues/{number}`  | PATCH | 更新 Issue 状态 |
+| 步骤           | API                                     | 方法  | 说明            |
+| -------------- | --------------------------------------- | ----- | --------------- |
+| 重新打开 Issue | `${API}/repos/{repo}/-/issues/{number}` | PATCH | 更新 Issue 状态 |
 
 **请求体：**
 

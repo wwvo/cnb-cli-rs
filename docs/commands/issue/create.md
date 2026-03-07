@@ -11,31 +11,18 @@ cnb issue create [flags]
 
 ## 选项
 
-`-t, --title <TITLE>`
-: Issue 标题（必填）
-
-`-b, --body <BODY>`
-: Issue 描述（默认：空）
-
-`-p, --priority <PRIORITY>`
-: 优先级，可选值：`-2P`、`-1P`、`P0`、`P1`、`P2`、`P3`（默认：空）
-
-`-l, --labels <LABELS>`
-: 标签名称，多个用逗号分隔
-
-`-a, --assignees <ASSIGNEES>`
-: 处理人用户名，多个用逗号分隔
-
-`--start-date <DATE>`
-: 开始日期，格式：`YYYY-MM-DD`
-
-`--end-date <DATE>`
-: 结束日期，格式：`YYYY-MM-DD`
+- `-t, --title <TITLE>`: Issue 标题（必填）
+- `-b, --body <BODY>`: Issue 描述（默认：空）
+- `-p, --priority <PRIORITY>`: 优先级，可选值：`-2P`、`-1P`、`P0`、`P1`、`P2`、`P3`
+- `-l, --labels <LABELS>`: 标签名称，多个用逗号分隔
+- `-a, --assignees <ASSIGNEES>`: 处理人用户名，多个用逗号分隔
+- `--start-date <DATE>`: 开始日期，格式：`YYYY-MM-DD`
+- `--end-date <DATE>`: 结束日期，格式：`YYYY-MM-DD`
 
 **继承的全局选项：**
 
-`--repo <REPO>`
-: 指定仓库路径
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
