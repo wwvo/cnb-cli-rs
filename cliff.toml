@@ -1,0 +1,59 @@
+# git-cliff 配置文件
+# https://git-cliff.org/docs/configuration
+
+[changelog]
+header = """# Changelog\n
+此文件由 [git-cliff](https://git-cliff.org/) 自动生成。\n
+"""
+body = """
+{%- macro remote_url() -%}
+    https://cnb.cool/prevailna/cnb
+{%- endmacro -%}
+
+{% if version -%}
+    ## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else -%}
+    ## [未发布]
+{% endif -%}
+
+{% for group, commits in commits | group_by(attribute="group") %}
+    ### {{ group }}
+    {% for commit in commits %}
+        - {% if commit.scope %}**({{ commit.scope }})** {% endif %}\
+            {{ commit.message | split(pat="\n") | first | trim }} \
+            ([{{ commit.id | truncate(length=7, end="") }}]({{ self::remote_url() }}/-/commit/{{ commit.id }}))
+    {%- endfor %}
+{% endfor %}\n
+"""
+footer = ""
+trim = true
+
+[git]
+# 预处理器先剥离 emoji 前缀，再由 conventional commits 解析器提取 type/scope/description
+conventional_commits = true
+filter_unconventional = false
+split_commits = false
+commit_preprocessors = [
+  # 剥离开头的所有非 ASCII 字符（emoji）及其后的空格
+  { pattern = "^[^a-zA-Z]+", replace = "" },
+]
+commit_parsers = [
+  { message = "^feat", group = "✨ 新功能" },
+  { message = "^fix", group = "🐛 Bug 修复" },
+  { message = "^docs", group = "📝 文档" },
+  { message = "^refactor", group = "♻️ 重构" },
+  { message = "^perf", group = "⚡️ 性能优化" },
+  { message = "^style", group = "🎨 代码风格" },
+  { message = "^test", group = "✅ 测试" },
+  { message = "^ci", group = "👷 CI/CD" },
+  { message = "^build", group = "📦 构建" },
+  { message = "^chore", group = "🔧 杂项" },
+  { message = "^revert", group = "⏪ 回退" },
+  # 兜底：无法识别的 commit
+  { message = "^.*", group = "🌀 其他" },
+]
+protect_breaking_commits = false
+filter_commits = false
+tag_pattern = "v[0-9].*"
+topo_order = false
+sort_commits = "newest"
