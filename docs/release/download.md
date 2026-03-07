@@ -1,0 +1,51 @@
+# cnb release download
+
+```
+cnb release download <TAG> <FILENAME> [options]
+```
+
+下载 Release 附件到本地，或生成分享下载链接。
+
+## 参数
+
+`TAG`
+: Tag 名称（必填）
+
+`FILENAME`
+: 要下载的文件名（必填）
+
+## 选项
+
+`-o, --output <PATH>`
+: 保存路径（可以是目录或完整文件路径）
+
+`--share`
+: 仅生成分享下载链接，不下载文件
+
+## 示例
+
+```bash
+# 下载附件到当前目录
+$ cnb release download v1.2.0 app-linux-amd64.tar.gz
+
+# 保存到指定目录
+$ cnb release download v1.2.0 app-linux-amd64.tar.gz -o ./downloads/
+
+# 保存为指定文件名
+$ cnb release download v1.2.0 app-linux-amd64.tar.gz -o ./app.tar.gz
+
+# 获取分享下载链接
+$ cnb release download v1.2.0 app-linux-amd64.tar.gz --share
+```
+
+## API
+
+| 方法 | 端点 |
+|------|------|
+| GET | `/{repo}/-/releases/download/{tag}/{filename}` |
+
+## 另请参阅
+
+- [cnb release](/release/)
+- [cnb release view](/release/view)
+- [cnb release asset-upload](/release/asset-upload)

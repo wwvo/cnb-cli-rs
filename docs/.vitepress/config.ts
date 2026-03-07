@@ -73,10 +73,16 @@ export default defineConfig({
             link: '/release/',
             items: [
               { text: 'list', link: '/release/list' },
+              { text: 'view', link: '/release/view' },
               { text: 'create', link: '/release/create' },
+              { text: 'update', link: '/release/update' },
+              { text: 'delete', link: '/release/delete' },
+              { text: 'latest', link: '/release/latest' },
+              { text: 'download', link: '/release/download' },
+              { text: 'asset-upload', link: '/release/asset-upload' },
+              { text: 'asset-delete', link: '/release/asset-delete' },
               { text: 'asset-stats', link: '/release/asset-stats' },
               { text: 'asset-clean', link: '/release/asset-clean' },
-              { text: 'asset-upload', link: '/release/asset-upload' },
             ],
           },
           {
