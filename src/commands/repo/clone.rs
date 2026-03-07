@@ -3,7 +3,6 @@
 use anyhow::Result;
 use clap::Parser;
 use cnb_core::context::AppContext;
-use cnb_core::config::DEFAULT_GIT_PROTOCOL;
 use cnb_tui::success;
 
 /// 克隆仓库到本地
@@ -24,13 +23,8 @@ pub struct CloneArgs {
 pub async fn run(ctx: &AppContext, args: &CloneArgs) -> Result<()> {
     let domain = ctx.domain();
 
-    // 根据 git_protocol 配置选择克隆 URL
-    let protocol = ctx.config().git_protocol.as_deref().unwrap_or(DEFAULT_GIT_PROTOCOL);
-    let clone_url = if protocol == "ssh" {
-        format!("git@{domain}:{}.git", args.repo)
-    } else {
-        format!("https://{domain}/{}.git", args.repo)
-    };
+    // CNB 暂不支持 SSH 克隆，固定使用 HTTPS
+    let clone_url = format!("https://{domain}/{}.git", args.repo);
 
     // 构造 git clone 命令
     let mut cmd = std::process::Command::new("git");

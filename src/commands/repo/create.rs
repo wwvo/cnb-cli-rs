@@ -3,7 +3,6 @@
 use anyhow::Result;
 use clap::Parser;
 use cnb_api::types::CreateRepoRequest;
-use cnb_core::config::DEFAULT_GIT_PROTOCOL;
 use cnb_core::context::AppContext;
 use cnb_tui::success;
 
@@ -71,12 +70,8 @@ pub async fn run(ctx: &AppContext, args: &CreateArgs) -> Result<()> {
     success!("仓库已创建：https://{domain}/{repo_path}");
 
     if args.clone {
-        let protocol = ctx.config().git_protocol.as_deref().unwrap_or(DEFAULT_GIT_PROTOCOL);
-        let clone_url = if protocol == "ssh" {
-            format!("git@{domain}:{repo_path}.git")
-        } else {
-            format!("https://{domain}/{repo_path}.git")
-        };
+        // CNB 暂不支持 SSH 克隆，固定使用 HTTPS
+        let clone_url = format!("https://{domain}/{repo_path}.git");
 
         let status = std::process::Command::new("git")
             .arg("clone")

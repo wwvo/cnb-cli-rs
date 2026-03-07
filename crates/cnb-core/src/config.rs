@@ -87,7 +87,12 @@ impl Config {
 
         match key {
             "domain" => config.domain = Some(value.to_string()),
-            "git_protocol" => config.git_protocol = Some(value.to_string()),
+            "git_protocol" => {
+                if value != "https" {
+                    anyhow::bail!("CNB 暂不支持 SSH 克隆，git_protocol 当前仅支持 https");
+                }
+                config.git_protocol = Some(value.to_string());
+            }
             _ => anyhow::bail!("未知配置项：{key}\n可用配置项：{}", Self::VALID_KEYS.join(", ")),
         }
 
