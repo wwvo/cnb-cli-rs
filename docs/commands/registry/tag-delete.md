@@ -6,19 +6,31 @@ cnb registry tag delete <type> <name> <tag> --registry <registry> [options]
 
 删除制品标签。
 
-## 参数
+执行前会要求确认，可通过 `--yes` 跳过确认提示。删除操作不可撤销。
 
-| 参数                | 缩写 | 说明             |
-|---------------------|------|------------------|
-| `<type>`            |      | 制品类型         |
-| `<name>`            |      | 制品名称         |
-| `<tag>`             |      | 标签名           |
-| `--registry <path>` | `-r` | 制品库路径       |
-| `--yes`             | `-y` | 跳过确认提示     |
+## 选项
+
+- `<type>`: 制品类型（必填）
+- `<name>`: 制品名称（必填）
+- `<tag>`: 标签名（必填）
+- `-r, --registry <PATH>`: 制品库路径（必填）
+- `-y, --yes`: 跳过确认提示
+
+**继承的全局选项：**
+
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
 ```bash
-cnb registry tag delete docker my-app v1.0.0 --registry my-org/my-registry
-cnb registry tag delete docker my-app v1.0.0 --registry my-org/my-registry --yes
+# 删除制品标签（需确认）
+$ cnb registry tag delete docker my-app v1.0.0 --registry my-org/my-registry
+
+# 跳过确认
+$ cnb registry tag delete docker my-app v1.0.0 --registry my-org/my-registry --yes
 ```
+
+## 另请参阅
+
+- [cnb registry](/registry/)
+- [cnb registry tag list](/registry/tag-list)
