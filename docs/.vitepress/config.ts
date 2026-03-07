@@ -158,6 +158,21 @@ export default defineConfig({
             ],
           },
           {
+            text: 'cnb mission',
+            link: '/mission/',
+            items: [
+              { text: 'list', link: '/mission/list' },
+              { text: 'create', link: '/mission/create' },
+              { text: 'delete', link: '/mission/delete' },
+              { text: 'set-visibility', link: '/mission/set-visibility' },
+              { text: 'view list', link: '/mission/view-list' },
+              { text: 'view get', link: '/mission/view-get' },
+              { text: 'view set', link: '/mission/view-set' },
+              { text: 'view add', link: '/mission/view-add' },
+              { text: 'view sort', link: '/mission/view-sort' },
+            ],
+          },
+          {
             text: 'cnb member',
             link: '/member/',
             items: [
