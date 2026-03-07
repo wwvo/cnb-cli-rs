@@ -6,25 +6,31 @@ cnb build download-log <pipeline_id> [-o <path>]
 
 下载指定流水线的 Runner 日志。
 
-## 参数
+不指定输出路径时默认输出到标准输出。
 
-| 参数              | 缩写 | 说明                          |
-|-------------------|------|-------------------------------|
-| `<pipeline_id>`   |      | 流水线 ID                     |
-| `--output <path>` | `-o` | 输出文件路径（不指定则 stdout）|
+## 选项
+
+- `<pipeline_id>`: 流水线 ID（必填）
+- `-o, --output <PATH>`: 输出文件路径（不指定则输出到 stdout）
+
+**继承的全局选项：**
+
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
 ```bash
 # 输出到终端
-cnb build download-log pipeline-1
+$ cnb build download-log pipeline-1
 
 # 保存到文件
-cnb build download-log pipeline-1 -o ./build.log
-# ✓ 日志已保存到 ./build.log
+$ cnb build download-log pipeline-1 -o ./build.log
+✓ 日志已保存到 ./build.log
 ```
 
 ## 另请参阅
 
+- [cnb build](/build/)
 - [cnb build stage](/build/stage)
 - [cnb build delete-log](/build/delete-log)
