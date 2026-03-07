@@ -9,6 +9,7 @@ mod group;
 mod issue;
 mod label;
 mod member;
+mod mission;
 mod knowledge;
 mod pull;
 mod release;
