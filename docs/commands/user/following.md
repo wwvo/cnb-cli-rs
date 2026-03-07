@@ -4,19 +4,34 @@
 cnb user following [<username>] [options]
 ```
 
-查看指定用户的关注列表，不指定则查看当前用户。
+查看指定用户的关注列表，不指定则查看当前认证用户。
 
-## 参数
+输出为表格格式，包含用户名和昵称。
 
-| 参数            | 缩写 | 说明                           |
-|-----------------|------|--------------------------------|
-| `[<username>]`  |      | 用户名（不指定则查看当前用户） |
-| `--limit <n>`   | `-L` | 最大数量（默认 100）           |
+## 选项
+
+- `[<username>]`: 用户名（不指定则查看当前用户）
+- `-L, --limit <N>`: 最大返回数量（默认：`100`）
+
+**继承的全局选项：**
+
+- `--json`: 以 JSON 格式输出
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
 ```bash
-cnb user following
-cnb user following zhangsan
-cnb user following --json
+# 查看当前用户的关注列表
+$ cnb user following
+
+# 查看指定用户的关注列表
+$ cnb user following zhangsan
+
+# JSON 格式输出
+$ cnb user following --json
 ```
+
+## 另请参阅
+
+- [cnb user](/user/)
+- [cnb user followers](/user/followers)
