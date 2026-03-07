@@ -1,0 +1,94 @@
+x-release-job: &release-job
+  # Job 1: 生成 CHANGELOG 并创建 Release
+  - name: create-release
+    runner:
+      cpus: 2
+    stages:
+      - name: 生成 CHANGELOG
+        image: docker.cnb.cool/prevailna/cnb:rust-cross
+        script: bash .cnb/scripts/generate-changelog.sh
+      - name: 创建 Release
+        type: git:release
+        options:
+          title: $CNB_BRANCH
+          descriptionFromFile: LATEST_CHANGELOG.md
+          latest: true
+      - name: Release 已就绪
+        type: cnb:resolve
+        options:
+          key: release-ready
+
+  # Job 2: 构建 Linux x86_64 (gnu + musl)
+  - name: build-linux-x86_64
+    runner:
+      cpus: 4
+    stages:
+      - name: 构建 Linux x86_64
+        image: docker.cnb.cool/prevailna/cnb:rust-cross
+        script: bash .cnb/scripts/build-target.sh x86_64-unknown-linux-gnu x86_64-unknown-linux-musl
+      - name: 等待 Release 就绪
+        type: cnb:await
+        options:
+          key: release-ready
+      - name: 上传产物
+        image: cnbcool/attachments:latest
+        settings:
+          attachments:
+            - "cnb-*.tar.gz"
+
+  # Job 3: 构建 Linux ARM64 (gnu + musl)
+  - name: build-linux-arm64
+    runner:
+      cpus: 4
+    stages:
+      - name: 构建 Linux ARM64
+        image: docker.cnb.cool/prevailna/cnb:rust-cross
+        script: bash .cnb/scripts/build-target.sh aarch64-unknown-linux-gnu aarch64-unknown-linux-musl
+      - name: 等待 Release 就绪
+        type: cnb:await
+        options:
+          key: release-ready
+      - name: 上传产物
+        image: cnbcool/attachments:latest
+        settings:
+          attachments:
+            - "cnb-*.tar.gz"
+
+  # Job 4: 构建 Windows x86_64
+  - name: build-windows
+    runner:
+      cpus: 4
+    stages:
+      - name: 构建 Windows
+        image: docker.cnb.cool/prevailna/cnb:rust-cross
+        script: bash .cnb/scripts/build-target.sh x86_64-pc-windows-gnu
+      - name: 等待 Release 就绪
+        type: cnb:await
+        options:
+          key: release-ready
+      - name: 上传产物
+        image: cnbcool/attachments:latest
+        settings:
+          attachments:
+            - "cnb-*.zip"
+
+  # Job 5: 构建 macOS (Intel + Apple Silicon)
+  - name: build-macos
+    runner:
+      cpus: 4
+    stages:
+      - name: 构建 macOS
+        image: docker.cnb.cool/prevailna/cnb:rust-cross
+        script: bash .cnb/scripts/build-target.sh x86_64-apple-darwin aarch64-apple-darwin
+      - name: 等待 Release 就绪
+        type: cnb:await
+        options:
+          key: release-ready
+      - name: 上传产物
+        image: cnbcool/attachments:latest
+        settings:
+          attachments:
+            - "cnb-*.tar.gz"
+
+'v*':
+  tag_push: *release-job
