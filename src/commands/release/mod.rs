@@ -9,6 +9,7 @@ pub mod asset_stats;
 pub mod asset_upload;
 pub mod create;
 pub mod list;
+pub mod view;
 
 /// Release 管理
 #[derive(Debug, Parser)]
@@ -32,6 +33,8 @@ pub enum ReleaseSubcommand {
     /// 上传附件到 Release
     #[command(name = "asset-upload")]
     AssetUpload(asset_upload::AssetUploadArgs),
+    /// 查看 Release 详情
+    View(view::ViewArgs),
 }
 
 impl ReleaseCommand {
@@ -42,6 +45,7 @@ impl ReleaseCommand {
             ReleaseSubcommand::AssetStats => asset_stats::run(ctx).await,
             ReleaseSubcommand::AssetClean(args) => asset_clean::run(ctx, args).await,
             ReleaseSubcommand::AssetUpload(args) => asset_upload::run(ctx, args).await,
+            ReleaseSubcommand::View(args) => view::run(ctx, args).await,
         }
     }
 }
