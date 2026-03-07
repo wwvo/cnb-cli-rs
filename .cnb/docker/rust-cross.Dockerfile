@@ -78,6 +78,9 @@ RUN cargo build --release --target x86_64-pc-windows-gnu
 RUN cargo zigbuild --release --target x86_64-unknown-linux-musl
 RUN cargo zigbuild --release --target aarch64-unknown-linux-gnu
 RUN cargo zigbuild --release --target aarch64-unknown-linux-musl
+
+# macOS 交叉编译需要禁用 jitterentropy（缺少 CoreServices 框架头文件）
+ENV AWS_LC_SYS_NO_JITTER_ENTROPY=1
 RUN cargo zigbuild --release --target x86_64-apple-darwin
 RUN cargo zigbuild --release --target aarch64-apple-darwin
 
