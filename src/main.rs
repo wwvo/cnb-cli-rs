@@ -102,6 +102,9 @@ enum Commands {
     /// 成员管理
     Member(commands::member::MemberCommand),
 
+    /// 任务集管理
+    Mission(commands::mission::MissionCommand),
+
     /// 组织管理
     Group(commands::group::GroupCommand),
 
@@ -180,6 +183,7 @@ async fn async_main() -> anyhow::Result<()> {
         Commands::Label(cmd) => cmd.execute(&ctx).await,
         Commands::Knowledge(cmd) => cmd.execute(&ctx).await,
         Commands::Member(cmd) => cmd.execute(&ctx).await,
+        Commands::Mission(cmd) => cmd.execute(&ctx).await,
         Commands::Group(cmd) => cmd.execute(&ctx).await,
         Commands::User(cmd) => cmd.execute(&ctx).await,
         Commands::Workspace(cmd) => cmd.execute(&ctx).await,
