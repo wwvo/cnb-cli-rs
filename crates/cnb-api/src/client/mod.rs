@@ -1,6 +1,7 @@
 //! CNB API HTTP 客户端
 
 mod ai;
+mod build;
 mod commit;
 mod group;
 mod issue;
