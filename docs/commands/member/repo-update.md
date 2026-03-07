@@ -6,15 +6,25 @@ cnb member repo-update <username> --role <role>
 
 更新仓库成员权限。
 
-## 参数
+## 选项
 
-| 参数             | 缩写 | 说明               |
-|------------------|------|--------------------|
-| `<username>`     |      | 用户名             |
-| `--role <role>`  | `-r` | 新权限等级         |
+- `<username>`: 用户名（必填）
+- `-r, --role <ROLE>`: 新权限等级（必填）
+
+**继承的全局选项：**
+
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
 ```bash
-cnb member repo-update zhangsan --role Master
+$ cnb member repo-update zhangsan --role Master
+✓ 已更新成员 zhangsan 权限为 Master
 ```
+
+## 另请参阅
+
+- [cnb member](/member/)
+- [cnb member repo-list](/member/repo-list)
+- [cnb member repo-remove](/member/repo-remove)

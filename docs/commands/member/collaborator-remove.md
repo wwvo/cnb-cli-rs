@@ -6,17 +6,29 @@ cnb member collaborator-remove <username> --group <group> [options]
 
 移除外部贡献者。
 
-## 参数
+执行前会要求确认，可通过 `--yes` 跳过确认提示。
 
-| 参数              | 缩写 | 说明             |
-|-------------------|------|------------------|
-| `<username>`      |      | 用户名           |
-| `--group <group>` | `-g` | 组织路径         |
-| `--yes`           | `-y` | 跳过确认提示     |
+## 选项
+
+- `<username>`: 用户名（必填）
+- `-g, --group <GROUP>`: 组织路径（必填）
+- `-y, --yes`: 跳过确认提示
+
+**继承的全局选项：**
+
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
 ```bash
-cnb member collaborator-remove zhangsan --group myorg
-cnb member collaborator-remove zhangsan --group myorg --yes
+# 移除外部贡献者（需确认）
+$ cnb member collaborator-remove zhangsan --group myorg
+
+# 跳过确认
+$ cnb member collaborator-remove zhangsan --group myorg --yes
 ```
+
+## 另请参阅
+
+- [cnb member](/member/)
+- [cnb member collaborator-list](/member/collaborator-list)
