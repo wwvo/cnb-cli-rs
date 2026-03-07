@@ -3,6 +3,7 @@
 mod ai;
 mod build;
 mod commit;
+mod gpg_key;
 mod group;
 mod issue;
 mod label;
