@@ -6,16 +6,27 @@ cnb mission set-visibility <mission> <visibility>
 
 设置任务集可见性。
 
-## 参数
+## 选项
 
-| 参数           | 说明                           |
-|----------------|--------------------------------|
-| `<mission>`    | 任务集路径                     |
-| `<visibility>` | 可见性（public/private/secret）|
+- `<mission>`: 任务集路径，格式 `group/mission`（必填）
+- `<visibility>`: 可见性：`public`、`private`、`secret`（必填）
+
+**继承的全局选项：**
+
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
 ```bash
-cnb mission set-visibility my-org/sprint-2025-q1 private
-cnb mission set-visibility my-org/sprint-2025-q1 public
+# 设为私有
+$ cnb mission set-visibility my-org/sprint-2025-q1 private
+✓ 可见性已更新为 private
+
+# 设为公开
+$ cnb mission set-visibility my-org/sprint-2025-q1 public
 ```
+
+## 另请参阅
+
+- [cnb mission](/mission/)
+- [cnb mission list](/mission/list)
