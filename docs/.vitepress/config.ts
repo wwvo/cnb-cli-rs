@@ -7,6 +7,10 @@ export default defineConfig({
   lastUpdated: true,
   cleanUrls: true,
 
+  rewrites: {
+    'commands/:slug*': ':slug*',
+  },
+
   themeConfig: {
     nav: [{ text: '指南', link: '/guide/getting-started' }],
 
