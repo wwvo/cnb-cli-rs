@@ -4,6 +4,7 @@
 set -euo pipefail
 
 VERSION="${CNB_BRANCH}"
+TARGET_DIR="${CARGO_TARGET_DIR:-target}"
 TARGETS=("$@")
 
 if [ ${#TARGETS[@]} -eq 0 ]; then
@@ -34,13 +35,13 @@ for target in "${TARGETS[@]}"; do
   mkdir -p "${dir}"
 
   if [[ "$target" == *-windows-* ]]; then
-    cp "target/${target}/release/cnb.exe" "${dir}/"
-    cp "target/${target}/release/git-cnb.exe" "${dir}/"
+    cp "${TARGET_DIR}/${target}/release/cnb.exe" "${dir}/"
+    cp "${TARGET_DIR}/${target}/release/git-cnb.exe" "${dir}/"
     zip -r "${dir}.zip" "${dir}"
     echo "  完成: ${dir}.zip"
   else
-    cp "target/${target}/release/cnb" "${dir}/"
-    cp "target/${target}/release/git-cnb" "${dir}/"
+    cp "${TARGET_DIR}/${target}/release/cnb" "${dir}/"
+    cp "${TARGET_DIR}/${target}/release/git-cnb" "${dir}/"
     tar czf "${dir}.tar.gz" "${dir}"
     echo "  完成: ${dir}.tar.gz"
   fi
