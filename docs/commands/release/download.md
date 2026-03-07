@@ -6,21 +6,17 @@ cnb release download <TAG> <FILENAME> [options]
 
 下载 Release 附件到本地，或生成分享下载链接。
 
-## 参数
-
-`TAG`
-: Tag 名称（必填）
-
-`FILENAME`
-: 要下载的文件名（必填）
-
 ## 选项
 
-`-o, --output <PATH>`
-: 保存路径（可以是目录或完整文件路径）
+- `<TAG>`: Tag 名称（必填）
+- `<FILENAME>`: 要下载的文件名（必填）
+- `-o, --output <PATH>`: 保存路径（可以是目录或完整文件路径）
+- `--share`: 仅生成分享下载链接，不下载文件
 
-`--share`
-: 仅生成分享下载链接，不下载文件
+**继承的全局选项：**
+
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
@@ -40,9 +36,9 @@ $ cnb release download v1.2.0 app-linux-amd64.tar.gz --share
 
 ## API
 
-| 方法 | 端点 |
-|------|------|
-| GET | `/{repo}/-/releases/download/{tag}/{filename}` |
+| 方法 | 端点                                           |
+| ---- | ---------------------------------------------- |
+| GET  | `/{repo}/-/releases/download/{tag}/{filename}` |
 
 ## 另请参阅
 

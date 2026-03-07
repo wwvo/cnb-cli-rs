@@ -8,6 +8,13 @@ cnb release asset-stats
 
 遍历仓库所有 Release，列出每个包含附件的 Release 的名称、Tag、附件总大小和发布时间，最后输出所有附件的总大小。附件大小自动转换为可读格式（B/KB/MB/GB/TB）。
 
+## 选项
+
+**继承的全局选项：**
+
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
+
 ## 输出示例
 
 ```

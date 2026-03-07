@@ -10,20 +10,16 @@ cnb release create [flags]
 
 ## 选项
 
-`-t, --tag <TAG>`
-: Release 的 Tag 名称（必填）
+- `-t, --tag <TAG>`: Release 的 Tag 名称（必填）
+- `-n, --name <NAME>`: Release 名称（必填）
+- `-b, --body <BODY>`: Release 描述（默认：空）
+- `--make-latest <true|false>`: 是否标记为最新版本（默认：`false`）
+- `--prerelease`: 标记为预发布版本
 
-`-n, --name <NAME>`
-: Release 名称（必填）
+**继承的全局选项：**
 
-`-b, --body <BODY>`
-: Release 描述（默认: 空）
-
-`--make-latest <true|false>`
-: 是否标记为最新版本（默认: `false`）
-
-`--prerelease`
-: 标记为预发布版本
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 

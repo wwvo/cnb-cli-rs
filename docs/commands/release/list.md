@@ -8,6 +8,14 @@ cnb release list
 
 输出为表格格式，包含 Release 名称、Tag 名称、类型标记（`Latest` / `Pre release`）和发布时间。
 
+## 选项
+
+**继承的全局选项：**
+
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--json`: 以 JSON 格式输出
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
+
 ## 输出示例
 
 ```

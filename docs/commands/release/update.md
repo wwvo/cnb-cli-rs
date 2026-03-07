@@ -6,27 +6,19 @@ cnb release update <TAG> [options]
 
 更新 Release 信息。至少需要指定一项修改内容。
 
-## 参数
-
-`TAG`
-: Tag 名称（必填）
-
 ## 选项
 
-`-n, --name <NAME>`
-: 修改 Release 名称
+- `<TAG>`: Tag 名称（必填）
+- `-n, --name <NAME>`: 修改 Release 名称
+- `-b, --body <BODY>`: 修改 Release 描述
+- `--draft`: 标记为草稿
+- `--prerelease`: 标记为预发布
+- `--make-latest <VALUE>`: 设置最新版本标记：`true`、`false`、`legacy`
 
-`-b, --body <BODY>`
-: 修改 Release 描述
+**继承的全局选项：**
 
-`--draft`
-: 标记为草稿
-
-`--prerelease`
-: 标记为预发布
-
-`--make-latest <VALUE>`
-: 设置最新版本标记（true/false/legacy）
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
@@ -46,8 +38,8 @@ $ cnb release update v1.2.0 --make-latest true
 
 ## API
 
-| 方法 | 端点 |
-|------|------|
+| 方法  | 端点                              |
+| ----- | --------------------------------- |
 | PATCH | `/{repo}/-/releases/{release_id}` |
 
 ## 另请参阅

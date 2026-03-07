@@ -6,15 +6,15 @@ cnb release delete <TAG> [options]
 
 删除指定 Release。此操作不可逆，需要交互确认。
 
-## 参数
-
-`TAG`
-: Tag 名称（必填）
-
 ## 选项
 
-`--confirm`
-: 跳过交互确认
+- `<TAG>`: Tag 名称（必填）
+- `--confirm`: 跳过交互确认
+
+**继承的全局选项：**
+
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
@@ -28,8 +28,8 @@ $ cnb release delete v1.0.0-beta --confirm
 
 ## API
 
-| 方法 | 端点 |
-|------|------|
+| 方法   | 端点                              |
+| ------ | --------------------------------- |
 | DELETE | `/{repo}/-/releases/{release_id}` |
 
 ## 另请参阅

@@ -6,15 +6,16 @@ cnb release view <TAG> [options]
 
 查看指定 Release 的详细信息，包括基本信息、描述内容和附件列表。
 
-## 参数
-
-`TAG`
-: Tag 名称（必填）
-
 ## 选项
 
-`-w, --web`
-: 在浏览器中打开 Release 页面
+- `<TAG>`: Tag 名称（必填）
+- `-w, --web`: 在浏览器中打开 Release 页面
+
+**继承的全局选项：**
+
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--json`: 以 JSON 格式输出
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 输出示例
 
