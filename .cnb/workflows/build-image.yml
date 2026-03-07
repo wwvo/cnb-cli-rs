@@ -1,7 +1,7 @@
 x-build-image-job: &build-image-job
   - name: build-rust-cross-image
     runner:
-      cpus: 2
+      cpus: 8
     services:
       - docker
     stages:
@@ -14,7 +14,7 @@ main:
   push:
     - name: build-rust-cross-image
       runner:
-        cpus: 2
+        cpus: 8
       ifModify:
         - ".cnb/docker/rust-cross.Dockerfile"
         - "Cargo.lock"
