@@ -80,6 +80,10 @@ enum Commands {
     /// 下载仓库文件
     Download(commands::download::DownloadArgs),
 
+    /// GPG 密钥管理
+    #[command(name = "gpg-key")]
+    GpgKey(commands::gpg_key::GpgKeyCommand),
+
     /// 提交统计仪表盘
     Stats,
 
@@ -160,6 +164,7 @@ async fn async_main() -> anyhow::Result<()> {
         Commands::Repo(cmd) => cmd.execute(&ctx).await,
         Commands::Commit(cmd) => cmd.execute(&ctx).await,
         Commands::Download(ref args) => args.execute(&ctx).await,
+        Commands::GpgKey(cmd) => cmd.execute(&ctx).await,
         Commands::Stats => commands::stats::run().await,
         Commands::Stars => commands::stars::run(&ctx).await,
         Commands::Label(cmd) => cmd.execute(&ctx).await,
