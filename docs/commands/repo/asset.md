@@ -8,7 +8,7 @@ cnb repo asset <list|delete> [flags]
 
 ## 子命令
 
-### `cnb repo asset list`
+### asset list
 
 ```
 cnb repo asset list [<repo>] [flags]
@@ -16,41 +16,25 @@ cnb repo asset list [<repo>] [flags]
 
 列出仓库的资产记录。
 
-**选项：**
+- `[<repo>]`: 仓库路径（如 `org/repo`），可选
+- `-L, --limit <N>`: 最大列出数量
 
-`<repo>`
-: 仓库路径（如 `org/repo`），可选
-
-`--limit <N>`, `-L`
-: 最大列出数量
-
-**继承的全局选项：**
-
-`--json`
-: 以 JSON 格式输出
-
-### `cnb repo asset delete`
+### asset delete
 
 ```
 cnb repo asset delete <id> [flags]
 ```
 
-删除指定的仓库资产。
+删除指定的仓库资产。仅 `slug_img` 和 `slug_file` 类型可删除。
 
-::: warning
-仅 `slug_img` 和 `slug_file` 类型的资产可通过此命令删除，`repo_release` 和 `repo_commit` 类型不可删除。
-:::
+- `<id>`: 资产 ID（必填）
+- `-y, --yes`: 跳过确认提示
 
-**选项：**
+**继承的全局选项：**
 
-`<id>`
-: 资产 ID（必填）
-
-`--repo <REPO>`
-: 仓库路径（如 `org/repo`），可选
-
-`--yes`, `-y`
-: 跳过确认提示
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--json`: 以 JSON 格式输出（适用于 list）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
@@ -78,10 +62,10 @@ $ cnb repo asset list --json
 
 ## API
 
-| 子操作   | API                                          | 方法   | 说明     |
-| -------- | -------------------------------------------- | ------ | -------- |
-| `list`   | `${CNB_API_ENDPOINT}/{slug}/-/list-assets`   | GET    | 列出资产 |
-| `delete` | `${CNB_API_ENDPOINT}/{repo}/-/assets/{id}`   | DELETE | 删除资产 |
+| 子操作   | API                                        | 方法   | 说明     |
+| -------- | ------------------------------------------ | ------ | -------- |
+| `list`   | `${CNB_API_ENDPOINT}/{slug}/-/list-assets` | GET    | 列出资产 |
+| `delete` | `${CNB_API_ENDPOINT}/{repo}/-/assets/{id}` | DELETE | 删除资产 |
 
 **API 详情**（OpenAPI）：
 

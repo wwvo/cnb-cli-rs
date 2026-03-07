@@ -12,22 +12,14 @@ cnb repo view [<repo>] [flags]
 
 ## 选项
 
-`<repo>`
-: 仓库路径（如 `org/repo`），可选
-
-`--web`, `-w`
-: 在浏览器中打开仓库页面（不调用 API）
+- `[<repo>]`: 仓库路径（如 `org/repo`），可选
+- `-w, --web`: 在浏览器中打开仓库页面
 
 **继承的全局选项：**
 
-`--repo <REPO>`
-: 指定仓库路径
-
-`--json`
-: 以 JSON 格式输出完整仓库信息
-
-`--domain <DOMAIN>`
-: 指定目标域名（默认：`cnb.cool`）
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--json`: 以 JSON 格式输出
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
@@ -47,9 +39,9 @@ $ cnb repo view --json
 
 ## API
 
-| 步骤       | API                        | 方法 | 说明         |
-| ---------- | -------------------------- | ---- | ------------ |
-| 获取仓库   | `${CNB_API_ENDPOINT}/{repo}` | GET  | 获取仓库详情 |
+| 步骤     | API                          | 方法 | 说明         |
+| -------- | ---------------------------- | ---- | ------------ |
+| 获取仓库 | `${CNB_API_ENDPOINT}/{repo}` | GET  | 获取仓库详情 |
 
 **API 详情**（OpenAPI：[`GetByID`](https://api.cnb.cool/#/operations/GetByID)）：
 

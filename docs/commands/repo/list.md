@@ -18,31 +18,17 @@ cnb repo list [<owner>] [flags]
 
 ## 选项
 
-`<owner>`
-: 用户名或组织名，可选
-
-`--limit <N>`, `-L`
-: 最大列出数量（默认：30，上限 100）
-
-`--visibility <TYPE>`
-: 按可见性过滤（`public` / `private` / `secret`）
-
-`--sort <FIELD>`
-: 排序字段（`created_at` / `last_updated_at` / `stars`）
-
-`--desc`
-: 倒序排列
-
-`--search <KEYWORD>`, `-s`
-: 按关键词搜索
+- `[<owner>]`: 用户名或组织名（可选）
+- `-L, --limit <N>`: 最大列出数量（默认：`30`，上限 `100`）
+- `--visibility <TYPE>`: 按可见性过滤：`public`、`private`、`secret`
+- `--sort <FIELD>`: 排序字段：`created_at`、`last_updated_at`、`stars`
+- `--desc`: 倒序排列
+- `-s, --search <KEYWORD>`: 按关键词搜索
 
 **继承的全局选项：**
 
-`--json`
-: 以 JSON 格式输出完整仓库数组
-
-`--domain <DOMAIN>`
-: 指定目标域名（默认：`cnb.cool`）
+- `--json`: 以 JSON 格式输出
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
@@ -70,11 +56,11 @@ $ cnb repo list --json
 
 根据 `owner` 参数类型选择：
 
-| 场景               | API                                    | 方法 | 说明               |
-| ------------------ | -------------------------------------- | ---- | ------------------ |
-| 无参数（当前用户） | `${CNB_API_ENDPOINT}/user/repos`       | GET  | 列出当前用户的仓库 |
+| 场景               | API                                          | 方法 | 说明               |
+| ------------------ | -------------------------------------------- | ---- | ------------------ |
+| 无参数（当前用户） | `${CNB_API_ENDPOINT}/user/repos`             | GET  | 列出当前用户的仓库 |
 | 指定用户           | `${CNB_API_ENDPOINT}/users/{username}/repos` | GET  | 列出指定用户的仓库 |
-| 指定组织           | `${CNB_API_ENDPOINT}/{slug}/-/repos`   | GET  | 列出组织下的仓库   |
+| 指定组织           | `${CNB_API_ENDPOINT}/{slug}/-/repos`         | GET  | 列出组织下的仓库   |
 
 **API 详情**（OpenAPI）：
 

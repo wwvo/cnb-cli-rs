@@ -11,28 +11,16 @@ cnb repo edit [<repo>] [flags]
 
 ## 选项
 
-`<repo>`
-: 仓库路径（如 `org/repo`），可选
-
-`--description <TEXT>`, `-d`
-: 仓库描述
-
-`--license <LICENSE>`, `-l`
-: 开源许可证
-
-`--site <URL>`, `-s`
-: 仓库站点 URL
-
-`--topics <T1,T2,...>`, `-t`
-: 主题标签（逗号分隔）
+- `[<repo>]`: 仓库路径（如 `org/repo`），可选
+- `-d, --description <TEXT>`: 仓库描述
+- `-l, --license <LICENSE>`: 开源许可证
+- `-s, --site <URL>`: 仓库站点 URL
+- `-t, --topics <T1,T2,...>`: 主题标签（逗号分隔）
 
 **继承的全局选项：**
 
-`--repo <REPO>`
-: 指定仓库路径
-
-`--domain <DOMAIN>`
-: 指定目标域名（默认：`cnb.cool`）
+- `--repo <REPO>`: 指定仓库路径（格式：`group/repo`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 

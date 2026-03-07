@@ -10,22 +10,14 @@ cnb repo contributor [<repo>] [flags]
 
 ## 选项
 
-`<repo>`
-: 仓库路径（如 `org/repo`），可选
-
-`--limit <N>`, `-L`
-: 贡献者数量上限（默认：30，上限 100）
-
-`--exclude-external`
-: 排除外部用户
+- `[<repo>]`: 仓库路径（如 `org/repo`），可选
+- `-L, --limit <N>`: 贡献者数量上限（默认：`30`，上限 `100`）
+- `--exclude-external`: 排除外部用户
 
 **继承的全局选项：**
 
-`--json`
-: 以 JSON 格式输出完整贡献者趋势数据
-
-`--domain <DOMAIN>`
-: 指定目标域名（默认：`cnb.cool`）
+- `--json`: 以 JSON 格式输出
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
@@ -45,9 +37,9 @@ $ cnb repo contributor --json
 
 ## API
 
-| 步骤         | API                                                    | 方法 | 说明           |
-| ------------ | ------------------------------------------------------ | ---- | -------------- |
-| 获取趋势数据 | `${CNB_API_ENDPOINT}/{slug}/-/contributor/trend`       | GET  | 贡献者趋势     |
+| 步骤         | API                                              | 方法 | 说明       |
+| ------------ | ------------------------------------------------ | ---- | ---------- |
+| 获取趋势数据 | `${CNB_API_ENDPOINT}/{slug}/-/contributor/trend` | GET  | 贡献者趋势 |
 
 **API 详情**（OpenAPI：[`GetRepoContributorTrend`](https://api.cnb.cool/#/operations/GetRepoContributorTrend)）：
 

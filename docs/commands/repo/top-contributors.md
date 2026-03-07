@@ -10,19 +10,13 @@ cnb repo top-contributors [<repo>] [flags]
 
 ## 选项
 
-`<repo>`
-: 仓库路径（如 `org/repo`），可选
-
-`--top <N>`, `-n`
-: 返回用户数量（默认：10）
+- `[<repo>]`: 仓库路径（如 `org/repo`），可选
+- `-n, --top <N>`: 返回用户数量（默认：`10`）
 
 **继承的全局选项：**
 
-`--json`
-: 以 JSON 格式输出
-
-`--domain <DOMAIN>`
-: 指定目标域名（默认：`cnb.cool`）
+- `--json`: 以 JSON 格式输出
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
@@ -42,9 +36,9 @@ $ cnb repo top-contributors --json
 
 ## API
 
-| 步骤             | API                                                    | 方法 | 说明           |
-| ---------------- | ------------------------------------------------------ | ---- | -------------- |
-| 获取活跃用户     | `${CNB_API_ENDPOINT}/{repo}/-/top-activity-users`      | GET  | 活跃用户排名   |
+| 步骤         | API                                               | 方法 | 说明         |
+| ------------ | ------------------------------------------------- | ---- | ------------ |
+| 获取活跃用户 | `${CNB_API_ENDPOINT}/{repo}/-/top-activity-users` | GET  | 活跃用户排名 |
 
 **API 详情**（OpenAPI：[`TopContributors`](https://api.cnb.cool/#/operations/TopContributors)）：
 

@@ -11,28 +11,16 @@ cnb repo create <name> [flags]
 
 ## 选项
 
-`<name>`
-: 仓库名称（必填）
-
-`--group <GROUP>`, `-g`
-: 所属组织（不指定则创建到个人空间）
-
-`--description <TEXT>`, `-d`
-: 仓库描述
-
-`--license <LICENSE>`, `-l`
-: 开源许可证
-
-`--private`
-: 创建私有仓库
-
-`--secret`
-: 创建加密仓库
+- `<name>`: 仓库名称（必填）
+- `-g, --group <GROUP>`: 所属组织（不指定则创建到个人空间）
+- `-d, --description <TEXT>`: 仓库描述
+- `-l, --license <LICENSE>`: 开源许可证
+- `--private`: 创建私有仓库
+- `--secret`: 创建加密仓库
 
 **继承的全局选项：**
 
-`--domain <DOMAIN>`
-: 指定目标域名（默认：`cnb.cool`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
@@ -55,9 +43,9 @@ $ cnb repo create my-app
 
 ## API
 
-| 步骤     | API                                    | 方法 | 说明     |
-| -------- | -------------------------------------- | ---- | -------- |
-| 创建仓库 | `${CNB_API_ENDPOINT}/{slug}/-/repos`   | POST | 创建仓库 |
+| 步骤     | API                                  | 方法 | 说明     |
+| -------- | ------------------------------------ | ---- | -------- |
+| 创建仓库 | `${CNB_API_ENDPOINT}/{slug}/-/repos` | POST | 创建仓库 |
 
 **API 详情**（OpenAPI：[`CreateRepo`](https://api.cnb.cool/#/operations/CreateRepo)）：
 

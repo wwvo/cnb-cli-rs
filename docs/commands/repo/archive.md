@@ -10,16 +10,12 @@ cnb repo archive <repo> [flags]
 
 ## 选项
 
-`<repo>`
-: 仓库路径（如 `org/repo`，必填）
-
-`--yes`, `-y`
-: 跳过确认提示
+- `<repo>`: 仓库路径（如 `org/repo`，必填）
+- `-y, --yes`: 跳过确认提示
 
 **继承的全局选项：**
 
-`--domain <DOMAIN>`
-: 指定目标域名（默认：`cnb.cool`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
@@ -35,9 +31,9 @@ $ cnb repo archive org/old-project --yes
 
 ## API
 
-| 步骤     | API                                                  | 方法 | 说明     |
-| -------- | ---------------------------------------------------- | ---- | -------- |
-| 归档仓库 | `${CNB_API_ENDPOINT}/{slug}/-/settings/archive`      | POST | 归档仓库 |
+| 步骤     | API                                             | 方法 | 说明     |
+| -------- | ----------------------------------------------- | ---- | -------- |
+| 归档仓库 | `${CNB_API_ENDPOINT}/{slug}/-/settings/archive` | POST | 归档仓库 |
 
 **API 详情**（OpenAPI：[`ArchiveRepo`](https://api.cnb.cool/#/operations/ArchiveRepo)）：
 

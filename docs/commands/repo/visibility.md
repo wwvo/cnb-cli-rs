@@ -10,22 +10,13 @@ cnb repo visibility <repo> <visibility> [flags]
 
 ## 选项
 
-`<repo>`
-: 仓库路径（如 `org/repo`，必填）
-
-`<visibility>`
-: 目标可见性（必填），可选值：
-  - `public` — 公开
-  - `private` — 私有
-  - `secret` — 加密
-
-`--yes`, `-y`
-: 跳过确认提示
+- `<repo>`: 仓库路径（如 `org/repo`，必填）
+- `<visibility>`: 目标可见性（必填），可选值：`public`、`private`、`secret`
+- `-y, --yes`: 跳过确认提示
 
 **继承的全局选项：**
 
-`--domain <DOMAIN>`
-: 指定目标域名（默认：`cnb.cool`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
@@ -42,9 +33,9 @@ $ cnb repo visibility org/repo private --yes
 
 ## API
 
-| 步骤         | API                                                            | 方法 | 说明         |
-| ------------ | -------------------------------------------------------------- | ---- | ------------ |
-| 设置可见性   | `${CNB_API_ENDPOINT}/{repo}/-/settings/set_visibility`         | POST | 修改可见性   |
+| 步骤       | API                                                    | 方法 | 说明       |
+| ---------- | ------------------------------------------------------ | ---- | ---------- |
+| 设置可见性 | `${CNB_API_ENDPOINT}/{repo}/-/settings/set_visibility` | POST | 修改可见性 |
 
 **API 详情**（OpenAPI：[`SetRepoVisibility`](https://api.cnb.cool/#/operations/SetRepoVisibility)）：
 

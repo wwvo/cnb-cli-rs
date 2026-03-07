@@ -63,20 +63,18 @@ $ cnb repo settings branch-protection create \
 
 **选项：**
 
-| 参数 | 说明 |
-|------|------|
-| `--rule <pattern>`, `-r` | 规则名称（支持通配符，必填） |
-| `--allow-pushes` | 允许所有人推送 |
-| `--allow-master-pushes` | 仅允许管理员推送 |
-| `--allow-force-pushes` | 允许所有人强推 |
-| `--allow-master-force-pushes` | 仅允许管理员强推 |
-| `--require-pr` | 必须通过 PR 推送 |
-| `--require-review` | 需要代码评审 |
-| `--review-count <n>` | 评审者数量 [1, 5] |
-| `--review-ratio <n>` | 评审通过率 [1, 100] |
-| `--require-master-approve` | 需管理员批准 |
-| `--require-status-checks` | 需通过状态检查 |
-| `--require-linear-history` | 仅允许线性提交 |
+- `-r, --rule <PATTERN>`: 规则名称（支持通配符，必填）
+- `--allow-pushes`: 允许所有人推送
+- `--allow-master-pushes`: 仅允许管理员推送
+- `--allow-force-pushes`: 允许所有人强推
+- `--allow-master-force-pushes`: 仅允许管理员强推
+- `--require-pr`: 必须通过 PR 推送
+- `--require-review`: 需要代码评审
+- `--review-count <N>`: 评审者数量（1-5）
+- `--review-ratio <N>`: 评审通过率（1-100）
+- `--require-master-approve`: 需管理员批准
+- `--require-status-checks`: 需通过状态检查
+- `--require-linear-history`: 仅允许线性提交
 
 ### `update <id>`
 
@@ -126,14 +124,12 @@ $ cnb repo settings pull-request set \
 
 **选项：**
 
-| 参数 | 说明 |
-|------|------|
-| `--allow-merge-commit` | 允许直接提交合并 |
-| `--allow-rebase` | 允许变基合并 |
-| `--allow-squash` | 允许压缩合并 |
-| `--auto-reviewer` | 自动添加管理员为评审者 |
-| `--merge-message-style <style>` | 直接合并提交信息风格 |
-| `--squash-message-style <style>` | 压缩合并提交信息风格 |
+- `--allow-merge-commit`: 允许直接提交合并
+- `--allow-rebase`: 允许变基合并
+- `--allow-squash`: 允许压缩合并
+- `--auto-reviewer`: 自动添加管理员为评审者
+- `--merge-message-style <STYLE>`: 直接合并提交信息风格
+- `--squash-message-style <STYLE>`: 压缩合并提交信息风格
 
 **提交信息风格可选值：** `default`, `pull_request_title`, `pull_request_title_with_body`
 
@@ -169,12 +165,10 @@ $ cnb repo settings push-limit set --master-only-tag
 
 **选项：**
 
-| 参数 | 说明 |
-|------|------|
-| `--check-push-number` | 开启单次推送数量限制 |
-| `--max-push-number <n>` | 单次推送最大数量 |
-| `--master-only-tag` | 仅管理员可推送/删除标签和版本 |
-| `--commit-must-be <policy>` | 提交检查策略：`any`/`registered`/`pusher` |
+- `--check-push-number`: 开启单次推送数量限制
+- `--max-push-number <N>`: 单次推送最大数量
+- `--master-only-tag`: 仅管理员可推送/删除标签和版本
+- `--commit-must-be <POLICY>`: 提交检查策略：`any`、`registered`、`pusher`
 
 ---
 
@@ -204,28 +198,26 @@ $ cnb repo settings pipeline set \
 
 **选项：**
 
-| 参数 | 说明 |
-|------|------|
-| `--auto-trigger` | 按 .cnb.yml 自动触发构建 |
-| `--fork-auto-trigger` | 允许 Fork 仓库自动触发构建 |
+- `--auto-trigger`: 按 .cnb.yml 自动触发构建
+- `--fork-auto-trigger`: 允许 Fork 仓库自动触发构建
 
 ---
 
 ## API
 
-| 子命令 | API | 方法 | 权限 |
-|--------|-----|------|------|
-| `branch-protection list` | `/{repo}/-/settings/branch-protections` | GET | `repo-manage:r` |
-| `branch-protection get` | `/{repo}/-/settings/branch-protections/{id}` | GET | `repo-manage:r` |
-| `branch-protection create` | `/{repo}/-/settings/branch-protections` | POST | `repo-manage:rw` |
-| `branch-protection update` | `/{repo}/-/settings/branch-protections/{id}` | PATCH | `repo-manage:rw` |
+| 子命令                     | API                                          | 方法   | 权限             |
+| -------------------------- | -------------------------------------------- | ------ | ---------------- |
+| `branch-protection list`   | `/{repo}/-/settings/branch-protections`      | GET    | `repo-manage:r`  |
+| `branch-protection get`    | `/{repo}/-/settings/branch-protections/{id}` | GET    | `repo-manage:r`  |
+| `branch-protection create` | `/{repo}/-/settings/branch-protections`      | POST   | `repo-manage:rw` |
+| `branch-protection update` | `/{repo}/-/settings/branch-protections/{id}` | PATCH  | `repo-manage:rw` |
 | `branch-protection delete` | `/{repo}/-/settings/branch-protections/{id}` | DELETE | `repo-manage:rw` |
-| `pull-request get` | `/{repo}/-/settings/pull-request` | GET | `repo-manage:r` |
-| `pull-request set` | `/{repo}/-/settings/pull-request` | PUT | `repo-manage:rw` |
-| `push-limit get` | `/{repo}/-/settings/push-limit` | GET | `repo-manage:r` |
-| `push-limit set` | `/{repo}/-/settings/push-limit` | PUT | `repo-manage:rw` |
-| `pipeline get` | `/{repo}/-/settings/cloud-native-build` | GET | `repo-manage:r` |
-| `pipeline set` | `/{repo}/-/settings/cloud-native-build` | PUT | `repo-manage:rw` |
+| `pull-request get`         | `/{repo}/-/settings/pull-request`            | GET    | `repo-manage:r`  |
+| `pull-request set`         | `/{repo}/-/settings/pull-request`            | PUT    | `repo-manage:rw` |
+| `push-limit get`           | `/{repo}/-/settings/push-limit`              | GET    | `repo-manage:r`  |
+| `push-limit set`           | `/{repo}/-/settings/push-limit`              | PUT    | `repo-manage:rw` |
+| `pipeline get`             | `/{repo}/-/settings/cloud-native-build`      | GET    | `repo-manage:r`  |
+| `pipeline set`             | `/{repo}/-/settings/cloud-native-build`      | PUT    | `repo-manage:rw` |
 
 ## 另请参阅
 

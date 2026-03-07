@@ -10,22 +10,14 @@ cnb repo security [<repo>] [flags]
 
 ## 选项
 
-`<repo>`
-: 仓库路径（如 `org/repo`），可选
-
-`--types <TYPES>`, `-t`
-: 扫描类型过滤（逗号分隔：`code_sensitive,code_vulnerability,code_issue`），不指定则查询所有
-
-`--tab <TAB>`
-: 查询类型：`open` / `ignore` / `all`（默认 `all`）
+- `[<repo>]`: 仓库路径（如 `org/repo`），可选
+- `-t, --types <TYPES>`: 扫描类型过滤（逗号分隔：`code_sensitive`、`code_vulnerability`、`code_issue`）
+- `--tab <TAB>`: 查询类型：`open`、`ignore`、`all`（默认：`all`）
 
 **继承的全局选项：**
 
-`--json`
-: 以 JSON 格式输出完整安全概览
-
-`--domain <DOMAIN>`
-: 指定目标域名（默认：`cnb.cool`）
+- `--json`: 以 JSON 格式输出
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
@@ -45,9 +37,9 @@ $ cnb repo security --json
 
 ## API
 
-| 步骤         | API                                                    | 方法 | 说明         |
-| ------------ | ------------------------------------------------------ | ---- | ------------ |
-| 获取安全概览 | `${CNB_API_ENDPOINT}/{repo}/-/security/overview`       | GET  | 安全概览     |
+| 步骤         | API                                              | 方法 | 说明     |
+| ------------ | ------------------------------------------------ | ---- | -------- |
+| 获取安全概览 | `${CNB_API_ENDPOINT}/{repo}/-/security/overview` | GET  | 安全概览 |
 
 **API 详情**（OpenAPI：[`GetRepoSecurityOverview`](https://api.cnb.cool/#/operations/GetRepoSecurityOverview)）：
 

@@ -8,13 +8,11 @@ cnb repo unarchive <repo>
 
 ## 选项
 
-`<repo>`
-: 仓库路径（如 `org/repo`，必填）
+- `<repo>`: 仓库路径（如 `org/repo`，必填）
 
 **继承的全局选项：**
 
-`--domain <DOMAIN>`
-: 指定目标域名（默认：`cnb.cool`）
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
@@ -25,9 +23,9 @@ $ cnb repo unarchive org/old-project
 
 ## API
 
-| 步骤         | API                                                  | 方法 | 说明         |
-| ------------ | ---------------------------------------------------- | ---- | ------------ |
-| 解除归档     | `${CNB_API_ENDPOINT}/{slug}/-/settings/unarchive`    | POST | 解除仓库归档 |
+| 步骤     | API                                               | 方法 | 说明         |
+| -------- | ------------------------------------------------- | ---- | ------------ |
+| 解除归档 | `${CNB_API_ENDPOINT}/{slug}/-/settings/unarchive` | POST | 解除仓库归档 |
 
 **API 详情**（OpenAPI：[`UnArchiveRepo`](https://api.cnb.cool/#/operations/UnArchiveRepo)）：
 

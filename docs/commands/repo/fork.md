@@ -14,19 +14,13 @@ cnb repo fork [<repo>] [flags]
 
 ## 选项
 
-`<repo>`
-: 仓库路径（如 `org/repo`），可选
-
-`--limit <N>`, `-L`
-: 最大列出数量（默认：30，上限 100）
+- `[<repo>]`: 仓库路径（如 `org/repo`），可选
+- `-L, --limit <N>`: 最大列出数量（默认：`30`，上限 `100`）
 
 **继承的全局选项：**
 
-`--json`
-: 以 JSON 格式输出完整 Fork 信息
-
-`--domain <DOMAIN>`
-: 指定目标域名（默认：`cnb.cool`）
+- `--json`: 以 JSON 格式输出
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
@@ -46,9 +40,9 @@ $ cnb repo fork --json
 
 ## API
 
-| 步骤       | API                                    | 方法 | 说明             |
-| ---------- | -------------------------------------- | ---- | ---------------- |
-| 获取 Fork  | `${CNB_API_ENDPOINT}/{repo}/-/forks`   | GET  | 获取 Fork 列表   |
+| 步骤      | API                                  | 方法 | 说明           |
+| --------- | ------------------------------------ | ---- | -------------- |
+| 获取 Fork | `${CNB_API_ENDPOINT}/{repo}/-/forks` | GET  | 获取 Fork 列表 |
 
 **API 详情**（OpenAPI：[`ListForksRepos`](https://api.cnb.cool/#/operations/ListForksRepos)）：
 

@@ -10,22 +10,14 @@ cnb repo events [<repo>] [flags]
 
 ## 选项
 
-`<repo>`
-: 仓库路径（如 `org/repo`），可选
-
-`--date <DATE>`, `-d`
-: 查询日期（格式：`YYYY-MM-DD`，默认今天）
-
-`--hour <HOUR>`
-: 指定小时（0-23）
+- `[<repo>]`: 仓库路径（如 `org/repo`），可选
+- `-d, --date <DATE>`: 查询日期（格式：`YYYY-MM-DD`，默认今天）
+- `--hour <HOUR>`: 指定小时（0-23）
 
 **继承的全局选项：**
 
-`--json`
-: 以 JSON 格式输出
-
-`--domain <DOMAIN>`
-: 指定目标域名（默认：`cnb.cool`）
+- `--json`: 以 JSON 格式输出
+- `--domain <DOMAIN>`: 指定目标域名（默认：`cnb.cool`）
 
 ## 示例
 
@@ -42,9 +34,9 @@ $ cnb repo events --date 2025-01-15 --hour 14
 
 ## API
 
-| 步骤         | API                                                  | 方法 | 说明         |
-| ------------ | ---------------------------------------------------- | ---- | ------------ |
-| 获取动态     | `${CNB_API_ENDPOINT}/events/{repo}/-/{date}`         | GET  | 仓库动态     |
+| 步骤     | API                                          | 方法 | 说明     |
+| -------- | -------------------------------------------- | ---- | -------- |
+| 获取动态 | `${CNB_API_ENDPOINT}/events/{repo}/-/{date}` | GET  | 仓库动态 |
 
 **API 详情**（OpenAPI：[`GetEvents`](https://api.cnb.cool/#/operations/GetEvents)）：
 
