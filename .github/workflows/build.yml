@@ -1,0 +1,196 @@
+# GitHub Actions Workflow for multi-platform cnb cli build
+# 支持多操作系统与 CPU 架构的交叉编译与产物发布
+#
+# 矩阵策略：覆盖 5 种 OS/Target 与 2 种 Arch，共 10 种组合
+# - windows-msvc: Windows MSVC 工具链
+# - windows-gnu: Windows MinGW 工具链
+# - apple-darwin: macOS (Intel & Apple Silicon)
+# - linux-gnu: Linux glibc
+# - linux-musl: Linux musl (静态链接)
+
+name: Build cnb cli
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    tags:
+      - 'v*'
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }} (${{ matrix.arch }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Windows MSVC - x86_64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            arch: x86_64
+            platform: windows-msvc
+          # Windows MSVC - aarch64
+          - os: windows-latest
+            target: aarch64-pc-windows-msvc
+            arch: aarch64
+            platform: windows-msvc
+          # Windows GNU - x86_64
+          - os: windows-latest
+            target: x86_64-pc-windows-gnu
+            arch: x86_64
+            platform: windows-gnu
+          # Windows GNU - aarch64 (使用 cross)
+          - os: ubuntu-latest
+            target: aarch64-pc-windows-gnu
+            arch: aarch64
+            platform: windows-gnu
+            use_cross: true
+          # macOS Intel
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            arch: x86_64
+            platform: apple-darwin
+          # macOS Apple Silicon
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            arch: aarch64
+            platform: apple-darwin
+          # Linux glibc - x86_64
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            arch: x86_64
+            platform: linux-gnu
+          # Linux glibc - aarch64 (使用 cross)
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            arch: aarch64
+            platform: linux-gnu
+            use_cross: true
+          # Linux musl - x86_64 (使用 cross)
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            arch: x86_64
+            platform: linux-musl
+            use_cross: true
+          # Linux musl - aarch64 (使用 cross)
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-musl
+            arch: aarch64
+            platform: linux-musl
+            use_cross: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Setup Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+
+      # Windows GNU 需要安装 MinGW
+      - name: Setup MinGW (Windows GNU x86_64)
+        if: matrix.target == 'x86_64-pc-windows-gnu'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: mingw-w64-x86_64-toolchain
+
+      # 添加 MinGW 到 PATH
+      - name: Add MinGW to PATH (Windows GNU x86_64)
+        if: matrix.target == 'x86_64-pc-windows-gnu'
+        shell: pwsh
+        run: echo "C:\msys64\mingw64\bin" >> $env:GITHUB_PATH
+
+      # 使用 cross 进行交叉编译
+      - name: Install cross
+        if: matrix.use_cross
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cross
+
+      - name: Build binary
+        run: |
+          if [ "${{ matrix.use_cross }}" = "true" ]; then
+            cross build --release --target ${{ matrix.target }}
+          else
+            cargo build --release --target ${{ matrix.target }}
+          fi
+        shell: bash
+
+      - name: Prepare artifact
+        id: artifact
+        shell: bash
+        run: |
+          # 确定二进制文件扩展名
+          if [[ "${{ matrix.platform }}" == "windows-msvc" || "${{ matrix.platform }}" == "windows-gnu" ]]; then
+            BINARY_NAME="cnb.exe"
+            GIT_CNB_NAME="git-cnb.exe"
+          else
+            BINARY_NAME="cnb"
+            GIT_CNB_NAME="git-cnb"
+          fi
+
+          # 设置 artifact 名称
+          ARTIFACT_NAME="cnb-${{ matrix.platform }}-${{ matrix.arch }}"
+          echo "artifact_name=${ARTIFACT_NAME}" >> $GITHUB_OUTPUT
+
+          # 创建输出目录
+          mkdir -p output
+          cp target/${{ matrix.target }}/release/${BINARY_NAME} output/
+          cp target/${{ matrix.target }}/release/${GIT_CNB_NAME} output/
+
+          # 创建压缩包
+          cd output
+          if [[ "${{ matrix.platform }}" == "windows-msvc" || "${{ matrix.platform }}" == "windows-gnu" ]]; then
+            7z a ../${ARTIFACT_NAME}.zip *
+          else
+            tar -czvf ../${ARTIFACT_NAME}.tar.gz *
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.artifact.outputs.artifact_name }}
+          path: |
+            *.zip
+            *.tar.gz
+          retention-days: 30
+
+  # 可选：创建 Release（仅在 tag push 时执行）
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/**/*
+          generate_release_notes: true
+          draft: false
+          prerelease: false
