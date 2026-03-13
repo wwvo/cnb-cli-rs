@@ -63,5 +63,5 @@ pub fn validate_file(file_path: &str) -> anyhow::Result<(&str, i64)> {
         .file_name()
         .and_then(|n| n.to_str())
         .unwrap_or("file");
-    Ok((file_name, metadata.len() as i64))
+    Ok((file_name, i64::try_from(metadata.len())?))
 }
