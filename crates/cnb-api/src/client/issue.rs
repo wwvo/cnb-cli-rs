@@ -45,23 +45,16 @@ impl CnbClient {
     }
 
     pub async fn list_all_issues(&self, state: &str) -> Result<Vec<Issue>, ApiError> {
-        let page_size = 100u32;
-        let mut all = Vec::new();
-        let mut page = 1u32;
-        loop {
+        self.paginate(|page, page_size| async move {
             let opts = ListIssuesOptions {
                 state: state.to_string(),
                 page,
                 page_size,
                 ..Default::default()
             };
-            let items = self.list_issues(&opts).await?;
-            let count = items.len();
-            all.extend(items);
-            if (count as u32) < page_size { break; }
-            page += 1;
-        }
-        Ok(all)
+            self.list_issues(&opts).await
+        })
+        .await
     }
 
     pub async fn get_issue(&self, number: &str) -> Result<IssueDetail, ApiError> {
