@@ -1,0 +1,11 @@
+x-release-prepare-job: &release-prepare-job
+  - name: release-prepare
+    runner:
+      cpus: 4
+    stages:
+      - name: 生成 release PR
+        image: docker.cnb.cool/wwvo/cnb-cli/cnb:rust-cross
+        script: bash .cnb/scripts/prepare-release.sh
+
+main:
+  web_trigger_release-prepare: *release-prepare-job

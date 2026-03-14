@@ -23,14 +23,15 @@ RUN cargo binstall --no-confirm cargo-zigbuild git-cliff
 ENV RUSTUP_DIST_SERVER=https://mirrors.tuna.tsinghua.edu.cn/rustup
 ENV RUSTUP_UPDATE_ROOT=https://mirrors.tuna.tsinghua.edu.cn/rustup/rustup
 
-# 添加所有交叉编译 targets
-RUN rustup target add \
-    x86_64-unknown-linux-musl \
-    aarch64-unknown-linux-gnu \
-    aarch64-unknown-linux-musl \
-    x86_64-pc-windows-gnu \
-    x86_64-apple-darwin \
-    aarch64-apple-darwin
+# 预装 CI 检查所需组件，并添加所有交叉编译 targets
+RUN rustup component add rustfmt clippy \
+    && rustup target add \
+        x86_64-unknown-linux-musl \
+        aarch64-unknown-linux-gnu \
+        aarch64-unknown-linux-musl \
+        x86_64-pc-windows-gnu \
+        x86_64-apple-darwin \
+        aarch64-apple-darwin
 
 # 配置 cargo 镜像源（国内加速）和 Windows 交叉编译链接器
 RUN printf '\

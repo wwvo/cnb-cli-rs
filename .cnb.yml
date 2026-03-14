@@ -1,6 +1,8 @@
 include:
   - .cnb/workflows/deploy-docs.yml
   - .cnb/workflows/ci-check.yml
+  - .cnb/workflows/auto-tag.yml
+  - .cnb/workflows/release-prepare.yml
   - .cnb/workflows/pre-release-check.yml
   - .cnb/workflows/release.yml
   - .cnb/workflows/build-image.yml

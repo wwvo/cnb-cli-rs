@@ -1,0 +1,18 @@
+x-auto-tag-job: &auto-tag-job
+  - name: auto-create-release-tag
+    runner:
+      cpus: 2
+    ifModify:
+      - "Cargo.toml"
+      - "CHANGELOG.md"
+    stages:
+      - name: 等待代码检查通过
+        type: cnb:await
+        options:
+          key: ci-check-ready
+      - name: 自动创建版本标签
+        image: docker.cnb.cool/wwvo/cnb-cli/cnb:rust-cross
+        script: bash .cnb/scripts/auto-create-tag.sh
+
+main:
+  push: *auto-tag-job

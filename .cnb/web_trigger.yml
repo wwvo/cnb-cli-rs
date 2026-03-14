@@ -1,7 +1,10 @@
 branch:
   - buttons:
+      - name: 准备 release PR
+        description: 自动 bump 版本、更新 CHANGELOG 并创建 release PR
+        event: web_trigger_release-prepare
       - name: 运行代码检查
-        description: 执行 cargo check 与 cargo test
+        description: 执行 rustfmt、cargo check、clippy 与 cargo test
         event: web_trigger_ci-check
       - name: 部署文档站点
         description: 部署文档站点
