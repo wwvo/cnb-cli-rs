@@ -1,0 +1,8 @@
+main:
+  review:
+    - stages:
+        - name: automerge
+          type: git:auto-merge
+          options:
+            mergeType: auto
+            removeSourceBranch: true

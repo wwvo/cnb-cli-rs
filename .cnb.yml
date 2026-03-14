@@ -3,6 +3,7 @@ include:
   - .cnb/workflows/release.yml
   - .cnb/workflows/build-image.yml
   - .cnb/workflows/test-macos.yml
+  - .cnb/workflows/automerge.yml
 
 $:
   vscode:
