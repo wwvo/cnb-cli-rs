@@ -42,6 +42,10 @@ jobs:
           - os: windows-latest
             target: aarch64-pc-windows-msvc
             archive_ext: zip
+          - os: ubuntu-latest
+            target: aarch64-pc-windows-gnu
+            archive_ext: zip
+            use_cross: true
           - os: macos-latest
             target: x86_64-apple-darwin
             archive_ext: tar.gz
