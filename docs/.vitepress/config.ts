@@ -43,6 +43,7 @@ export default defineConfig({
         items: [
           { text: '快速开始', link: '/guide/getting-started' },
           { text: 'cnb', link: '/guide/cnb' },
+          { text: '发布流程', link: '/guide/release-process' },
         ],
       },
       {
