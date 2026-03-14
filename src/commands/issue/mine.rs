@@ -3,7 +3,7 @@
 use anyhow::Result;
 use cnb_api::types::ListIssuesOptions;
 use cnb_core::context::AppContext;
-use cnb_tui::{info, Column, Table};
+use cnb_tui::{Column, Table, info};
 
 /// 执行 issue mine 命令
 pub async fn run(ctx: &AppContext) -> Result<()> {
@@ -29,8 +29,8 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
         ..Default::default()
     };
     let (to_me, from_me) = tokio::join!(
-        client.list_issues(&to_me_opts),
-        client.list_issues(&from_me_opts)
+        client.list_all_issues_with_options(&to_me_opts),
+        client.list_all_issues_with_options(&from_me_opts)
     );
     let to_me = to_me?;
     let from_me = from_me?;
@@ -73,11 +73,7 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
         Column::new("TYPE", 10),
     ]);
     for (number, title, issue_type) in &results {
-        table.add_row(vec![
-            number.clone(),
-            title.clone(),
-            issue_type.to_string(),
-        ]);
+        table.add_row(vec![number.clone(), title.clone(), issue_type.to_string()]);
     }
     table.print();
 
@@ -98,7 +94,10 @@ pub async fn run(ctx: &AppContext) -> Result<()> {
             assignees: Some(me.username.clone()),
             ..Default::default()
         };
-        if let Ok(fb_issues) = feedback_client.list_issues(&fb_to_me_opts).await {
+        if let Ok(fb_issues) = feedback_client
+            .list_all_issues_with_options(&fb_to_me_opts)
+            .await
+        {
             let mut fb_table = Table::new(vec![
                 Column::new("NUMBER", 15),
                 Column::new("TITLE", 65),

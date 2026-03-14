@@ -3,9 +3,9 @@
 use anyhow::Result;
 use clap::Parser;
 use cnb_core::context::AppContext;
+use cnb_tui::concurrent::run_concurrent;
 use cnb_tui::confirm::confirm_action;
-use cnb_tui::{info, success, fail};
-use futures::stream::{self, StreamExt};
+use cnb_tui::{fail, info, success};
 
 /// 清理 Release 附件
 #[derive(Debug, Parser)]
@@ -112,26 +112,41 @@ pub async fn run(ctx: &AppContext, args: &AssetCleanArgs) -> Result<()> {
     eprintln!();
 
     // 确认删除
-    if !confirm_action(&format!("确认删除以上 {} 个附件？", assets_to_delete.len()), args.yes)? {
+    if !confirm_action(
+        &format!("确认删除以上 {} 个附件？", assets_to_delete.len()),
+        args.yes,
+    )? {
         info!("已取消");
         return Ok(());
     }
 
     // 并发删除（最多 10 并发）
-    stream::iter(assets_to_delete.iter())
-        .for_each_concurrent(10, |asset| {
-            let client = &client;
-            async move {
-                match client
-                    .delete_release_asset(&asset.release_id, &asset.asset_id)
-                    .await
-                {
-                    Ok(()) => success!("已删除：{asset}"),
-                    Err(e) => fail!("删除失败：{asset}, 错误：{e}"),
+    let failed = run_concurrent(&assets_to_delete, 10, |asset| {
+        let api_client = client;
+        let release_id = asset.release_id.clone();
+        let asset_id = asset.asset_id.clone();
+        let asset_desc = asset.to_string();
+        async move {
+            match api_client
+                .delete_release_asset(&release_id, &asset_id)
+                .await
+            {
+                Ok(()) => {
+                    success!("已删除：{asset_desc}");
+                    Ok(())
+                }
+                Err(e) => {
+                    fail!("删除失败：{asset_desc}, 错误：{e}");
+                    Err(e)
                 }
             }
-        })
-        .await;
+        }
+    })
+    .await;
+
+    if failed > 0 {
+        anyhow::bail!("Release 附件清理完成，但有 {failed} 个删除失败");
+    }
 
     Ok(())
 }

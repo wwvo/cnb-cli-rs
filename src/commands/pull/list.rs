@@ -4,7 +4,7 @@ use anyhow::Result;
 use clap::{Parser, ValueEnum};
 use cnb_api::types::ListPullsOptions;
 use cnb_core::context::AppContext;
-use cnb_tui::{info, Column, Table};
+use cnb_tui::{Column, Table, info};
 
 /// 列表状态过滤
 #[derive(Debug, Clone, ValueEnum)]
@@ -54,7 +54,7 @@ pub async fn run(ctx: &AppContext, args: &ListArgs) -> Result<()> {
             authors: args.author.clone(),
             reviewers: args.reviewer.clone(),
         };
-        let pulls = client.list_pulls(&opts).await?;
+        let pulls = client.list_all_pulls(&opts).await?;
 
         if pulls.is_empty() {
             info!("没有找到符合条件的 Pull Request");
@@ -103,8 +103,8 @@ pub async fn run(ctx: &AppContext, args: &ListArgs) -> Result<()> {
     };
 
     let (from_me, to_me) = tokio::join!(
-        client.list_pulls(&from_me_opts),
-        client.list_pulls(&to_me_opts)
+        client.list_all_pulls(&from_me_opts),
+        client.list_all_pulls(&to_me_opts)
     );
     let from_me = from_me?;
     let to_me = to_me?;
@@ -112,13 +112,23 @@ pub async fn run(ctx: &AppContext, args: &ListArgs) -> Result<()> {
     // 合并并去重：同一 PR 既是我创建的又需要我评审时标记为 ME->ME
     let mut results: Vec<(String, String, String, &str)> = Vec::new();
     for pr in &from_me {
-        results.push((pr.number.clone(), pr.title.clone(), pr.blocked_on.clone(), "ME->"));
+        results.push((
+            pr.number.clone(),
+            pr.title.clone(),
+            pr.blocked_on.clone(),
+            "ME->",
+        ));
     }
     for pr in &to_me {
         if let Some(existing) = results.iter_mut().find(|(n, _, _, _)| *n == pr.number) {
             existing.3 = "ME->ME";
         } else {
-            results.push((pr.number.clone(), pr.title.clone(), pr.blocked_on.clone(), "->ME"));
+            results.push((
+                pr.number.clone(),
+                pr.title.clone(),
+                pr.blocked_on.clone(),
+                "->ME",
+            ));
         }
     }
 

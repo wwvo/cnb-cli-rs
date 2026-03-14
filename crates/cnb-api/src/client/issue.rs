@@ -1,12 +1,18 @@
+use super::CnbClient;
 use crate::error::ApiError;
 use crate::types::*;
-use super::CnbClient;
 use urlencoding::encode;
 
 impl CnbClient {
     pub async fn list_issues(&self, opts: &ListIssuesOptions) -> Result<Vec<Issue>, ApiError> {
-        let mut url = format!("{}{}/-/issues?page={}&page_size={}&state={}",
-            self.base_url, self.repo, opts.page, opts.page_size, encode(&opts.state));
+        let mut url = format!(
+            "{}{}/-/issues?page={}&page_size={}&state={}",
+            self.base_url,
+            self.repo,
+            opts.page,
+            opts.page_size,
+            encode(&opts.state)
+        );
         if let Some(ref keyword) = opts.keyword {
             url.push_str(&format!("&keyword={}", encode(keyword)));
         }
@@ -57,6 +63,21 @@ impl CnbClient {
         .await
     }
 
+    pub async fn list_all_issues_with_options(
+        &self,
+        opts: &ListIssuesOptions,
+    ) -> Result<Vec<Issue>, ApiError> {
+        self.paginate(|page, page_size| {
+            let mut opts = opts.clone();
+            async move {
+                opts.page = page;
+                opts.page_size = page_size;
+                self.list_issues(&opts).await
+            }
+        })
+        .await
+    }
+
     pub async fn get_issue(&self, number: &str) -> Result<IssueDetail, ApiError> {
         let number = encode(number);
         let url = format!("{}{}/-/issues/{number}", self.base_url, self.repo);
@@ -70,27 +91,46 @@ impl CnbClient {
         Self::handle_response(resp).await
     }
 
-    pub async fn update_issue(&self, number: &str, req: &UpdateIssueRequest) -> Result<(), ApiError> {
+    pub async fn update_issue(
+        &self,
+        number: &str,
+        req: &UpdateIssueRequest,
+    ) -> Result<(), ApiError> {
         let number = encode(number);
         let url = format!("{}{}/-/issues/{number}", self.base_url, self.repo);
         let resp = self.http.patch(&url).json(req).send().await?;
         Self::handle_empty_response(resp).await
     }
 
-    pub async fn list_issue_comments(&self, number: &str, page: u32, page_size: u32) -> Result<Vec<IssueComment>, ApiError> {
+    pub async fn list_issue_comments(
+        &self,
+        number: &str,
+        page: u32,
+        page_size: u32,
+    ) -> Result<Vec<IssueComment>, ApiError> {
         let number = encode(number);
-        let url = format!("{}{}/-/issues/{number}/comments?page={page}&page_size={page_size}",
-            self.base_url, self.repo);
+        let url = format!(
+            "{}{}/-/issues/{number}/comments?page={page}&page_size={page_size}",
+            self.base_url, self.repo
+        );
         let resp = self.send_with_retry(|| self.http.get(&url)).await?;
         Self::handle_response(resp).await
     }
 
     /// 获取全部 Issue 评论（自动分页）
-    pub async fn list_all_issue_comments(&self, number: &str) -> Result<Vec<IssueComment>, ApiError> {
-        self.paginate(|page, page_size| self.list_issue_comments(number, page, page_size)).await
+    pub async fn list_all_issue_comments(
+        &self,
+        number: &str,
+    ) -> Result<Vec<IssueComment>, ApiError> {
+        self.paginate(|page, page_size| self.list_issue_comments(number, page, page_size))
+            .await
     }
 
-    pub async fn create_issue_comment(&self, number: &str, req: &CreateCommentRequest) -> Result<(), ApiError> {
+    pub async fn create_issue_comment(
+        &self,
+        number: &str,
+        req: &CreateCommentRequest,
+    ) -> Result<(), ApiError> {
         let number = encode(number);
         let url = format!("{}{}/-/issues/{number}/comments", self.base_url, self.repo);
         let resp = self.http.post(&url).json(req).send().await?;
@@ -104,7 +144,11 @@ impl CnbClient {
         Self::handle_response(resp).await
     }
 
-    pub async fn add_issue_assignees(&self, number: &str, req: &AddAssigneesRequest) -> Result<(), ApiError> {
+    pub async fn add_issue_assignees(
+        &self,
+        number: &str,
+        req: &AddAssigneesRequest,
+    ) -> Result<(), ApiError> {
         let number = encode(number);
         let url = format!("{}{}/-/issues/{number}/assignees", self.base_url, self.repo);
         let resp = self.http.post(&url).json(req).send().await?;
@@ -120,7 +164,11 @@ impl CnbClient {
     }
 
     /// 添加 Issue 标签
-    pub async fn add_issue_labels(&self, number: &str, req: &IssueLabelRequest) -> Result<(), ApiError> {
+    pub async fn add_issue_labels(
+        &self,
+        number: &str,
+        req: &IssueLabelRequest,
+    ) -> Result<(), ApiError> {
         let number = encode(number);
         let url = format!("{}{}/-/issues/{number}/labels", self.base_url, self.repo);
         let resp = self.http.post(&url).json(req).send().await?;
@@ -128,7 +176,11 @@ impl CnbClient {
     }
 
     /// 设置（替换）Issue 标签
-    pub async fn set_issue_labels(&self, number: &str, req: &IssueLabelRequest) -> Result<(), ApiError> {
+    pub async fn set_issue_labels(
+        &self,
+        number: &str,
+        req: &IssueLabelRequest,
+    ) -> Result<(), ApiError> {
         let number = encode(number);
         let url = format!("{}{}/-/issues/{number}/labels", self.base_url, self.repo);
         let resp = self.http.put(&url).json(req).send().await?;
@@ -139,7 +191,10 @@ impl CnbClient {
     pub async fn remove_issue_label(&self, number: &str, label_name: &str) -> Result<(), ApiError> {
         let number = encode(number);
         let label_name = encode(label_name);
-        let url = format!("{}{}/-/issues/{number}/labels/{label_name}", self.base_url, self.repo);
+        let url = format!(
+            "{}{}/-/issues/{number}/labels/{label_name}",
+            self.base_url, self.repo
+        );
         let resp = self.http.delete(&url).send().await?;
         Self::handle_empty_response(resp).await
     }

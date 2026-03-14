@@ -4,7 +4,7 @@ use anyhow::Result;
 use clap::Parser;
 use cnb_core::context::AppContext;
 use cnb_tui::confirm::confirm_action;
-use cnb_tui::success;
+use cnb_tui::{info, success};
 
 /// 删除任务集
 #[derive(Debug, Parser)]
@@ -21,7 +21,10 @@ pub struct DeleteArgs {
 pub async fn run(ctx: &AppContext, args: &DeleteArgs) -> Result<()> {
     let client = ctx.api_client()?;
 
-    confirm_action(&format!("确认删除任务集 {}？", args.mission), args.yes)?;
+    if !confirm_action(&format!("确认删除任务集 {}？", args.mission), args.yes)? {
+        info!("已取消");
+        return Ok(());
+    }
 
     client.delete_mission(&args.mission).await?;
     success!("任务集 {} 已删除", args.mission);

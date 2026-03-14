@@ -4,7 +4,7 @@ use anyhow::Result;
 use clap::Parser;
 use cnb_core::context::AppContext;
 use cnb_tui::confirm::confirm_action;
-use cnb_tui::success;
+use cnb_tui::{info, success};
 
 /// 删除制品
 #[derive(Debug, Parser)]
@@ -28,12 +28,17 @@ pub struct PackageDeleteArgs {
 pub async fn run(ctx: &AppContext, args: &PackageDeleteArgs) -> Result<()> {
     let client = ctx.api_client()?;
 
-    confirm_action(
+    if !confirm_action(
         &format!("确认删除制品 {}/{}？", args.pkg_type, args.name),
         args.yes,
-    )?;
+    )? {
+        info!("已取消");
+        return Ok(());
+    }
 
-    client.delete_package(&args.registry, &args.pkg_type, &args.name).await?;
+    client
+        .delete_package(&args.registry, &args.pkg_type, &args.name)
+        .await?;
     success!("制品 {}/{} 已删除", args.pkg_type, args.name);
 
     Ok(())

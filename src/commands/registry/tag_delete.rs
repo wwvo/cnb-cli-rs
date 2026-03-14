@@ -4,7 +4,7 @@ use anyhow::Result;
 use clap::Parser;
 use cnb_core::context::AppContext;
 use cnb_tui::confirm::confirm_action;
-use cnb_tui::success;
+use cnb_tui::{info, success};
 
 /// 删除制品标签
 #[derive(Debug, Parser)]
@@ -31,12 +31,20 @@ pub struct TagDeleteArgs {
 pub async fn run(ctx: &AppContext, args: &TagDeleteArgs) -> Result<()> {
     let client = ctx.api_client()?;
 
-    confirm_action(
-        &format!("确认删除标签 {}/{}:{}？", args.pkg_type, args.name, args.tag),
+    if !confirm_action(
+        &format!(
+            "确认删除标签 {}/{}:{}？",
+            args.pkg_type, args.name, args.tag
+        ),
         args.yes,
-    )?;
+    )? {
+        info!("已取消");
+        return Ok(());
+    }
 
-    client.delete_package_tag(&args.registry, &args.pkg_type, &args.name, &args.tag).await?;
+    client
+        .delete_package_tag(&args.registry, &args.pkg_type, &args.name, &args.tag)
+        .await?;
     success!("标签 {}/{}:{} 已删除", args.pkg_type, args.name, args.tag);
 
     Ok(())

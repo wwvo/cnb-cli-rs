@@ -114,13 +114,17 @@ pub async fn run(ctx: &AppContext, args: &DownloadArgs) -> Result<()> {
     let mut errors = Vec::new();
 
     for handle in handles {
-        if let Ok((path, result)) = handle.await {
-            match result {
+        match handle.await {
+            Ok((path, result)) => match result {
                 Ok(()) => success += 1,
                 Err(e) => {
                     errors.push(format!("{path}: {e}"));
                     failed += 1;
                 }
+            },
+            Err(e) => {
+                errors.push(format!("下载任务执行失败: {e}"));
+                failed += 1;
             }
         }
     }
@@ -128,6 +132,10 @@ pub async fn run(ctx: &AppContext, args: &DownloadArgs) -> Result<()> {
     eprintln!("\n下载完成：{success} 成功，{failed} 失败");
     for err in &errors {
         eprintln!("  ✗ {err}");
+    }
+
+    if failed > 0 {
+        anyhow::bail!("下载过程中有 {failed} 个失败项");
     }
 
     Ok(())
@@ -139,51 +147,35 @@ async fn collect_files(
     files: &[String],
     git_ref: &str,
 ) -> Result<Vec<DownFile>> {
-    // 阶段 1：并行获取所有顶层路径的 content
-    let top_contents = try_join_all(
-        files.iter().map(|path| client.get_content(path, git_ref)),
-    )
-    .await?;
-
     let mut download_files: Vec<DownFile> = Vec::new();
-    let mut sub_paths: Vec<String> = Vec::new();
+    let mut pending_paths: Vec<String> = files.to_vec();
 
-    for content in top_contents {
-        match content.content_type {
-            ContentType::Blob | ContentType::Lfs => {
-                download_files.push(DownFile {
-                    path: content.path,
-                    file_type: content.content_type,
-                    content: content.content,
-                    lfs_download_url: content.lfs_download_url,
-                    size: content.size,
-                });
-            }
-            ContentType::Tree => {
-                for entry in &content.entries {
-                    if entry.entry_type == ContentType::Blob || entry.entry_type == ContentType::Lfs {
-                        sub_paths.push(entry.path.clone());
+    while !pending_paths.is_empty() {
+        let contents = try_join_all(
+            pending_paths
+                .iter()
+                .map(|path| client.get_content(path, git_ref)),
+        )
+        .await?;
+        pending_paths.clear();
+
+        for content in contents {
+            match content.content_type {
+                ContentType::Blob | ContentType::Lfs => {
+                    download_files.push(DownFile {
+                        path: content.path,
+                        file_type: content.content_type,
+                        content: content.content,
+                        lfs_download_url: content.lfs_download_url,
+                        size: content.size,
+                    });
+                }
+                ContentType::Tree => {
+                    for entry in &content.entries {
+                        pending_paths.push(entry.path.clone());
                     }
                 }
             }
-        }
-    }
-
-    // 阶段 2：并行获取所有 Tree 子文件的 content
-    if !sub_paths.is_empty() {
-        let sub_contents = try_join_all(
-            sub_paths.iter().map(|path| client.get_content(path, git_ref)),
-        )
-        .await?;
-
-        for sub in sub_contents {
-            download_files.push(DownFile {
-                path: sub.path,
-                file_type: sub.content_type,
-                content: sub.content,
-                lfs_download_url: sub.lfs_download_url,
-                size: sub.size,
-            });
         }
     }
 

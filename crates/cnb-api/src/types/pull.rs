@@ -71,7 +71,7 @@ pub struct MergePullRequestBody {
 }
 
 /// Pull Request 列表查询参数
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct ListPullsOptions {
     pub state: String,
     pub page: u32,
@@ -92,9 +92,10 @@ mod tests {
 
     #[test]
     fn pull_request_deserialize() {
-        let json = r#"{"number": "10", "title": "feat: add feature", "state": "open", "blocked_on": ""}"#;
-        let pr: PullRequest = serde_json::from_str(json)
-            .unwrap_or_else(|e| panic!("反序列化失败：{e}"));
+        let json =
+            r#"{"number": "10", "title": "feat: add feature", "state": "open", "blocked_on": ""}"#;
+        let pr: PullRequest =
+            serde_json::from_str(json).unwrap_or_else(|e| panic!("反序列化失败：{e}"));
         assert_eq!(pr.number, "10");
         assert_eq!(pr.title, "feat: add feature");
         assert_eq!(pr.state, "open");
@@ -103,15 +104,15 @@ mod tests {
     #[test]
     fn pull_request_deserialize_defaults() {
         let json = r#"{"number": "1", "title": "test", "state": "open"}"#;
-        let pr: PullRequest = serde_json::from_str(json)
-            .unwrap_or_else(|e| panic!("反序列化失败：{e}"));
+        let pr: PullRequest =
+            serde_json::from_str(json).unwrap_or_else(|e| panic!("反序列化失败：{e}"));
         assert_eq!(pr.blocked_on, "");
     }
 
     #[test]
     fn merge_style_serialize() {
-        let merge = serde_json::to_string(&MergeStyle::Merge)
-            .unwrap_or_else(|e| panic!("序列化失败：{e}"));
+        let merge =
+            serde_json::to_string(&MergeStyle::Merge).unwrap_or_else(|e| panic!("序列化失败：{e}"));
         assert_eq!(merge, r#""merge""#);
 
         let squash = serde_json::to_string(&MergeStyle::Squash)
@@ -132,8 +133,7 @@ mod tests {
             title: "test PR".to_string(),
             body: String::new(),
         };
-        let json = serde_json::to_string(&req)
-            .unwrap_or_else(|e| panic!("序列化失败：{e}"));
+        let json = serde_json::to_string(&req).unwrap_or_else(|e| panic!("序列化失败：{e}"));
         assert!(!json.contains("head_repo"));
         assert!(!json.contains("body"));
         assert!(json.contains("base"));
@@ -147,8 +147,7 @@ mod tests {
             body: None,
             state: None,
         };
-        let json = serde_json::to_string(&req)
-            .unwrap_or_else(|e| panic!("序列化失败：{e}"));
+        let json = serde_json::to_string(&req).unwrap_or_else(|e| panic!("序列化失败：{e}"));
         assert_eq!(json, "{}");
     }
 
@@ -159,8 +158,7 @@ mod tests {
             commit_message: String::new(),
             merge_style: MergeStyle::Squash,
         };
-        let json = serde_json::to_string(&body)
-            .unwrap_or_else(|e| panic!("序列化失败：{e}"));
+        let json = serde_json::to_string(&body).unwrap_or_else(|e| panic!("序列化失败：{e}"));
         assert!(json.contains(r#""merge_style":"squash""#));
         assert!(!json.contains("commit_message"));
     }
@@ -168,8 +166,8 @@ mod tests {
     #[test]
     fn merge_pull_response_deserialize() {
         let json = r#"{"merged": true, "sha": "abc123", "message": "ok"}"#;
-        let resp: MergePullResponse = serde_json::from_str(json)
-            .unwrap_or_else(|e| panic!("反序列化失败：{e}"));
+        let resp: MergePullResponse =
+            serde_json::from_str(json).unwrap_or_else(|e| panic!("反序列化失败：{e}"));
         assert!(resp.merged);
         assert_eq!(resp.sha, "abc123");
     }

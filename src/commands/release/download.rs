@@ -59,6 +59,11 @@ pub async fn run(ctx: &AppContext, args: &DownloadArgs) -> Result<()> {
 
     // 下载文件
     let resp = client.http_client().get(&url).send().await?;
+    let status = resp.status().as_u16();
+    if !(200..300).contains(&status) {
+        let body = resp.text().await.unwrap_or_default();
+        anyhow::bail!("下载附件失败 (HTTP {status}): {body}");
+    }
     let bytes = resp.bytes().await?;
     std::fs::write(&save_path, &bytes)?;
 
