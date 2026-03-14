@@ -2,6 +2,55 @@
 
 此文件由 [git-cliff](https://git-cliff.org/) 自动生成。
 
+## [0.4.2] - 2026-03-15
+
+### ♻️ 重构
+
+- 用 paginate() 替换 list_all_issues 手写分页 ([3de5133](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/3de5133cfa5ab4f741d3497d3b5646011b4d31a2))
+- 统一 GET 请求使用 send_with_retry 重试机制 ([b0f7012](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/b0f7012f5e101151b973d3f900d5f73f06f34cff))
+- **(ci)** 消除 build-image.yml 中的重复 job 定义 ([d80e0fc](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/d80e0fc32cd80f5d3c4b449c77556665385c95e9))
+
+### ✨ 新功能
+
+- 新增代码检查与发版前检查流水线 #38 ([aed69aa](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/aed69aa7ccd31395f1196a9819dbfa553bc65532))
+- add GitHub Actions workflow for multi-platform cnb cli build ([929555d](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/929555d133cb13693be922103ae25c887c4a27ea))
+- **(ci)** 在 release 流水线中添加更新 CHANGELOG.md 的步骤 ([9519aa2](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/9519aa2abc8198d6f21bd93aa441932d19c29b84))
+
+### 🎨 代码风格
+
+- clean up rustfmt and clippy debt ([53c0cca](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/53c0ccac579bd812693b2853652a5d60ed479325))
+
+### 🐛 Bug 修复
+
+- 修正 CI 触发条件与 automerge 事件 #42 ([6460c55](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/6460c552d864a1f0df5e7dd3234827db4a2b3ccc))
+- 修复 CLI 危险操作确认与下载分页缺陷 #34 ([531ea56](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/531ea5640763c6b610484551e34da7ffd84911b3))
+- config.rs 解析失败时返回错误而非静默使用默认值 ([d3bc8cc](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/d3bc8ccb19c3efed4ff916f9f4639f4fd9ae4b34))
+- validate_file 使用安全类型转换替代 as i64 强转 ([f90d0e8](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/f90d0e8e295b2f65adb8dd32179411ae1131d558))
+- cnb_home_dir() 获取 home 目录失败时记录警告日志 ([ec6944a](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/ec6944add868cd0254372af5d928dc5228c3d5cd))
+- 将主入口错误输出从 stdout 改为 stderr ([ded319f](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/ded319f6e5311964616e8878731e91d482f98aa1))
+- 为 ListReposOptions::query_string() 添加 URL 编码 ([53c91c7](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/53c91c713df496e15d03a0ef194856b8078d0e5e))
+- 修复字符串截断的 UTF-8 安全问题 ([a52e901](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/a52e9011c1cf433dcee27b6180c6017a43cef430))
+- 修复字符串截断的 UTF-8 安全问题 ([1cc40b6](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/1cc40b62032c5830c25040142f6b37931078f4cc))
+- **(docker)** 修复框架桩目录创建使用 sh 不支持的花括号扩展 ([9e7b6bc](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/9e7b6bcbcec03061dd091beb89ad24c037ca4101))
+- **(docker)** 创建 macOS 框架桩文件解决交叉编译链接错误 ([87b8698](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/87b869897858ee8ec59260e6c26aaa51b92e39c5))
+
+### 👷 CI/CD
+
+- **(release)** 将 tag 发布切换为 GitHub 同步 ([063436a](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/063436ab0a2ffad3ec56d64a78ac326b688d9c2a))
+- **(workflow)** 添加通用流水线辅助脚本 ([8b9fd3e](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/8b9fd3eda7d7159c8c5996c3d21abcbe69da82de))
+- decouple release workflow from protected main ([38387d2](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/38387d2730434117e8b8ab81c093981c8bd378ec))
+- 添加自动合并工作流 #33 ([646fbae](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/646fbae317e06e799d8bed8088609d0724c10d09))
+
+### 📦 构建
+
+- **(deps)** 同步 cnb-tui 的 Cargo.lock 依赖记录 ([91caa9f](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/91caa9f3cf331505e5d705c1ed37631308ad4f8f))
+
+### 🔧 杂项
+
+- 统一仓库文本文件行尾规则 #36 ([3056199](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/3056199b36b5331aa8f674124d14267f1afa5641))
+- 更新仓库路径 prevailna/cnb → wwvo/cnb-cli/cnb ([c8b3f4a](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/c8b3f4ab4176784a98fb712be05341a1a6b32e19))
+- **(ci)** 添加临时 macOS 构建测试工作流 ([e13df04](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/e13df0440a40ca3fe4986236cd1b7e3b5a50e246))
+
 ## [0.4.1] - 2026-03-07
 
 ### ♻️ 重构
@@ -451,5 +500,4 @@
 
 - 更新 .gitignore 忽略 IDE 和工具目录 ([641663b](https://cnb.cool/prevailna/cnb/-/commit/641663b003dad21c841e678a430229616651e7d1))
 - **(license)** 添加 Apache-2.0 许可证文件 ([88c6ef7](https://cnb.cool/prevailna/cnb/-/commit/88c6ef7012d7c9b6fc2284b3ee81828c59e325ab))
-
 
