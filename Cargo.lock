@@ -387,6 +387,7 @@ dependencies = [
  "anyhow",
  "chrono",
  "crossterm",
+ "futures",
  "ratatui",
 ]
 
