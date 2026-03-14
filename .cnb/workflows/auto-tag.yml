@@ -9,7 +9,7 @@ x-auto-tag-job: &auto-tag-job
       - name: 等待代码检查通过
         type: cnb:await
         options:
-          key: ci-check-ready
+          key: github-main-sync-ready
       - name: 自动创建版本标签
         image: docker.cnb.cool/wwvo/cnb-cli/cnb:rust-cross
         script: bash .cnb/scripts/auto-create-tag.sh

@@ -1,0 +1,26 @@
+x-sync-github-main-job: &sync-github-main-job
+  - name: sync-github-main
+    runner:
+      cpus: 2
+    imports:
+      - https://cnb.cool/prevailna/secrets/-/blob/main/github-sync/cnb-cli-rs.yml
+    stages:
+      - name: 等待代码检查通过
+        type: cnb:await
+        options:
+          key: ci-check-ready
+      - name: 同步 main 到 GitHub
+        image: tencentcom/git-sync
+        settings:
+          target_url: ${GITHUB_SYNC_TARGET_URL}
+          auth_type: https
+          username: ${GITHUB_SYNC_USERNAME}
+          password: ${GITHUB_SYNC_TOKEN}
+          branch: main
+      - name: GitHub main 同步完成
+        type: cnb:resolve
+        options:
+          key: github-main-sync-ready
+
+main:
+  push: *sync-github-main-job
