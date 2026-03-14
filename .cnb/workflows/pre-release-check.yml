@@ -1,0 +1,18 @@
+x-pre-release-check-job: &pre-release-check-job
+  - name: pre-release-check
+    runner:
+      cpus: 4
+    stages:
+      - name: 校验版本标签
+        image: docker.cnb.cool/wwvo/cnb-cli/cnb:rust-cross
+        script: bash .cnb/scripts/check-release-tag.sh
+      - name: cargo test
+        image: docker.cnb.cool/wwvo/cnb-cli/cnb:rust-cross
+        script: cargo test --workspace
+      - name: 发版前检查通过
+        type: cnb:resolve
+        options:
+          key: pre-release-check-ready
+
+'v*':
+  tag_push: *pre-release-check-job

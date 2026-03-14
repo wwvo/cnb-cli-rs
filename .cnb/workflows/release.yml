@@ -4,6 +4,10 @@ x-release-job: &release-job
     runner:
       cpus: 2
     stages:
+      - name: 等待发版前检查
+        type: cnb:await
+        options:
+          key: pre-release-check-ready
       - name: 生成 CHANGELOG
         image: docker.cnb.cool/wwvo/cnb-cli/cnb:rust-cross
         script: bash .cnb/scripts/generate-changelog.sh

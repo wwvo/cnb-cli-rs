@@ -1,5 +1,8 @@
 branch:
   - buttons:
+      - name: 运行代码检查
+        description: 执行 cargo check 与 cargo test
+        event: web_trigger_ci-check
       - name: 部署文档站点
         description: 部署文档站点
         event: web_trigger_deploy-docs
