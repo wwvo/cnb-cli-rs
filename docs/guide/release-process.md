@@ -1,12 +1,13 @@
 # 发布流程
 
-`cnb` 项目当前采用“准备发版 PR -> 合并后自动打 tag -> tag 自动发布”的三段式流程：
+`cnb` 项目当前采用“准备发版 PR -> 合并后自动打 tag -> CNB 创建 release 并同步 GitHub -> GitHub 构建并回填附件”的四段式流程：
 
 - `release prepare` 负责自动推导下一个版本号、更新 `Cargo.toml` 与 `CHANGELOG.md`、创建 release PR
 - `main push` 负责在 release PR 合并后自动创建对应 tag
-- `tag release` 负责校验、创建 Release、构建并上传多平台附件
+- `tag release` 负责在 CNB 校验标签、生成发布说明、创建 CNB Release，并将 `main` 与 release tag 同步到 GitHub
+- `github release assets` 负责在 GitHub 原生 runner 上构建 Linux / Windows / macOS 附件，上传到 GitHub Release，并回填到 CNB Release
 
-这样既兼容受保护的 `main` 分支，也把手工 bump version、手工建 release PR、手工打 tag 这几步收敛进了流水线。
+这样既兼容受保护的 `main` 分支，也避免继续在 CNB 的 Linux 容器里承担 Windows / macOS 的最终发布构建。
 
 ## 1. 准备 release PR
 
@@ -39,16 +40,29 @@ release PR 合并到 `main` 后，`main push` 流水线会自动执行：
 
 这一步不再需要手工执行 `git tag` 和 `git push origin <tag>`。
 
-## 3. tag 自动正式发布
+## 3. tag 在 CNB 创建 release 并同步到 GitHub
 
-标签创建后，CNB 流水线会自动执行以下步骤：
+标签创建后，CNB 的 `tag_push` 流水线会自动执行以下步骤：
 
 1. 运行发版前检查
 2. 校验标签格式与 `Cargo.toml` 版本一致
 3. 运行 release 镜像内的 `cargo test --workspace --target x86_64-unknown-linux-gnu`
 4. 生成本次发布说明 `LATEST_CHANGELOG.md`
-5. 创建 Release
-6. 构建并上传 Linux、Windows、macOS 附件
+5. 创建或更新 CNB Release
+6. 将 `main` 分支和当前 release tag 同步到 GitHub 镜像仓库
+
+这一步不再在 CNB 内部构建 Linux / Windows / macOS 附件。
+
+## 4. GitHub 构建并回填 release 附件
+
+GitHub 镜像仓库收到 `v*` tag 后，会触发 `.github/workflows/build.yml`：
+
+1. 在 GitHub 原生 runner 上分别构建 Linux、Windows、macOS 产物
+2. 生成与 CNB 一致的 `LATEST_CHANGELOG.md`
+3. 上传附件到 GitHub Release
+4. 先删除 CNB 对应 Release 的旧附件，再回填同一批新文件
+
+回填完成后，GitHub Release 和 CNB Release 会持有同一组二进制产物。
 
 ## 标签规则
 
@@ -70,15 +84,32 @@ release PR 合并到 `main` 后，`main push` 流水线会自动执行：
   - 进入 `main` 前需要审阅
 - `LATEST_CHANGELOG.md`
   - 单次发布说明
-  - 由 tag 发布流水线临时生成
+  - 由 CNB tag 发布流水线和 GitHub tag workflow 按同一规则临时生成
   - 作为 Release 描述使用，不回写仓库
 
-## 为什么 release 流程要拆成三段
+## 必需配置
+
+- CNB 侧默认通过 key repo `imports` 引入以下变量：
+  - `https://cnb.cool/prevailna/secrets/-/blob/main/github-sync/cnb-cli-rs.yml`
+  - `GITHUB_SYNC_TARGET_URL`
+  - `GITHUB_SYNC_USERNAME`
+  - `GITHUB_SYNC_TOKEN`
+- GitHub 侧需要配置仓库 secret：
+  - `CNB_TOKEN`
+    - 需具备 CNB `repo-contents` 读写权限，用于回填 Release 附件
+
+## 重跑约定
+
+- CNB 的 `git:release` 采用覆盖更新模式，避免重跑时删除已有 Release 元数据
+- GitHub 在回填 CNB 附件前会先删除同 tag 下的旧附件，再上传新文件，保证 release 重跑后的产物集保持一致
+
+## 为什么 release 流程要拆成四段
 
 仓库的 `main` 分支启用了保护策略。如果在正式 release 流水线中直接修改或推送 `main`，一旦分支保护拦截，就会连带阻塞附件上传。
 
-拆成“release PR / main 自动打 tag / tag 正式发布”之后：
+拆成“release PR / main 自动打 tag / CNB 创建 release 并同步 GitHub / GitHub 原生构建附件”之后：
 
 - 项目级变更文档仍然通过 PR 审阅进入 `main`
-- 正式 release 流水线不再直接写主干
+- CNB 保持版本编排和 Release 生命周期控制
+- GitHub 负责真正适合其 runner 的多平台附件构建
 - release PR 合并后无需再手工打 tag

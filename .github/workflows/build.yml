@@ -1,22 +1,9 @@
-# GitHub Actions Workflow for multi-platform cnb cli build
-# 支持多操作系统与 CPU 架构的交叉编译与产物发布
-#
-# 矩阵策略：覆盖 5 种 OS/Target 与 2 种 Arch，共 10 种组合
-# - windows-msvc: Windows MSVC 工具链
-# - windows-gnu: Windows MinGW 工具链
-# - apple-darwin: macOS (Intel & Apple Silicon)
-# - linux-gnu: Linux glibc
-# - linux-musl: Linux musl (静态链接)
-
-name: Build cnb cli
+name: Release Assets
 
 on:
-  pull_request:
-    branches: [main]
   push:
-    branches: [main]
     tags:
-      - 'v*'
+      - "v*"
 
 env:
   CARGO_TERM_COLOR: always
@@ -24,66 +11,37 @@ env:
 
 jobs:
   build:
-    name: Build ${{ matrix.target }} (${{ matrix.arch }})
+    name: Build ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          # Windows MSVC - x86_64
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            arch: x86_64
-            platform: windows-msvc
-          # Windows MSVC - aarch64
-          - os: windows-latest
-            target: aarch64-pc-windows-msvc
-            arch: aarch64
-            platform: windows-msvc
-          # Windows GNU - x86_64
-          - os: windows-latest
-            target: x86_64-pc-windows-gnu
-            arch: x86_64
-            platform: windows-gnu
-          # Windows GNU - aarch64 (使用 cross)
-          - os: ubuntu-latest
-            target: aarch64-pc-windows-gnu
-            arch: aarch64
-            platform: windows-gnu
-            use_cross: true
-          # macOS Intel
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            arch: x86_64
-            platform: apple-darwin
-          # macOS Apple Silicon
-          - os: macos-latest
-            target: aarch64-apple-darwin
-            arch: aarch64
-            platform: apple-darwin
-          # Linux glibc - x86_64
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            arch: x86_64
-            platform: linux-gnu
-          # Linux glibc - aarch64 (使用 cross)
-          - os: ubuntu-latest
-            target: aarch64-unknown-linux-gnu
-            arch: aarch64
-            platform: linux-gnu
-            use_cross: true
-          # Linux musl - x86_64 (使用 cross)
+            archive_ext: tar.gz
           - os: ubuntu-latest
             target: x86_64-unknown-linux-musl
-            arch: x86_64
-            platform: linux-musl
+            archive_ext: tar.gz
             use_cross: true
-          # Linux musl - aarch64 (使用 cross)
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            archive_ext: tar.gz
+            use_cross: true
           - os: ubuntu-latest
             target: aarch64-unknown-linux-musl
-            arch: aarch64
-            platform: linux-musl
+            archive_ext: tar.gz
             use_cross: true
+          - os: windows-latest
+            target: x86_64-pc-windows-gnu
+            archive_ext: zip
+            setup_mingw: true
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            archive_ext: tar.gz
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            archive_ext: tar.gz
 
     steps:
       - name: Checkout repository
@@ -99,98 +57,166 @@ jobs:
         with:
           key: ${{ matrix.target }}
 
-      # Windows GNU 需要安装 MinGW
-      - name: Setup MinGW (Windows GNU x86_64)
-        if: matrix.target == 'x86_64-pc-windows-gnu'
+      - name: Setup MinGW
+        if: matrix.setup_mingw
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
           update: true
           install: mingw-w64-x86_64-toolchain
 
-      # 添加 MinGW 到 PATH
-      - name: Add MinGW to PATH (Windows GNU x86_64)
-        if: matrix.target == 'x86_64-pc-windows-gnu'
+      - name: Add MinGW to PATH
+        if: matrix.setup_mingw
         shell: pwsh
         run: echo "C:\msys64\mingw64\bin" >> $env:GITHUB_PATH
 
-      # 使用 cross 进行交叉编译
       - name: Install cross
         if: matrix.use_cross
         uses: taiki-e/install-action@v2
         with:
           tool: cross
 
-      - name: Build binary
-        run: |
-          if [ "${{ matrix.use_cross }}" = "true" ]; then
-            cross build --release --target ${{ matrix.target }}
-          else
-            cargo build --release --target ${{ matrix.target }}
-          fi
-        shell: bash
-
-      - name: Prepare artifact
-        id: artifact
+      - name: Build binaries
         shell: bash
         run: |
-          # 确定二进制文件扩展名
-          if [[ "${{ matrix.platform }}" == "windows-msvc" || "${{ matrix.platform }}" == "windows-gnu" ]]; then
-            BINARY_NAME="cnb.exe"
-            GIT_CNB_NAME="git-cnb.exe"
+          set -euo pipefail
+
+          if [[ "${{ matrix.use_cross }}" == "true" ]]; then
+            cross build --release --locked --target "${{ matrix.target }}"
           else
-            BINARY_NAME="cnb"
-            GIT_CNB_NAME="git-cnb"
+            cargo build --release --locked --target "${{ matrix.target }}"
           fi
 
-          # 设置 artifact 名称
-          ARTIFACT_NAME="cnb-${{ matrix.platform }}-${{ matrix.arch }}"
-          echo "artifact_name=${ARTIFACT_NAME}" >> $GITHUB_OUTPUT
+      - name: Package artifact
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
 
-          # 创建输出目录
-          mkdir -p output
-          cp target/${{ matrix.target }}/release/${BINARY_NAME} output/
-          cp target/${{ matrix.target }}/release/${GIT_CNB_NAME} output/
+          release_tag="${GITHUB_REF_NAME}"
+          asset_base="cnb-${release_tag}-${{ matrix.target }}"
+          asset_dir="${asset_base}"
 
-          # 创建压缩包
-          cd output
-          if [[ "${{ matrix.platform }}" == "windows-msvc" || "${{ matrix.platform }}" == "windows-gnu" ]]; then
-            7z a ../${ARTIFACT_NAME}.zip *
+          if [[ "${{ matrix.target }}" == *-windows-* ]]; then
+            binary_name="cnb.exe"
+            git_cnb_name="git-cnb.exe"
           else
-            tar -czvf ../${ARTIFACT_NAME}.tar.gz *
+            binary_name="cnb"
+            git_cnb_name="git-cnb"
           fi
 
-      - name: Upload artifact
+          mkdir -p "${asset_dir}"
+          cp "target/${{ matrix.target }}/release/${binary_name}" "${asset_dir}/"
+          cp "target/${{ matrix.target }}/release/${git_cnb_name}" "${asset_dir}/"
+
+          if [[ "${{ matrix.archive_ext }}" == "zip" ]]; then
+            7z a "${asset_base}.zip" "${asset_dir}"
+            asset_file="${asset_base}.zip"
+          else
+            tar czf "${asset_base}.tar.gz" "${asset_dir}"
+            asset_file="${asset_base}.tar.gz"
+          fi
+
+          echo "asset_file=${asset_file}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.artifact.outputs.artifact_name }}
-          path: |
-            *.zip
-            *.tar.gz
-          retention-days: 30
+          name: ${{ matrix.target }}
+          path: ${{ steps.package.outputs.asset_file }}
+          retention-days: 7
+          if-no-files-found: error
 
-  # 可选：创建 Release（仅在 tag push 时执行）
-  release:
-    name: Create Release
+  publish:
+    name: Publish GitHub and CNB releases
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
     permissions:
       contents: write
+    env:
+      CNB_API_ENDPOINT: https://api.cnb.cool
+      CNB_WEB_ENDPOINT: https://cnb.cool
+      CNB_REPO_SLUG: wwvo/cnb-cli/cnb
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Download all artifacts
+      - name: Validate CNB upload secret
+        env:
+          CNB_TOKEN: ${{ secrets.CNB_TOKEN }}
+        run: |
+          set -euo pipefail
+          : "${CNB_TOKEN:?Missing GitHub secret CNB_TOKEN}"
+
+      - name: Install git-cliff
+        uses: taiki-e/install-action@v2
+        with:
+          tool: git-cliff
+
+      - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          path: artifacts
+          path: release-artifacts
+          merge-multiple: true
 
-      - name: Create Release
+      - name: Generate release notes
+        run: |
+          set -euo pipefail
+          git fetch --tags --force
+          git cliff --latest --strip header -o LATEST_CHANGELOG.md
+
+      - name: Create or update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: artifacts/**/*
-          generate_release_notes: true
-          draft: false
-          prerelease: false
+          files: release-artifacts/*
+          body_path: LATEST_CHANGELOG.md
+          overwrite_files: true
+          prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') }}
+
+      - name: Collect CNB attachment files
+        id: attachments
+        run: |
+          set -euo pipefail
+
+          files="$(find release-artifacts -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.zip' \) | sort | paste -sd, -)"
+          : "${files:?No release artifacts found for CNB upload}"
+          echo "files=${files}" >> "$GITHUB_OUTPUT"
+
+      - name: Delete existing CNB release attachments
+        env:
+          CNB_TOKEN: ${{ secrets.CNB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          docker run --rm \
+            -e TZ=Asia/Shanghai \
+            -e CNB_TOKEN="${CNB_TOKEN}" \
+            -e CNB_API_ENDPOINT="${CNB_API_ENDPOINT}" \
+            -e CNB_WEB_ENDPOINT="${CNB_WEB_ENDPOINT}" \
+            -e CNB_REPO_SLUG="${CNB_REPO_SLUG}" \
+            -e PLUGIN_TAG="${GITHUB_REF_NAME}" \
+            -e PLUGIN_TYPE="DELETE" \
+            -v "${PWD}:${PWD}" \
+            -w "${PWD}" \
+            cnbcool/attachments:latest
+
+      - name: Upload attachments to CNB Release
+        env:
+          CNB_TOKEN: ${{ secrets.CNB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          docker run --rm \
+            -e TZ=Asia/Shanghai \
+            -e CNB_TOKEN="${CNB_TOKEN}" \
+            -e CNB_API_ENDPOINT="${CNB_API_ENDPOINT}" \
+            -e CNB_WEB_ENDPOINT="${CNB_WEB_ENDPOINT}" \
+            -e CNB_REPO_SLUG="${CNB_REPO_SLUG}" \
+            -e PLUGIN_TAG="${GITHUB_REF_NAME}" \
+            -e PLUGIN_ATTACHMENTS="${{ steps.attachments.outputs.files }}" \
+            -v "${PWD}:${PWD}" \
+            -w "${PWD}" \
+            cnbcool/attachments:latest
