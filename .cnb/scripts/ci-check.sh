@@ -31,7 +31,7 @@ run_check() {
 
 run_clippy() {
   ensure_rust_component clippy clippy
-  cargo clippy --workspace --all-targets -- -W clippy::all -W clippy::pedantic
+  cargo clippy --workspace --all-targets --target "${target}" -- -W clippy::all -W clippy::pedantic
 }
 
 run_test() {

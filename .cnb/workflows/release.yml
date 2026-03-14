@@ -10,10 +10,10 @@ x-release-job: &release-job
         options:
           key: pre-release-check-ready
       - name: 检查 GitHub 镜像同步配置
-        image: docker.cnb.cool/wwvo/cnb-cli/cnb:rust-cross
+        image: docker.cnb.cool/wwvo/cnb-cli/cnb:rust-ci
         script: bash .cnb/scripts/check-github-sync-env.sh
       - name: 生成 CHANGELOG
-        image: docker.cnb.cool/wwvo/cnb-cli/cnb:rust-cross
+        image: docker.cnb.cool/wwvo/cnb-cli/cnb:rust-ci
         script: bash .cnb/scripts/generate-changelog.sh
       - name: 创建 CNB Release
         type: git:release
