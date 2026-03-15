@@ -27,12 +27,3 @@ cnb issue list
 # 使用 AI 对话
 cnb chat --do "查看我的 Issue 列表"
 ```
-
-## 作为 Git 子命令
-
-CNB CLI 也可以通过 `git cnb` 方式调用：
-
-```bash
-git cnb info
-git cnb issue list
-```

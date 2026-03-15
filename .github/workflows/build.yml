@@ -120,15 +120,12 @@ jobs:
 
           if [[ "${{ matrix.target }}" == *-windows-* ]]; then
             binary_name="cnb.exe"
-            git_cnb_name="git-cnb.exe"
           else
             binary_name="cnb"
-            git_cnb_name="git-cnb"
           fi
 
           mkdir -p "${asset_dir}"
           cp "target/${{ matrix.target }}/release/${binary_name}" "${asset_dir}/"
-          cp "target/${{ matrix.target }}/release/${git_cnb_name}" "${asset_dir}/"
 
           if [[ "${{ matrix.archive_ext }}" == "zip" ]]; then
             7z a "${asset_base}.zip" "${asset_dir}"

@@ -58,18 +58,11 @@ cnb chat --do "查看我的仓库列表"
 cnb download --files README.md
 ```
 
-也可以通过 `git cnb` 方式调用：
-
-```bash
-git cnb info
-git cnb issue list
-```
-
 ## 项目结构
 
 ```
 cnb/
-├── src/                  # 主程序入口 (cnb / git-cnb)
+├── src/                  # 主程序入口
 │   ├── main.rs
 │   └── commands/         # 命令实现
 ├── crates/

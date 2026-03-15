@@ -1,6 +1,6 @@
 //! CNB CLI - 一个非官方的 CNB 命令行工具
 //!
-//! 通过 `cnb` 或 `git cnb` 命令使用。
+//! 通过 `cnb` 命令使用。
 
 use clap::Parser;
 use cnb_core::context::AppContext;

@@ -98,10 +98,6 @@ unsafe_code = "warn"
 name = "cnb"
 path = "src/main.rs"
 
-[[bin]]
-name = "git-cnb"
-path = "src/main.rs"
-
 [dependencies]
 anyhow = { workspace = true }
 base64 = { workspace = true }
