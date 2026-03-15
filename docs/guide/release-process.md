@@ -93,6 +93,89 @@ GitHub 镜像仓库收到 `v*` tag 后，会触发 `.github/workflows/build.yml`
   - 由 CNB tag 发布流水线和 GitHub tag workflow 按同一规则临时生成
   - 作为 Release 描述使用，不回写仓库
 
+## Issue 版本标签约定
+
+对于明确承诺“随某个版本交付”的 issue，使用版本标签管理，而不是在 PR 合并后立即关闭：
+
+- `target:vX.Y.Z`
+  - 表示计划在该版本交付
+  - issue 在开发过程中保持打开
+- `released:vX.Y.Z`
+  - 表示已经确认随该版本发布
+  - 一般在版本真正发布成功后，由人工添加
+
+辅助标签约定：
+
+- `epic`
+- `tracking`
+- `keep-open`
+
+带上述辅助标签的 issue 默认不因为 release 直接关闭，即使它们关联了版本标签，也更适合作为长期跟踪项保留。
+
+首次使用某个版本标签前，先在仓库里创建对应 label，避免后续 `issue-add` 时因为标签不存在而中断。推荐颜色：
+
+```bash
+cnb --repo wwvo/cnb-cli/cnb label create -n "target:v0.4.6" -c "1d76db" -d "计划在 v0.4.6 交付"
+cnb --repo wwvo/cnb-cli/cnb label create -n "released:v0.4.6" -c "2da44e" -d "已随 v0.4.6 发布"
+```
+
+## Issue / PR 使用约定
+
+- issue 创建或 triage 时，如果已经确定目标版本，就为 issue 添加 `target:vX.Y.Z`
+- PR 合并到 `main` 不等于 issue 应立即关闭；对于 release 相关或用户可见交付，优先等正式版本发布后再确认关闭
+- 只把版本标签用于明确属于某个版本交付的 issue；不要给长期 epic、tracking、纯重构或日常 cleanup 强行挂版本标签
+
+## Release 后手工收口
+
+版本真正发布成功后，建议按以下顺序手工收口 issue：
+
+1. 在 CNB 页面点击 `生成 release issue 清单`
+2. 输入已经成功发布的稳定版 tag，例如 `v0.4.6`
+3. 查看当前 `target:v0.4.6` 的 open / closed issue 列表
+4. 对已随该版本交付的 issue：
+   - 添加评论
+   - 添加 `released:v0.4.6`
+   - 移除 `target:v0.4.6`
+   - 关闭 issue，`state_reason=completed`
+5. 对未赶上该版本的 issue：
+   - 移除 `target:v0.4.6`
+   - 迁移到下一个目标版本标签，例如 `target:v0.4.7`
+
+推荐关闭评论模板：
+
+```md
+已随 `v0.4.6` 正式发布，关闭。
+
+- CNB Release: <链接>
+- GitHub Release: <链接>
+```
+
+如果只是留档不关闭，推荐评论模板：
+
+```md
+该 issue 关联的改动已包含在 `v0.4.6` 中，当前保持打开。
+```
+
+手工收口阶段建议直接使用仓库内置 CLI：
+
+```bash
+cnb --repo wwvo/cnb-cli/cnb label issue-add <NUMBER> -l "released:v0.4.6"
+cnb --repo wwvo/cnb-cli/cnb label issue-remove <NUMBER> "target:v0.4.6"
+cnb --repo wwvo/cnb-cli/cnb issue comment <NUMBER> -c "已随 `v0.4.6` 正式发布，关闭。"
+cnb --repo wwvo/cnb-cli/cnb issue close <NUMBER> -r completed
+```
+
+## 辅助流水线
+
+仓库提供了一个手动按钮 `生成 release issue 清单`，用途是辅助人工收口，而不是自动关闭 issue：
+
+- 输入 `RELEASE_TAG` 后，流水线会列出当前 `target:vX.Y.Z` 的 open / closed issue 清单
+- 可选输入 `NEXT_TARGET_TAG`，用于在日志中生成更明确的迁移提示
+- 流水线开始前会先校验对应的 CNB / GitHub Release 是否已经存在；如果 release 还没准备好，直接失败
+- 流水线只读，不会自动评论、改标签或关闭 issue
+
+这条辅助流水线的目标是让 release 管理更清楚，而不是追求完全自动关闭。
+
 ## 必需配置
 
 - CNB 侧默认通过 key repo `imports` 引入以下变量：
