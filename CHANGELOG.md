@@ -2,6 +2,14 @@
 
 此文件由 [git-cliff](https://git-cliff.org/) 自动生成。
 
+## [0.4.4] - 2026-03-15
+
+### 👷 CI/CD
+
+- **(release)** 修复 release commit message 换行 ([130cbcc](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/130cbcc44b8fc9527c22b1c566b2f64d1cb10ea7))
+- **(release)** 规范 git-cliff 版本标题 ([c690c68](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/c690c68bfd61eb82eec98e7bd4a379f7db78da83))
+- **(release)** 同步 release prepare 的 Cargo.lock ([19387d5](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/19387d5d06fdf2e858f8793dc027f1a6e7d17a7c))
+
 ## [0.4.3] - 2026-03-15
 
 ### 👷 CI/CD
