@@ -2,6 +2,12 @@
 
 此文件由 [git-cliff](https://git-cliff.org/) 自动生成。
 
+## [0.4.5] - 2026-03-15
+
+### 👷 CI/CD
+
+- **(release)** 稳定同步 release lockfile ([b00cb05](https://cnb.cool/wwvo/cnb-cli/cnb/-/commit/b00cb05c5cb39ddcefc909fd4a8b77e8f538d617))
+
 ## [0.4.4] - 2026-03-15
 
 ### 👷 CI/CD
