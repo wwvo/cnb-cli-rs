@@ -11,6 +11,9 @@ hero:
     - theme: alt
       text: 命令参考
       link: /guide/cnb
+    - theme: alt
+      text: 迁移指南
+      link: /guide/migrate-cnb-to-cnb-rs
 
 features:
   - title: 认证管理

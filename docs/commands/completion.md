@@ -8,6 +8,9 @@ cnb-rs completion <shell>
 
 支持的 Shell 类型：`bash`、`zsh`、`fish`、`powershell`、`elvish`。
 
+> [!WARNING]
+> 改名后补全文件名也随之变化。例如 Fish 的输出文件应从 `cnb.fish` 改为 `cnb-rs.fish`。升级旧版本时请重新生成补全脚本。
+
 ## 示例
 
 ::: code-group
@@ -33,3 +36,4 @@ $ cnb-rs completion powershell >> $PROFILE
 ## 另请参阅
 
 - [cnb-rs](/guide/cnb)
+- [从 cnb 迁移到 cnb-rs](/guide/migrate-cnb-to-cnb-rs)

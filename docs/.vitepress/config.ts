@@ -42,7 +42,8 @@ export default defineConfig({
         text: '指南',
         items: [
           { text: '快速开始', link: '/guide/getting-started' },
-          { text: 'cnb', link: '/guide/cnb' },
+          { text: '从 cnb 迁移到 cnb-rs', link: '/guide/migrate-cnb-to-cnb-rs' },
+          { text: 'cnb-rs', link: '/guide/cnb' },
           { text: '发布流程', link: '/guide/release-process' },
         ],
       },
@@ -50,7 +51,7 @@ export default defineConfig({
         text: '常用命令',
         items: [
           {
-            text: 'cnb auth',
+            text: 'cnb-rs auth',
             link: '/auth/',
             items: [
               { text: 'login', link: '/auth/login' },
@@ -58,9 +59,9 @@ export default defineConfig({
               { text: 'logout', link: '/auth/logout' },
             ],
           },
-          { text: 'cnb chat', link: '/chat' },
+          { text: 'cnb-rs chat', link: '/chat' },
           {
-            text: 'cnb config',
+            text: 'cnb-rs config',
             link: '/config/',
             items: [
               { text: 'get', link: '/config/get' },
@@ -69,7 +70,7 @@ export default defineConfig({
             ],
           },
           {
-            text: 'cnb issue',
+            text: 'cnb-rs issue',
             link: '/issue/',
             items: [
               { text: 'list', link: '/issue/list' },
@@ -87,7 +88,7 @@ export default defineConfig({
             ],
           },
           {
-            text: 'cnb pull',
+            text: 'cnb-rs pull',
             link: '/pull/',
             items: [
               { text: 'list', link: '/pull/list' },
@@ -97,7 +98,7 @@ export default defineConfig({
             ],
           },
           {
-            text: 'cnb release',
+            text: 'cnb-rs release',
             link: '/release/',
             items: [
               { text: 'list', link: '/release/list' },
@@ -114,7 +115,7 @@ export default defineConfig({
             ],
           },
           {
-            text: 'cnb commit',
+            text: 'cnb-rs commit',
             link: '/commit/',
             items: [
               { text: 'asset-stats', link: '/commit/asset-stats' },
@@ -128,7 +129,7 @@ export default defineConfig({
         text: '仓库命令',
         items: [
           {
-            text: 'cnb repo',
+            text: 'cnb-rs repo',
             link: '/repo/',
             items: [
               { text: 'archive', link: '/repo/archive' },
@@ -152,7 +153,7 @@ export default defineConfig({
             ],
           },
           {
-            text: 'cnb build',
+            text: 'cnb-rs build',
             link: '/build/',
             items: [
               { text: 'start', link: '/build/start' },
@@ -166,7 +167,7 @@ export default defineConfig({
             ],
           },
           {
-            text: 'cnb label',
+            text: 'cnb-rs label',
             link: '/label/',
             items: [
               { text: 'list', link: '/label/list' },
@@ -186,7 +187,7 @@ export default defineConfig({
             ],
           },
           {
-            text: 'cnb badge',
+            text: 'cnb-rs badge',
             link: '/badge/',
             items: [
               { text: 'get', link: '/badge/get' },
@@ -195,7 +196,7 @@ export default defineConfig({
             ],
           },
           {
-            text: 'cnb member',
+            text: 'cnb-rs member',
             link: '/member/',
             items: [
               { text: 'repo-list', link: '/member/repo-list' },
@@ -218,18 +219,18 @@ export default defineConfig({
               { text: 'collaborator-remove', link: '/member/collaborator-remove' },
             ],
           },
-          { text: 'cnb browse', link: '/browse' },
-          { text: 'cnb download', link: '/download' },
-          { text: 'cnb info', link: '/info' },
-          { text: 'cnb stats', link: '/stats' },
-          { text: 'cnb stars', link: '/stars' },
+          { text: 'cnb-rs browse', link: '/browse' },
+          { text: 'cnb-rs download', link: '/download' },
+          { text: 'cnb-rs info', link: '/info' },
+          { text: 'cnb-rs stats', link: '/stats' },
+          { text: 'cnb-rs stars', link: '/stars' },
         ],
       },
       {
         text: '组织与制品管理',
         items: [
           {
-            text: 'cnb group',
+            text: 'cnb-rs group',
             link: '/group/',
             items: [
               { text: 'list', link: '/group/list' },
@@ -246,7 +247,7 @@ export default defineConfig({
             ],
           },
           {
-            text: 'cnb mission',
+            text: 'cnb-rs mission',
             link: '/mission/',
             items: [
               { text: 'list', link: '/mission/list' },
@@ -261,7 +262,7 @@ export default defineConfig({
             ],
           },
           {
-            text: 'cnb registry',
+            text: 'cnb-rs registry',
             link: '/registry/',
             items: [
               { text: 'list', link: '/registry/list' },
@@ -276,7 +277,7 @@ export default defineConfig({
             ],
           },
           {
-            text: 'cnb knowledge',
+            text: 'cnb-rs knowledge',
             link: '/knowledge/',
             items: [
               { text: 'list-models', link: '/knowledge/list-models' },
@@ -291,7 +292,7 @@ export default defineConfig({
         text: '用户与安全',
         items: [
           {
-            text: 'cnb user',
+            text: 'cnb-rs user',
             link: '/user/',
             items: [
               { text: 'followers', link: '/user/followers' },
@@ -301,7 +302,7 @@ export default defineConfig({
             ],
           },
           {
-            text: 'cnb gpg-key',
+            text: 'cnb-rs gpg-key',
             link: '/gpg-key/',
             items: [{ text: 'list', link: '/gpg-key/list' }],
           },
@@ -311,7 +312,7 @@ export default defineConfig({
         text: '其他命令',
         items: [
           {
-            text: 'cnb workspace',
+            text: 'cnb-rs workspace',
             link: '/workspace/',
             items: [
               { text: 'list', link: '/workspace/list' },
@@ -322,8 +323,8 @@ export default defineConfig({
               { text: 'closed-clean', link: '/workspace/closed-clean' },
             ],
           },
-          { text: 'cnb completion', link: '/completion' },
-          { text: 'cnb version', link: '/version' },
+          { text: 'cnb-rs completion', link: '/completion' },
+          { text: 'cnb-rs version', link: '/version' },
         ],
       },
     ],

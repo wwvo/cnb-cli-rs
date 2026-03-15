@@ -2,6 +2,9 @@
 
 在命令行中高效管理你的 CNB 平台资源。
 
+> [!WARNING]
+> 旧命令 `cnb` 已改为 `cnb-rs`。如果你是从旧版本升级，请先阅读 [从 cnb 迁移到 cnb-rs](/guide/migrate-cnb-to-cnb-rs)。
+
 ## 常用命令
 
 - [cnb-rs auth](/auth/) — 认证管理

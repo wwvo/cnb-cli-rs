@@ -39,6 +39,10 @@
 
 从 [Release 页面](https://cnb.cool/wwvo/cnb-cli/cnb/-/releases) 下载适合你平台的二进制文件。
 
+> [!WARNING]
+> 从本项目的改名版本开始，原来的 `cnb ...` 已改为 `cnb-rs ...`。
+> 如果你是从旧版本升级，请先阅读 [迁移指南](docs/guide/migrate-cnb-to-cnb-rs.md)。
+
 ## 快速开始
 
 ```bash
@@ -84,6 +88,14 @@ cargo build --release
 ```
 
 产物路径：`target/release/cnb-rs`（Windows 下为 `target/release/cnb-rs.exe`）。
+
+## 迁移说明
+
+- 旧命令：`cnb ...`
+- 新命令：`cnb-rs ...`
+- 如果需要继续输入 `cnb`，建议在本地 shell 中自行配置 alias，而不是依赖程序内兼容层
+
+完整说明见：[从 cnb 迁移到 cnb-rs](docs/guide/migrate-cnb-to-cnb-rs.md)
 
 ## 文档
 

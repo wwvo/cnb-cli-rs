@@ -70,6 +70,21 @@ GitHub 镜像仓库收到 `v*` tag 后，会触发 `.github/workflows/build.yml`
 
 回填完成后，GitHub Release 和 CNB Release 会持有同一组二进制产物以及对应的 SHA-256 校验文件。
 
+## CLI 改名类 breaking change 约定
+
+像 `cnb -> cnb-rs` 这种会直接影响用户调用方式的变更，不应仅仅作为普通重构处理。后续如果再出现类似 breaking change，release PR 和正式发布时至少需要满足下面 4 点：
+
+1. 在 release PR 中显式审阅迁移影响，而不是只看代码是否能编译通过
+2. 在 `CHANGELOG.md` 顶部增加单独的迁移提示，明确写出旧命令与新命令的对应关系
+3. 在 release notes 中重复同样的迁移提示，避免用户只看发布页时遗漏 breaking change
+4. 如果希望继续支持旧输入习惯，应通过外部分发仓库的 note、wrapper 或安装说明处理，不在主程序里恢复旧入口
+
+对 `cnb-rs` 这次改名，推荐在紧随其后的正式 release 中至少写清：
+
+- `cnb ...` 现已改为 `cnb-rs ...`
+- 发布产物文件名已从 `cnb-*` 改为 `cnb-rs-*`
+- 如需保留旧习惯，请自行配置 alias，或参照外部分发仓库的安装说明
+
 ## 标签规则
 
 发布标签必须满足以下要求：
