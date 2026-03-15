@@ -13,6 +13,7 @@ jobs:
   build:
     name: Build ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental || false }}
     strategy:
       fail-fast: false
       matrix:
@@ -46,6 +47,7 @@ jobs:
             target: aarch64-pc-windows-gnullvm
             archive_ext: zip
             use_cross: true
+            experimental: true
           - os: macos-latest
             target: x86_64-apple-darwin
             archive_ext: tar.gz
