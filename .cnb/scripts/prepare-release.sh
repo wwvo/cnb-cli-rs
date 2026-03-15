@@ -67,7 +67,12 @@ fi
 git checkout -B "${release_branch}" "origin/${base_branch}"
 
 set_workspace_version "${next_version}"
-cargo metadata --format-version 1 --no-deps >/dev/null
+cargo update -w
+
+if git diff --quiet -- Cargo.lock; then
+  cnb_err "Cargo.lock 未同步到目标版本 ${next_version}"
+fi
+
 git cliff --unreleased --tag "v${next_version}" --prepend CHANGELOG.md
 
 git add Cargo.toml Cargo.lock CHANGELOG.md
