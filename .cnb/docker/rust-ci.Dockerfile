@@ -1,7 +1,6 @@
 FROM rust:latest
 
-# 安装 cargo-binstall（用于快速安装预编译的 Rust CLI 工具）
-RUN curl -sSfL https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+ARG GIT_CLIFF_VERSION=2.12.0
 
 # 配置 rustup 使用 tuna 镜像源（加速下载工具链组件）
 ENV RUSTUP_DIST_SERVER=https://mirrors.tuna.tsinghua.edu.cn/rustup
@@ -11,7 +10,15 @@ ENV RUSTUP_UPDATE_ROOT=https://mirrors.tuna.tsinghua.edu.cn/rustup/rustup
 RUN rustup component add rustfmt clippy
 
 # release-prepare 与 tag release 仍在 CNB 侧使用 git-cliff
-RUN cargo binstall --no-confirm git-cliff
+RUN set -eux; \
+    tmpdir="$(mktemp -d)"; \
+    archive="${tmpdir}/git-cliff.tar.gz"; \
+    curl -sSfL "https://github.com/orhun/git-cliff/releases/download/v${GIT_CLIFF_VERSION}/git-cliff-${GIT_CLIFF_VERSION}-x86_64-unknown-linux-gnu.tar.gz" -o "${archive}"; \
+    tar -xzf "${archive}" -C "${tmpdir}"; \
+    binary="$(find "${tmpdir}" -type f -name git-cliff | head -n 1)"; \
+    test -n "${binary}"; \
+    install "${binary}" /usr/local/bin/git-cliff; \
+    rm -rf "${tmpdir}"
 
 # 配置 cargo 镜像源（国内加速）
 RUN printf '\
