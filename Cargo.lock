@@ -305,35 +305,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cnb"
-version = "0.5.0"
-dependencies = [
- "anyhow",
- "base64",
- "chrono",
- "clap",
- "clap_complete",
- "cnb-api",
- "cnb-chat",
- "cnb-core",
- "cnb-tui",
- "crossterm",
- "dirs",
- "futures",
- "glob",
- "indicatif",
- "ratatui",
- "reqwest",
- "rpassword",
- "rustyline",
- "serde_json",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "windows-sys 0.61.2",
-]
-
-[[package]]
 name = "cnb-api"
 version = "0.5.0"
 dependencies = [
@@ -378,6 +349,35 @@ dependencies = [
  "tokio-util",
  "toml",
  "tracing",
+]
+
+[[package]]
+name = "cnb-rs"
+version = "0.5.0"
+dependencies = [
+ "anyhow",
+ "base64",
+ "chrono",
+ "clap",
+ "clap_complete",
+ "cnb-api",
+ "cnb-chat",
+ "cnb-core",
+ "cnb-tui",
+ "crossterm",
+ "dirs",
+ "futures",
+ "glob",
+ "indicatif",
+ "ratatui",
+ "reqwest",
+ "rpassword",
+ "rustyline",
+ "serde_json",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
