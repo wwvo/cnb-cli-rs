@@ -154,7 +154,7 @@ jobs:
     env:
       CNB_API_ENDPOINT: https://api.cnb.cool
       CNB_WEB_ENDPOINT: https://cnb.cool
-      CNB_REPO_SLUG: wwvo/cnb-cli/cnb
+      CNB_REPO_SLUG: wwvo/cnb-rs/cnb-rs
 
     steps:
       - name: Checkout repository
