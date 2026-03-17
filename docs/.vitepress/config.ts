@@ -42,6 +42,7 @@ export default defineConfig({
         text: '指南',
         items: [
           { text: '快速开始', link: '/guide/getting-started' },
+          { text: 'Linux 安装说明', link: '/guide/linux-install' },
           { text: '从 cnb 迁移到 cnb-rs', link: '/guide/migrate-cnb-to-cnb-rs' },
           { text: 'cnb-rs', link: '/guide/cnb' },
           { text: '发布流程', link: '/guide/release-process' },

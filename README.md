@@ -37,7 +37,13 @@
 
 ## 安装
 
-从 [Release 页面](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/releases) 下载适合你平台的二进制文件。
+从 [Release 页面](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/releases) 下载适合你平台的发布产物。
+
+- Linux `x86_64`：优先使用 `.deb` 或 `.rpm`
+- Windows / macOS：当前继续使用压缩包附件
+- 如果你的 Linux 发行版不适用 `.deb` / `.rpm`，仍然可以回退到 `.tar.gz` 手动解压安装
+
+Linux 安装细节见：[Linux 安装说明](docs/guide/linux-install.md)。
 
 > [!WARNING]
 > 从本项目的改名版本开始，原来的 `cnb ...` 已改为 `cnb-rs ...`。
@@ -61,6 +67,8 @@ cnb-rs chat --do "查看我的仓库列表"
 # 下载文件
 cnb-rs download --files README.md
 ```
+
+如果你通过 Linux 原生包安装，`cnb-rs` 会同时安装 Bash、Zsh、Fish 补全文件；PowerShell 补全仍建议按 [completion 文档](docs/commands/completion.md) 手动生成。
 
 ## 项目结构
 
