@@ -47,7 +47,7 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
 
       - name: Build release binary
-        shell: bash
+        shell: pwsh
         run: cargo build --release --locked --target x86_64-pc-windows-msvc
 
       - name: Build MSI package

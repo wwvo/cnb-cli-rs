@@ -134,10 +134,16 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: Setup MSVC developer command prompt
-        if: matrix.package_windows_msi
+        if: endsWith(matrix.target, '-pc-windows-msvc')
         uses: ilammy/msvc-dev-cmd@v1
 
+      - name: Build binaries (Windows MSVC)
+        if: endsWith(matrix.target, '-pc-windows-msvc')
+        shell: pwsh
+        run: cargo build --release --locked --target "${{ matrix.target }}"
+
       - name: Build binaries
+        if: ${{ !endsWith(matrix.target, '-pc-windows-msvc') }}
         shell: bash
         run: |
           set -euo pipefail
