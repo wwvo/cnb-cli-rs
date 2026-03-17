@@ -5,13 +5,15 @@
 use clap::Parser;
 use cnb_core::context::AppContext;
 
+mod build_info;
 mod commands;
 
 /// CNB CLI - 一个非官方的 CNB 命令行工具
 #[derive(Debug, Parser)]
 #[clap(
     name = "cnb-rs",
-    version = concat!(env!("CARGO_PKG_VERSION"), " (", env!("GIT_HASH"), " ", env!("GIT_DATE"), ")"),
+    version = build_info::SHORT_VERSION,
+    long_version = build_info::CLAP_LONG_VERSION,
     about = "一个非官方的 CNB 命令行工具",
 )]
 struct Cli {
