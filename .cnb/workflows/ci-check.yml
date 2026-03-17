@@ -1,28 +1,43 @@
-x-ci-check-job: &ci-check-job
-  - name: ci-check
-    runner:
-      cpus: 4
-    stages:
-      - name: cargo fmt
-        image: docker.cnb.cool/wwvo/cnb-rs/cnb-rs:rust-ci
-        script: bash .cnb/scripts/ci-check.sh fmt
-      - name: cargo check
-        image: docker.cnb.cool/wwvo/cnb-rs/cnb-rs:rust-ci
-        script: bash .cnb/scripts/ci-check.sh check
-      - name: cargo clippy
-        image: docker.cnb.cool/wwvo/cnb-rs/cnb-rs:rust-ci
-        script: bash .cnb/scripts/ci-check.sh clippy
-      - name: cargo test
-        image: docker.cnb.cool/wwvo/cnb-rs/cnb-rs:rust-ci
-        script: bash .cnb/scripts/ci-check.sh test
-      - name: 代码检查通过
-        type: cnb:resolve
-        options:
-          key: ci-check-ready
+x-ci-check-base: &ci-check-base
+  name: ci-check
+  runner:
+    cpus: 4
+  stages: &ci-check-stages
+    - name: cargo fmt
+      image: docker.cnb.cool/wwvo/cnb-rs/cnb-rs:rust-ci
+      script: bash .cnb/scripts/ci-check.sh fmt
+    - name: cargo check
+      image: docker.cnb.cool/wwvo/cnb-rs/cnb-rs:rust-ci
+      script: bash .cnb/scripts/ci-check.sh check
+    - name: cargo clippy
+      image: docker.cnb.cool/wwvo/cnb-rs/cnb-rs:rust-ci
+      script: bash .cnb/scripts/ci-check.sh clippy
+    - name: cargo test
+      image: docker.cnb.cool/wwvo/cnb-rs/cnb-rs:rust-ci
+      script: bash .cnb/scripts/ci-check.sh test
+    - name: 代码检查通过
+      type: cnb:resolve
+      options:
+        key: ci-check-ready
+
+x-ci-check-push-job: &ci-check-push-job
+  - <<: *ci-check-base
+
+x-ci-check-pr-job: &ci-check-pr-job
+  - <<: *ci-check-base
+    ifModify:
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "build.rs"
+      - ".cargo/**/*"
+      - "src/**/*"
+      - "crates/**/*"
+      - ".cnb/scripts/ci-check.sh"
+      - ".cnb/workflows/ci-check.yml"
 
 main:
-  push: *ci-check-job
-  pull_request: *ci-check-job
+  push: *ci-check-push-job
+  pull_request: *ci-check-pr-job
 
 '**':
-  web_trigger_ci-check: *ci-check-job
+  web_trigger_ci-check: *ci-check-push-job
