@@ -64,6 +64,15 @@ jobs:
           $ErrorActionPreference = "Stop"
           Set-StrictMode -Version Latest
 
+          function Normalize-PathEntry {
+            param(
+              [Parameter(Mandatory = $true)]
+              [string]$PathEntry
+            )
+
+            return $PathEntry.Trim().TrimEnd('\').ToLowerInvariant()
+          }
+
           $msiPath = Get-ChildItem target\windows-msi\*.msi | Select-Object -First 1 -ExpandProperty FullName
           if (-not $msiPath) {
             throw "Failed to locate generated MSI package"
@@ -102,8 +111,11 @@ jobs:
               }
             }
 
-            $machinePathEntries = [Environment]::GetEnvironmentVariable("Path", "Machine") -split ';'
-            if ($installDir -notin $machinePathEntries) {
+            $normalizedInstallDir = Normalize-PathEntry -PathEntry $installDir
+            $machinePathEntries = [Environment]::GetEnvironmentVariable("Path", "Machine") -split ';' |
+              Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+              ForEach-Object { Normalize-PathEntry -PathEntry $_ }
+            if ($machinePathEntries -notcontains $normalizedInstallDir) {
               throw "Install directory was not appended to machine PATH"
             }
 
@@ -123,8 +135,10 @@ jobs:
               throw "Installed executable still exists after uninstall: $installedExe"
             }
 
-            $machinePathEntriesAfterUninstall = [Environment]::GetEnvironmentVariable("Path", "Machine") -split ';'
-            if ($installDir -in $machinePathEntriesAfterUninstall) {
+            $machinePathEntriesAfterUninstall = [Environment]::GetEnvironmentVariable("Path", "Machine") -split ';' |
+              Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+              ForEach-Object { Normalize-PathEntry -PathEntry $_ }
+            if ($machinePathEntriesAfterUninstall -contains $normalizedInstallDir) {
               throw "Install directory still present in machine PATH after uninstall"
             }
           }
