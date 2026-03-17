@@ -323,6 +323,7 @@ jobs:
   publish:
     name: Publish GitHub and CNB releases
     needs: build
+    if: ${{ always() && !cancelled() }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -354,6 +355,15 @@ jobs:
         with:
           path: release-artifacts
           merge-multiple: true
+
+      - name: Ensure at least one artifact is available
+        run: |
+          set -euo pipefail
+
+          if ! find release-artifacts -maxdepth 1 -type f | grep -q .; then
+            echo "No successful build artifacts were produced; skip release publishing." >&2
+            exit 1
+          fi
 
       - name: Generate release notes
         run: |
@@ -447,3 +457,17 @@ jobs:
           grep -Ev '^##\[set-output ' "${log_file}" || true
 
           exit "${status}"
+
+  report-build-failures:
+    name: Report Partial Build Failures
+    needs:
+      - build
+      - publish
+    if: ${{ always() && needs.build.result == 'failure' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Mark workflow as partial failure
+        run: |
+          echo "Release attachments were published from successful targets, but at least one required build target failed." >&2
+          exit 1
