@@ -2,6 +2,25 @@
 
 此文件由 [git-cliff](https://git-cliff.org/) 自动生成。
 
+## [0.6.1] - 2026-03-17
+
+### 🐛 Bug 修复
+
+- **(ci)** 将 automerge mergeType 改为 squash ([217c3a1](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/217c3a10b2996faeefbed03be1c691b66322a071))
+- **(ci)** 补充 release-issue-checklist workflow include ([d8c2967](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/d8c2967b8f58ba0fb5e5e008e5c854ffe002abac))
+
+### 👷 CI/CD
+
+- **(release)** 提高发布归档压缩级别 ([6bda72c](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/6bda72cd50ca25d15e6d3eb6f940a70d2a18930b))
+
+### 📝 文档
+
+- 收口顶层名称为 cnb-rs ([4c6d3cf](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/4c6d3cf22019c5be7755c3aa82d3bd571b7e6c2f))
+
+### 🔧 杂项
+
+- **(ci)** 将 GitHub Actions 版本钉位切到 v2 ([c02d04c](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/c02d04c797e74296149d76ced1de076b7b43d08f))
+
 ## [0.6.0] - 2026-03-16
 
 ### ✨ 新功能
