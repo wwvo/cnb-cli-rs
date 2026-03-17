@@ -9,12 +9,27 @@
     Scope="perMachine">
     <SummaryInformation Description="cnb-rs Windows MSI package" Manufacturer="wwvo" />
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+    <MajorUpgrade
+      Schedule="afterInstallInitialize"
+      DowngradeErrorMessage="A newer version of cnb-rs is already installed." />
 
     <StandardDirectory Id="ProgramFiles64Folder">
       <Directory Id="INSTALLFOLDER" Name="cnb-rs">
         <Component Guid="9A084689-1A6B-4A0A-B0A0-4C6100D05601">
           <File Id="CnbRsExe" Source="$(var.BinarySource)" KeyPath="yes" />
+          <!-- Keep cnb-rs available from new shells without touching PowerShell profile files. -->
+          <Environment
+            Id="CnbRsInstallFolderPath"
+            Name="PATH"
+            Action="set"
+            Part="last"
+            System="yes"
+            Value="[INSTALLFOLDER]" />
+        </Component>
+
+        <Component Guid="6B9D3F91-0B4E-4BE0-9CA3-1C25D270D2F8">
           <File Id="LicenseFile" Source="$(var.LicenseSource)" />
+          <File Id="ReadmeFile" Source="$(var.ReadmeSource)" />
         </Component>
       </Directory>
     </StandardDirectory>

@@ -4,6 +4,7 @@ param(
     [string]$Architecture = "x64",
     [string]$BinaryPath,
     [string]$LicensePath,
+    [string]$ReadmePath,
     [string]$Version,
     [string]$OutputDir = "target/windows-msi"
 )
@@ -43,12 +44,17 @@ if (-not $LicensePath) {
     $LicensePath = Join-Path $repoRoot "LICENSE"
 }
 
+if (-not $ReadmePath) {
+    $ReadmePath = Join-Path $repoRoot "README.md"
+}
+
 if (-not $Version) {
     $Version = Get-CargoVersion -ManifestPath $manifestPath
 }
 
 $BinaryPath = [System.IO.Path]::GetFullPath($BinaryPath)
 $LicensePath = [System.IO.Path]::GetFullPath($LicensePath)
+$ReadmePath = [System.IO.Path]::GetFullPath($ReadmePath)
 $OutputDir = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $OutputDir))
 $BuildOutputDir = Join-Path $OutputDir "build"
 
@@ -58,6 +64,10 @@ if (-not (Test-Path $BinaryPath)) {
 
 if (-not (Test-Path $LicensePath)) {
     throw "License file not found: $LicensePath"
+}
+
+if (-not (Test-Path $ReadmePath)) {
+    throw "README file not found: $ReadmePath"
 }
 
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
@@ -71,6 +81,7 @@ dotnet build $wixProjectPath `
     "-p:ProductVersion=$Version" `
     "-p:BinarySource=$BinaryPath" `
     "-p:LicenseSource=$LicensePath" `
+    "-p:ReadmeSource=$ReadmePath" `
     "-p:OutDir=$BuildOutputDir\"
 
 if ($LASTEXITCODE -ne 0) {
