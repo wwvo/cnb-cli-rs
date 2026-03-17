@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: CNB CLI
+  name: cnb-rs
   tagline: 在命令行中高效管理你的 CNB 仓库、Issue、PR、Release 等资源
   actions:
     - theme: brand

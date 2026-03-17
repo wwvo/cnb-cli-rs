@@ -1,6 +1,6 @@
 <div align="center">
 
-# CNB CLI
+# cnb-rs
 
 **一个非官方的 [CNB](https://cnb.cool) 平台命令行工具**
 
