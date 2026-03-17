@@ -4,6 +4,7 @@ include:
   - .cnb/workflows/sync-github-main.yml
   - .cnb/workflows/auto-tag.yml
   - .cnb/workflows/release-prepare.yml
+  - .cnb/workflows/release-issue-checklist.yml
   - .cnb/workflows/pre-release-check.yml
   - .cnb/workflows/release.yml
   - .cnb/workflows/build-image.yml
