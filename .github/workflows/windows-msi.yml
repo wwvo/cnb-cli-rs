@@ -58,6 +58,97 @@ jobs:
             -Architecture x64 `
             -OutputDir target\windows-msi
 
+      - name: Smoke test MSI install and uninstall
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          Set-StrictMode -Version Latest
+
+          $msiPath = Get-ChildItem target\windows-msi\*.msi | Select-Object -First 1 -ExpandProperty FullName
+          if (-not $msiPath) {
+            throw "Failed to locate generated MSI package"
+          }
+
+          $installDir = Join-Path ${env:ProgramFiles} "cnb-rs"
+          $installedExe = Join-Path $installDir "cnb-rs.exe"
+          $licenseFile = Join-Path $installDir "LICENSE"
+          $readmeFile = Join-Path $installDir "README.md"
+          $logDir = Join-Path $PWD "target\windows-msi\logs"
+          $installLog = Join-Path $logDir "install.log"
+          $uninstallLog = Join-Path $logDir "uninstall.log"
+          $installed = $false
+          $uninstalled = $false
+
+          New-Item -ItemType Directory -Force -Path $logDir | Out-Null
+
+          try {
+            $install = Start-Process msiexec.exe -ArgumentList @(
+              "/i", $msiPath, "/qn", "/norestart", "/L*V", $installLog
+            ) -Wait -PassThru
+
+            if ($install.ExitCode -ne 0) {
+              throw "MSI install failed with exit code $($install.ExitCode)"
+            }
+
+            $installed = $true
+
+            if (-not (Test-Path $installDir)) {
+              throw "Install directory not found: $installDir"
+            }
+
+            foreach ($path in @($installedExe, $licenseFile, $readmeFile)) {
+              if (-not (Test-Path $path)) {
+                throw "Expected installed file not found: $path"
+              }
+            }
+
+            $machinePathEntries = [Environment]::GetEnvironmentVariable("Path", "Machine") -split ';'
+            if ($installDir -notin $machinePathEntries) {
+              throw "Install directory was not appended to machine PATH"
+            }
+
+            & $installedExe --version
+
+            $uninstall = Start-Process msiexec.exe -ArgumentList @(
+              "/x", $msiPath, "/qn", "/norestart", "/L*V", $uninstallLog
+            ) -Wait -PassThru
+
+            if ($uninstall.ExitCode -ne 0) {
+              throw "MSI uninstall failed with exit code $($uninstall.ExitCode)"
+            }
+
+            $uninstalled = $true
+
+            if (Test-Path $installedExe) {
+              throw "Installed executable still exists after uninstall: $installedExe"
+            }
+
+            $machinePathEntriesAfterUninstall = [Environment]::GetEnvironmentVariable("Path", "Machine") -split ';'
+            if ($installDir -in $machinePathEntriesAfterUninstall) {
+              throw "Install directory still present in machine PATH after uninstall"
+            }
+          }
+          catch {
+            if (Test-Path $installLog) {
+              Write-Host "==== MSI install log ===="
+              Get-Content $installLog
+            }
+
+            if (Test-Path $uninstallLog) {
+              Write-Host "==== MSI uninstall log ===="
+              Get-Content $uninstallLog
+            }
+
+            throw
+          }
+          finally {
+            if ($installed -and -not $uninstalled) {
+              $null = Start-Process msiexec.exe -ArgumentList @(
+                "/x", $msiPath, "/qn", "/norestart"
+              ) -Wait -PassThru -ErrorAction SilentlyContinue
+            }
+          }
+
       - name: Upload MSI artifact
         uses: actions/upload-artifact@v4
         with:
