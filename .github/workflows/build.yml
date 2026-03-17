@@ -101,14 +101,13 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [[ -n "${{ matrix.linux_deb_arch }}" ]]; then
-            sudo dpkg --add-architecture "${{ matrix.linux_deb_arch }}"
-          fi
-
           sudo apt-get update
           sudo apt-get install -y dpkg-dev rpm
 
           if [[ -n "${{ matrix.linux_deb_arch }}" ]]; then
+            # crossbuild-essential-arm64 is an Architecture: all metapackage.
+            # Installing it does not require enabling arm64 apt indexes on the runner,
+            # which currently causes 404s against Ubuntu security mirrors.
             sudo apt-get install -y "crossbuild-essential-${{ matrix.linux_deb_arch }}"
           fi
 
