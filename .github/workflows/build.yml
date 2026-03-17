@@ -176,7 +176,7 @@ jobs:
             exit 0
           fi
 
-          cargo build --release --locked --bin cnb-rs --target-dir target/packaging-host
+          cargo build --release --locked --bin cnb-rs --target "${host_target}" --target-dir target/packaging-host
 
       - name: Package artifact
         id: package
@@ -220,7 +220,7 @@ jobs:
             host_target="$(rustc -vV | sed -n 's/^host: //p')"
             completion_binary_path="target/${{ matrix.target }}/release/cnb-rs"
             if [[ "${{ matrix.target }}" != "${host_target}" ]]; then
-              completion_binary_path="target/packaging-host/release/cnb-rs"
+              completion_binary_path="target/packaging-host/${host_target}/release/cnb-rs"
             fi
 
             bash packaging/linux/scripts/generate-completions.sh --binary-path "${completion_binary_path}"
