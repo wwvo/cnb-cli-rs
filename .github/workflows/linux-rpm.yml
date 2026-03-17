@@ -59,14 +59,22 @@ jobs:
 
       - name: Build RPM package
         shell: bash
-        run: cargo generate-rpm
+        run: cargo generate-rpm --target x86_64-unknown-linux-gnu
 
       - name: Verify package contents
         shell: bash
         run: |
           set -euo pipefail
 
-          rpm_file="$(find target/generate-rpm -maxdepth 1 -type f -name '*.rpm' | head -n 1)"
+          rpm_file=""
+          for candidate_dir in "target/x86_64-unknown-linux-gnu/generate-rpm" "target/generate-rpm"; do
+            if [[ -d "${candidate_dir}" ]]; then
+              rpm_file="$(find "${candidate_dir}" -maxdepth 1 -type f -name '*.rpm' | head -n 1)"
+            fi
+            if [[ -n "${rpm_file}" ]]; then
+              break
+            fi
+          done
           : "${rpm_file:?failed to locate generated rpm file}"
           rpm -qpl "${rpm_file}"
 
@@ -75,7 +83,15 @@ jobs:
         run: |
           set -euo pipefail
 
-          rpm_file="$(find target/generate-rpm -maxdepth 1 -type f -name '*.rpm' | head -n 1)"
+          rpm_file=""
+          for candidate_dir in "target/x86_64-unknown-linux-gnu/generate-rpm" "target/generate-rpm"; do
+            if [[ -d "${candidate_dir}" ]]; then
+              rpm_file="$(find "${candidate_dir}" -maxdepth 1 -type f -name '*.rpm' | head -n 1)"
+            fi
+            if [[ -n "${rpm_file}" ]]; then
+              break
+            fi
+          done
           : "${rpm_file:?failed to locate generated rpm file}"
 
           docker run --rm \
@@ -97,6 +113,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: cnb-rs-rpm-x86_64-unknown-linux-gnu
-          path: target/generate-rpm/*.rpm
+          path: |
+            target/x86_64-unknown-linux-gnu/generate-rpm/*.rpm
+            target/generate-rpm/*.rpm
           if-no-files-found: error
           retention-days: 7
