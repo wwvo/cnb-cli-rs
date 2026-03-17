@@ -72,7 +72,7 @@ jobs:
 
       - name: Setup MinGW
         if: matrix.setup_mingw
-        uses: msys2/setup-msys2@v2.30.0
+        uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
           update: true
@@ -193,7 +193,7 @@ jobs:
           find . -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.zip' \) -printf '%P\n' | sort | xargs sha256sum > sha256sum.txt
 
       - name: Create or update GitHub Release
-        uses: softprops/action-gh-release@v2.5.3
+        uses: softprops/action-gh-release@v2
         with:
           files: release-artifacts/*
           body_path: LATEST_CHANGELOG.md
