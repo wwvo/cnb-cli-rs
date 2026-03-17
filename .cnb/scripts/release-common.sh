@@ -102,18 +102,23 @@ commit_count_in_range() {
 
 detect_bump_level() {
   local range="${1:-}"
-  local log_args=(--format=%B)
+  local body_log_args=(--format=%B)
+  local subject_log_args=(--format=%s)
 
   if [[ -n "${range}" ]]; then
-    log_args+=("${range}")
+    body_log_args+=("${range}")
+    subject_log_args+=("${range}")
   fi
 
-  local commits
-  commits="$(git log "${log_args[@]}")"
+  local commit_bodies commit_subjects
+  commit_bodies="$(git log "${body_log_args[@]}")"
+  commit_subjects="$(git log "${subject_log_args[@]}")"
 
-  if grep -Eq '(^|[[:space:]])BREAKING CHANGE:|^[^[:space:]]+(\([^)]*\))?!:' <<<"${commits}"; then
+  # 提交主题允许带 emoji / 装饰前缀，例如 `✨ feat(dist): ...`
+  if grep -Eq '(^|[[:space:]])BREAKING CHANGE:|^[^[:alnum:]]*[[:alpha:]]+(\([^)]*\))?!:' <<<"${commit_bodies}" ||
+    grep -Eq '^[^[:alnum:]]*[[:alpha:]]+(\([^)]*\))?!:' <<<"${commit_subjects}"; then
     echo "major"
-  elif grep -Eq '^feat(\(|:|!)' <<<"${commits}"; then
+  elif grep -Eq '^[^[:alnum:]]*feat(\(|:|!)' <<<"${commit_subjects}"; then
     echo "minor"
   else
     echo "patch"
