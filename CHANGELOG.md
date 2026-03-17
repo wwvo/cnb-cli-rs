@@ -2,6 +2,21 @@
 
 此文件由 [git-cliff](https://git-cliff.org/) 自动生成。
 
+## [0.8.0] - 2026-03-17
+
+### ✨ 新功能
+
+- **(dist)** 为 arm64 Linux 接入 rpm 打包链路 ([2ba9d24](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/2ba9d2454355b0b1380f1ad3c7b5bbac36661948))
+- **(dist)** 为 arm64 Linux 接入 deb 打包链路 ([5fc1811](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/5fc18110d18142fe183f10bbf0ec8f538bf5c5f4))
+
+### 👷 CI/CD
+
+- **(packaging)** 解耦 arm64 Linux packaging 基础设施 ([639094b](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/639094bb25f74f011a7be234e7ad99be4a6c3f8d))
+
+### 📝 文档
+
+- **(install)** 补齐 arm64 Linux 原生包验证与说明 ([ce4634e](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/ce4634e3253572a017de58f74d3e5d423846beaf))
+
 ## [0.7.0] - 2026-03-17
 
 ### ✨ 新功能
