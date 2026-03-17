@@ -33,6 +33,7 @@ jobs:
             archive_ext: tar.gz
             use_cross: true
             package_linux_deb: true
+            package_linux_rpm: true
             linux_deb_arch: arm64
           - os: ubuntu-latest
             target: aarch64-unknown-linux-musl
