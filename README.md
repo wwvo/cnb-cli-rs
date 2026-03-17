@@ -45,6 +45,20 @@
 
 Linux 安装细节见：[Linux 安装说明](docs/guide/linux-install.md)。
 
+如果你更喜欢包管理器安装，也可以使用：
+
+```bash
+# Homebrew（macOS / Linux）
+brew tap wwvo/cnb-rs https://cnb.cool/wwvo/cnb-rs/homebrew-cnb-rs.git
+brew install wwvo/cnb-rs/cnb-rs
+```
+
+```powershell
+# Scoop（Windows）
+scoop bucket add cnb-rs https://cnb.cool/wwvo/cnb-rs/scoop-cnb-rs.git
+scoop install cnb-rs/cnb-rs
+```
+
 > [!WARNING]
 > 从本项目的改名版本开始，原来的 `cnb ...` 已改为 `cnb-rs ...`。
 > 如果你是从旧版本升级，请先阅读 [迁移指南](docs/guide/migrate-cnb-to-cnb-rs.md)。

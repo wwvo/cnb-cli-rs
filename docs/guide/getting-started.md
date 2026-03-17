@@ -27,6 +27,26 @@ sudo dnf install ./cnb-rs-<VERSION>-1.x86_64.rpm
 
 Windows 与 macOS 当前继续使用 release 页面中的压缩包附件。
 
+如果你更偏好包管理器方式，也可以直接使用：
+
+```bash
+# Homebrew（macOS / Linux）
+brew tap wwvo/cnb-rs https://cnb.cool/wwvo/cnb-rs/homebrew-cnb-rs.git
+brew install wwvo/cnb-rs/cnb-rs
+```
+
+```powershell
+# Scoop（Windows）
+scoop bucket add cnb-rs https://cnb.cool/wwvo/cnb-rs/scoop-cnb-rs.git
+scoop install cnb-rs/cnb-rs
+```
+
+边界说明：
+
+- `Homebrew` 当前适合 macOS，以及偏好使用 brew 的 Linux 用户
+- `Scoop` 当前适合 Windows 用户
+- 这两种方式依赖外部分发仓库，不替代 release 页面附件
+
 > [!WARNING]
 > 从改名版本开始，原来的 `cnb ...` 已改为 `cnb-rs ...`。
 > 如果你是从旧版本升级，请先阅读 [从 cnb 迁移到 cnb-rs](/guide/migrate-cnb-to-cnb-rs)。
