@@ -1,7 +1,7 @@
 name: Windows MSI Validation
 
 on:
-  pull_request:
+  push:
     branches:
       - main
     paths:
