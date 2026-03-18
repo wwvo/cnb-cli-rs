@@ -503,6 +503,7 @@ jobs:
           New-Item -ItemType Directory -Force -Path $certDir | Out-Null
 
           $pfxPath = Join-Path $certDir "release-signing.pfx"
+          $certificatePath = Join-Path $certDir "release-signing.cer"
           [System.IO.File]::WriteAllBytes($pfxPath, [System.Convert]::FromBase64String($env:WINDOWS_MSIX_PFX_BASE64))
 
           $password = ConvertTo-SecureString -String $env:WINDOWS_MSIX_PFX_PASSWORD -AsPlainText -Force
@@ -511,12 +512,18 @@ jobs:
             throw "Failed to read signing certificate from PFX"
           }
 
+          [System.IO.File]::WriteAllBytes(
+            $certificatePath,
+            $certificate.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Cert)
+          )
+
           $publisher = $certificate.Subject
           if ([string]::IsNullOrWhiteSpace($publisher)) {
             throw "Failed to resolve certificate subject for MSIX Publisher"
           }
 
           "pfx_path=$pfxPath" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "certificate_path=$certificatePath" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
           "publisher=$publisher" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
       - name: Stage MSIX package contents
@@ -542,6 +549,7 @@ jobs:
             -OutputDir target\windows-msix\output `
             -PfxPath "${{ steps.certificate.outputs.pfx_path }}" `
             -PfxPassword "${{ env.WINDOWS_MSIX_PFX_PASSWORD }}" `
+            -CertificatePath "${{ steps.certificate.outputs.certificate_path }}" `
             -Version "${{ steps.metadata.outputs.release_version }}"
 
       - name: Upload x64 MSIX artifact
@@ -574,6 +582,16 @@ jobs:
           if-no-files-found: error
           compression-level: 0
 
+      - name: Upload Windows MSIX signing certificate artifact
+        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: windows-msix-signing-cert-v${{ steps.metadata.outputs.release_version }}
+          path: ${{ steps.certificate.outputs.certificate_path }}
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0
+
   smoke-test-msix:
     name: Smoke test Windows MSIX/MSIXBUNDLE (${{ matrix.target }})
     needs: build-msix
@@ -598,13 +616,21 @@ jobs:
           name: cnb-rs-v${{ needs.build-msix.outputs.release_version }}-windows-msvc.msixbundle
           path: target/windows-msix/download/bundle
 
+      - name: Download MSIX signing certificate artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: windows-msix-signing-cert-v${{ needs.build-msix.outputs.release_version }}
+          path: target/windows-msix/download/cert
+
       - name: Smoke test MSIX install and uninstall
         shell: pwsh
         run: |
           $bundlePath = Get-ChildItem target\windows-msix\download\bundle\*.msixbundle | Select-Object -First 1 -ExpandProperty FullName
+          $certificatePath = Get-ChildItem target\windows-msix\download\cert\*.cer | Select-Object -First 1 -ExpandProperty FullName
 
           .\packaging\windows\scripts\test-msixbundle.ps1 `
             -BundlePath $bundlePath `
+            -CertificatePath $certificatePath `
             -ExpectedVersion "${{ needs.build-msix.outputs.msix_version }}"
 
   publish:

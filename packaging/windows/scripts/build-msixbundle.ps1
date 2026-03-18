@@ -6,6 +6,7 @@ param(
     [string]$CliPath = "target/tools/msixbundle-cli/bin/msixbundle-cli.exe",
     [string]$PfxPath,
     [string]$PfxPassword,
+    [string]$CertificatePath,
     [string]$Version,
     [string]$PackageBase = "cnb-rs"
 )
@@ -63,6 +64,41 @@ function Convert-ToMsixVersion {
     return "{0}.{1}.{2}.0" -f $match.Groups["major"].Value, $match.Groups["minor"].Value, $match.Groups["patch"].Value
 }
 
+function Import-TemporaryTrustedCertificate {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($Path)
+    $addedStores = @()
+    foreach ($storePath in @("Cert:\CurrentUser\Root", "Cert:\CurrentUser\TrustedPeople")) {
+        $existing = Get-ChildItem $storePath | Where-Object Thumbprint -eq $cert.Thumbprint | Select-Object -First 1
+        if (-not $existing) {
+            Import-Certificate -FilePath $Path -CertStoreLocation $storePath | Out-Null
+            $addedStores += $storePath
+        }
+    }
+
+    return [pscustomobject]@{
+        Thumbprint = $cert.Thumbprint
+        AddedStores = $addedStores
+    }
+}
+
+function Remove-TemporaryTrustedCertificate {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Thumbprint,
+
+        [string[]]$StorePaths = @("Cert:\CurrentUser\Root", "Cert:\CurrentUser\TrustedPeople")
+    )
+
+    foreach ($storePath in $StorePaths) {
+        Get-ChildItem $storePath | Where-Object Thumbprint -eq $Thumbprint | Remove-Item -Force -ErrorAction SilentlyContinue
+    }
+}
+
 $repoRoot = Get-RepoRoot
 $manifestPath = Join-Path $repoRoot "Cargo.toml"
 
@@ -75,8 +111,11 @@ $X64ContentDir = Resolve-FullPath -Path $X64ContentDir -BasePath $repoRoot
 $Arm64ContentDir = Resolve-FullPath -Path $Arm64ContentDir -BasePath $repoRoot
 $OutputDir = Resolve-FullPath -Path $OutputDir -BasePath $repoRoot
 $CliPath = Resolve-FullPath -Path $CliPath -BasePath $repoRoot
+if ($CertificatePath) {
+    $CertificatePath = Resolve-FullPath -Path $CertificatePath -BasePath $repoRoot
+}
 
-foreach ($path in @($X64ContentDir, $Arm64ContentDir, $CliPath)) {
+foreach ($path in @($X64ContentDir, $Arm64ContentDir, $CliPath, $CertificatePath) | Where-Object { $_ }) {
     if (-not (Test-Path $path)) {
         throw "Required input not found: $path"
     }
@@ -110,33 +149,45 @@ if ($PfxPath) {
     }
 }
 
-& $CliPath @arguments
-if ($LASTEXITCODE -ne 0) {
-    throw "msixbundle-cli failed with exit code $LASTEXITCODE"
+$trustedCertificate = $null
+try {
+    if ($CertificatePath) {
+        $trustedCertificate = Import-TemporaryTrustedCertificate -Path $CertificatePath
+    }
+
+    & $CliPath @arguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "msixbundle-cli failed with exit code $LASTEXITCODE"
+    }
+
+    $generatedX64 = Get-ChildItem -Path $OutputDir -Filter "*_${msixVersion}_x64.msix" | Select-Object -First 1
+    $generatedArm64 = Get-ChildItem -Path $OutputDir -Filter "*_${msixVersion}_arm64.msix" | Select-Object -First 1
+    $generatedBundle = Get-ChildItem -Path $OutputDir -Filter "*_${msixVersion}.msixbundle" | Select-Object -First 1
+
+    if (-not $generatedX64) {
+        throw "Failed to locate generated x64 MSIX package in $OutputDir"
+    }
+    if (-not $generatedArm64) {
+        throw "Failed to locate generated arm64 MSIX package in $OutputDir"
+    }
+    if (-not $generatedBundle) {
+        throw "Failed to locate generated MSIX bundle in $OutputDir"
+    }
+
+    $finalX64 = Join-Path $OutputDir "$PackageBase-v$Version-x86_64-pc-windows-msvc.msix"
+    $finalArm64 = Join-Path $OutputDir "$PackageBase-v$Version-aarch64-pc-windows-msvc.msix"
+    $finalBundle = Join-Path $OutputDir "$PackageBase-v$Version-windows-msvc.msixbundle"
+
+    Move-Item -Path $generatedX64.FullName -Destination $finalX64 -Force
+    Move-Item -Path $generatedArm64.FullName -Destination $finalArm64 -Force
+    Move-Item -Path $generatedBundle.FullName -Destination $finalBundle -Force
+
+    Write-Host "MSIX package created: $finalX64"
+    Write-Host "MSIX package created: $finalArm64"
+    Write-Host "MSIX bundle created: $finalBundle"
 }
-
-$generatedX64 = Get-ChildItem -Path $OutputDir -Filter "*_${msixVersion}_x64.msix" | Select-Object -First 1
-$generatedArm64 = Get-ChildItem -Path $OutputDir -Filter "*_${msixVersion}_arm64.msix" | Select-Object -First 1
-$generatedBundle = Get-ChildItem -Path $OutputDir -Filter "*_${msixVersion}.msixbundle" | Select-Object -First 1
-
-if (-not $generatedX64) {
-    throw "Failed to locate generated x64 MSIX package in $OutputDir"
+finally {
+    if ($trustedCertificate -and $trustedCertificate.AddedStores.Count -gt 0) {
+        Remove-TemporaryTrustedCertificate -Thumbprint $trustedCertificate.Thumbprint -StorePaths $trustedCertificate.AddedStores
+    }
 }
-if (-not $generatedArm64) {
-    throw "Failed to locate generated arm64 MSIX package in $OutputDir"
-}
-if (-not $generatedBundle) {
-    throw "Failed to locate generated MSIX bundle in $OutputDir"
-}
-
-$finalX64 = Join-Path $OutputDir "$PackageBase-v$Version-x86_64-pc-windows-msvc.msix"
-$finalArm64 = Join-Path $OutputDir "$PackageBase-v$Version-aarch64-pc-windows-msvc.msix"
-$finalBundle = Join-Path $OutputDir "$PackageBase-v$Version-windows-msvc.msixbundle"
-
-Move-Item -Path $generatedX64.FullName -Destination $finalX64 -Force
-Move-Item -Path $generatedArm64.FullName -Destination $finalArm64 -Force
-Move-Item -Path $generatedBundle.FullName -Destination $finalBundle -Force
-
-Write-Host "MSIX package created: $finalX64"
-Write-Host "MSIX package created: $finalArm64"
-Write-Host "MSIX bundle created: $finalBundle"
