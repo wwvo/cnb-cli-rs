@@ -2,6 +2,13 @@
 
 此文件由 [git-cliff](https://git-cliff.org/) 自动生成。
 
+## [0.10.1] - 2026-03-18
+
+### 👷 CI/CD
+
+- **(windows-msix)** 接入正式 Windows MSIX 发布链路 ([4877ae1](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/4877ae19d42902bf015309c2b8e9b764e2c52430))
+- **(windows-msix)** 添加实验性 Windows MSIX 打包流程 ([94379cf](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/94379cf896bf97da603e863620ddac6328f45c92))
+
 ## [0.10.0] - 2026-03-18
 
 ### ✨ 新功能
