@@ -370,9 +370,223 @@ jobs:
           if-no-files-found: error
           compression-level: 0
 
+  build-msix:
+    name: Build Windows MSIX/MSIXBUNDLE
+    needs: build
+    if: ${{ needs.build.result == 'success' }}
+    runs-on: windows-latest
+    outputs:
+      release_version: ${{ steps.metadata.outputs.release_version }}
+      msix_version: ${{ steps.metadata.outputs.msix_version }}
+    env:
+      WINDOWS_MSIX_PFX_BASE64: ${{ secrets.WINDOWS_MSIX_PFX_BASE64 }}
+      WINDOWS_MSIX_PFX_PASSWORD: ${{ secrets.WINDOWS_MSIX_PFX_PASSWORD }}
+      WINDOWS_MSIX_IDENTITY_NAME: ${{ vars.WINDOWS_MSIX_IDENTITY_NAME }}
+      WINDOWS_MSIX_PUBLISHER_DISPLAY_NAME: ${{ vars.WINDOWS_MSIX_PUBLISHER_DISPLAY_NAME }}
+      WINDOWS_MSIX_DISPLAY_NAME: ${{ vars.WINDOWS_MSIX_DISPLAY_NAME }}
+      WINDOWS_MSIX_DESCRIPTION: ${{ vars.WINDOWS_MSIX_DESCRIPTION }}
+      WINDOWS_MSIX_EXECUTION_ALIAS: ${{ vars.WINDOWS_MSIX_EXECUTION_ALIAS }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Validate MSIX signing secrets
+        shell: pwsh
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:WINDOWS_MSIX_PFX_BASE64)) {
+            throw "Missing GitHub secret WINDOWS_MSIX_PFX_BASE64"
+          }
+
+          if ([string]::IsNullOrWhiteSpace($env:WINDOWS_MSIX_PFX_PASSWORD)) {
+            throw "Missing GitHub secret WINDOWS_MSIX_PFX_PASSWORD"
+          }
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc, aarch64-pc-windows-msvc
+
+      - name: Setup Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: windows-msix-release
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Resolve MSIX release metadata
+        id: metadata
+        shell: pwsh
+        run: |
+          $manifest = Get-Content Cargo.toml -Raw
+          $match = [regex]::Match($manifest, '(?m)^\s*version\s*=\s*"(?<version>\d+\.\d+\.\d+(?:[-+][^"]+)?)"\s*$')
+          if (-not $match.Success) {
+            throw "Failed to detect workspace version from Cargo.toml"
+          }
+
+          $releaseVersion = $match.Groups["version"].Value
+          $semverMatch = [regex]::Match($releaseVersion, '^(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)')
+          if (-not $semverMatch.Success) {
+            throw "Unsupported workspace version for MSIX packaging: $releaseVersion"
+          }
+
+          $msixVersion = "{0}.{1}.{2}.0" -f `
+            $semverMatch.Groups["major"].Value, `
+            $semverMatch.Groups["minor"].Value, `
+            $semverMatch.Groups["patch"].Value
+
+          $identityName = if ([string]::IsNullOrWhiteSpace($env:WINDOWS_MSIX_IDENTITY_NAME)) { "wwvo.cnb-rs" } else { $env:WINDOWS_MSIX_IDENTITY_NAME }
+          $publisherDisplayName = if ([string]::IsNullOrWhiteSpace($env:WINDOWS_MSIX_PUBLISHER_DISPLAY_NAME)) { "wwvo" } else { $env:WINDOWS_MSIX_PUBLISHER_DISPLAY_NAME }
+          $displayName = if ([string]::IsNullOrWhiteSpace($env:WINDOWS_MSIX_DISPLAY_NAME)) { "cnb-rs" } else { $env:WINDOWS_MSIX_DISPLAY_NAME }
+          $description = if ([string]::IsNullOrWhiteSpace($env:WINDOWS_MSIX_DESCRIPTION)) { "Unofficial CNB command-line tool built with Rust" } else { $env:WINDOWS_MSIX_DESCRIPTION }
+          $executionAlias = if ([string]::IsNullOrWhiteSpace($env:WINDOWS_MSIX_EXECUTION_ALIAS)) { "cnb-rs.exe" } else { $env:WINDOWS_MSIX_EXECUTION_ALIAS }
+
+          "release_version=$releaseVersion" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "msix_version=$msixVersion" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "identity_name=$identityName" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "publisher_display_name=$publisherDisplayName" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "display_name=$displayName" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "description=$description" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "execution_alias=$executionAlias" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Setup MSVC developer command prompt (x64)
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: amd64
+
+      - name: Build x64 MSVC binary
+        shell: pwsh
+        run: cargo build --release --locked --target x86_64-pc-windows-msvc
+
+      - name: Setup MSVC developer command prompt (arm64)
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: amd64_arm64
+
+      - name: Build arm64 MSVC binary
+        shell: pwsh
+        run: cargo build --release --locked --target aarch64-pc-windows-msvc
+
+      - name: Install msixbundle-cli
+        shell: pwsh
+        run: cargo install msixbundle-cli --locked --version 1.1.4 --root target/tools/msixbundle-cli
+
+      - name: Materialize signing certificate
+        id: certificate
+        shell: pwsh
+        run: |
+          $certDir = Join-Path $PWD "target/windows-msix/cert"
+          New-Item -ItemType Directory -Force -Path $certDir | Out-Null
+
+          $pfxPath = Join-Path $certDir "release-signing.pfx"
+          [System.IO.File]::WriteAllBytes($pfxPath, [System.Convert]::FromBase64String($env:WINDOWS_MSIX_PFX_BASE64))
+
+          $password = ConvertTo-SecureString -String $env:WINDOWS_MSIX_PFX_PASSWORD -AsPlainText -Force
+          $certificate = Get-PfxCertificate -FilePath $pfxPath -Password $password
+          if (-not $certificate) {
+            throw "Failed to read signing certificate from PFX"
+          }
+
+          $publisher = $certificate.Subject
+          if ([string]::IsNullOrWhiteSpace($publisher)) {
+            throw "Failed to resolve certificate subject for MSIX Publisher"
+          }
+
+          "pfx_path=$pfxPath" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "publisher=$publisher" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
+      - name: Stage MSIX package contents
+        shell: pwsh
+        run: |
+          .\packaging\windows\scripts\stage-msix-content.ps1 `
+            -X64BinaryPath target\x86_64-pc-windows-msvc\release\cnb-rs.exe `
+            -Arm64BinaryPath target\aarch64-pc-windows-msvc\release\cnb-rs.exe `
+            -OutputDir target\windows-msix\appxcontent `
+            -IdentityName "${{ steps.metadata.outputs.identity_name }}" `
+            -Publisher "${{ steps.certificate.outputs.publisher }}" `
+            -PublisherDisplayName "${{ steps.metadata.outputs.publisher_display_name }}" `
+            -DisplayName "${{ steps.metadata.outputs.display_name }}" `
+            -Description "${{ steps.metadata.outputs.description }}" `
+            -ExecutionAlias "${{ steps.metadata.outputs.execution_alias }}"
+
+      - name: Build Windows MSIX/MSIXBUNDLE artifacts
+        shell: pwsh
+        run: |
+          .\packaging\windows\scripts\build-msixbundle.ps1 `
+            -OutputDir target\windows-msix\output `
+            -PfxPath "${{ steps.certificate.outputs.pfx_path }}" `
+            -PfxPassword "${{ env.WINDOWS_MSIX_PFX_PASSWORD }}" `
+            -Version "${{ steps.metadata.outputs.release_version }}"
+
+      - name: Upload x64 MSIX artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: cnb-rs-v${{ steps.metadata.outputs.release_version }}-x86_64-pc-windows-msvc.msix
+          path: target/windows-msix/output/cnb-rs-v${{ steps.metadata.outputs.release_version }}-x86_64-pc-windows-msvc.msix
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0
+
+      - name: Upload arm64 MSIX artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: cnb-rs-v${{ steps.metadata.outputs.release_version }}-aarch64-pc-windows-msvc.msix
+          path: target/windows-msix/output/cnb-rs-v${{ steps.metadata.outputs.release_version }}-aarch64-pc-windows-msvc.msix
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0
+
+      - name: Upload MSIX bundle artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: cnb-rs-v${{ steps.metadata.outputs.release_version }}-windows-msvc.msixbundle
+          path: target/windows-msix/output/cnb-rs-v${{ steps.metadata.outputs.release_version }}-windows-msvc.msixbundle
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0
+
+  smoke-test-msix:
+    name: Smoke test Windows MSIX/MSIXBUNDLE (${{ matrix.target }})
+    needs: build-msix
+    if: ${{ needs.build-msix.result == 'success' }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-pc-windows-msvc
+            runner: windows-latest
+          - target: aarch64-pc-windows-msvc
+            runner: windows-11-arm
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Download MSIX bundle artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: cnb-rs-v${{ needs.build-msix.outputs.release_version }}-windows-msvc.msixbundle
+          path: target/windows-msix/download/bundle
+
+      - name: Smoke test MSIX install and uninstall
+        shell: pwsh
+        run: |
+          $bundlePath = Get-ChildItem target\windows-msix\download\bundle\*.msixbundle | Select-Object -First 1 -ExpandProperty FullName
+
+          .\packaging\windows\scripts\test-msixbundle.ps1 `
+            -BundlePath $bundlePath `
+            -ExpectedVersion "${{ needs.build-msix.outputs.msix_version }}"
+
   publish:
     name: Publish GitHub and CNB releases
-    needs: build
+    needs:
+      - build
+      - build-msix
+      - smoke-test-msix
     if: ${{ github.event_name == 'push' && always() && !cancelled() }}
     runs-on: ubuntu-latest
     permissions:
@@ -403,6 +617,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v7
         with:
+          pattern: cnb-rs-*
           path: release-artifacts
           merge-multiple: true
 
@@ -425,7 +640,7 @@ jobs:
         run: |
           set -euo pipefail
           cd release-artifacts
-          find . -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.zip' -o -name '*.msi' -o -name '*.deb' -o -name '*.rpm' \) -printf '%P\n' | sort | xargs sha256sum > sha256sum.txt
+          find . -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.zip' -o -name '*.msi' -o -name '*.msix' -o -name '*.msixbundle' -o -name '*.deb' -o -name '*.rpm' \) -printf '%P\n' | sort | xargs sha256sum > sha256sum.txt
 
       - name: Create or update GitHub Release
         uses: softprops/action-gh-release@v2
@@ -440,7 +655,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          files="$(find release-artifacts -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.zip' -o -name '*.msi' -o -name '*.deb' -o -name '*.rpm' -o -name 'sha256sum.txt' \) | sort | paste -sd, -)"
+          files="$(find release-artifacts -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.zip' -o -name '*.msi' -o -name '*.msix' -o -name '*.msixbundle' -o -name '*.deb' -o -name '*.rpm' -o -name 'sha256sum.txt' \) | sort | paste -sd, -)"
           : "${files:?No release artifacts found for CNB upload}"
           echo "files=${files}" >> "$GITHUB_OUTPUT"
 
@@ -512,12 +727,14 @@ jobs:
     name: Report Partial Build Failures
     needs:
       - build
+      - build-msix
+      - smoke-test-msix
       - publish
-    if: ${{ always() && needs.build.result == 'failure' }}
+    if: ${{ always() && (needs.build.result == 'failure' || needs.build-msix.result == 'failure' || needs.smoke-test-msix.result == 'failure') }}
     runs-on: ubuntu-latest
 
     steps:
       - name: Mark workflow as partial failure
         run: |
-          echo "Release attachments were published from successful targets, but at least one required build target failed." >&2
+          echo "Release attachments were published from successful targets, but at least one required build or MSIX validation target failed." >&2
           exit 1

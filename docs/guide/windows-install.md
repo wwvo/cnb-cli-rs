@@ -2,16 +2,53 @@
 
 ## 推荐方式
 
-当前 Windows 平台支持以下 MSI 目标：
+当前 Windows 平台提供两类原生安装形态：
 
-- `x86_64-pc-windows-msvc`
-  - 面向大多数 Windows `x86_64` 用户的默认推荐
-- `aarch64-pc-windows-msvc`
-  - 面向 Windows `arm64` 用户的原生安装包
-- `x86_64-pc-windows-gnu`
-  - 面向需要 GNU toolchain 变体的 Windows `x86_64` 用户
+- `.msixbundle` / `.msix`
+  - 当前覆盖 `x86_64-pc-windows-msvc` 与 `aarch64-pc-windows-msvc`
+  - 使用 Windows 原生包安装机制，安装后通过 execution alias 调用 `cnb-rs`
+- `.msi`
+  - 当前覆盖 `x86_64-pc-windows-msvc`、`aarch64-pc-windows-msvc` 和 `x86_64-pc-windows-gnu`
+  - 适合偏好传统机器级安装、系统级 `PATH` 和标准 MSI 卸载流程的用户
 
-你可以从 Release 页面下载对应目标的 `.msi` 后安装：
+## MSIX / MSIXBUNDLE
+
+对大多数 MSVC 用户，推荐优先尝试以下附件：
+
+- `cnb-rs-v<VERSION>-windows-msvc.msixbundle`
+  - 同时包含 `x86_64-pc-windows-msvc` 与 `aarch64-pc-windows-msvc`
+  - 适合希望让 Windows 自动选择体系结构的场景
+- `cnb-rs-v<VERSION>-x86_64-pc-windows-msvc.msix`
+  - 单独的 `x86_64` 安装包
+- `cnb-rs-v<VERSION>-aarch64-pc-windows-msvc.msix`
+  - 单独的 `arm64` 安装包
+
+安装命令示例：
+
+```powershell
+Add-AppxPackage .\cnb-rs-v<VERSION>-windows-msvc.msixbundle
+# 或按架构安装单独 .msix
+Add-AppxPackage .\cnb-rs-v<VERSION>-x86_64-pc-windows-msvc.msix
+Add-AppxPackage .\cnb-rs-v<VERSION>-aarch64-pc-windows-msvc.msix
+```
+
+MSIX 安装完成后，建议新开一个 PowerShell 或 CMD 窗口，再执行：
+
+```powershell
+cnb-rs --version
+```
+
+MSIX 路径行为说明：
+
+- 通过 Windows execution alias 暴露 `cnb-rs`
+- 不依赖 MSI 的 `C:\Program Files\cnb-rs` 目录约定
+- 不会像 MSI 那样主动追加系统级 `PATH`
+
+如果你的环境禁用了 `Add-AppxPackage`、策略上不允许侧载，或者你更偏好传统安装方式，可以继续使用下方的 MSI 安装。
+
+## MSI
+
+你也可以从 Release 页面下载对应目标的 `.msi` 后安装：
 
 ```powershell
 msiexec /i .\cnb-rs-v<VERSION>-x86_64-pc-windows-msvc.msi
@@ -37,17 +74,23 @@ msiexec /i .\cnb-rs-v<VERSION>-<TARGET>.msi /qn /norestart
 
 ## 卸载
 
-可以在“已安装的应用”中卸载，也可以使用静默卸载：
+MSIX 可以在“已安装的应用”中卸载，也可以使用：
+
+```powershell
+Get-AppxPackage *cnb-rs* | Remove-AppxPackage
+```
+
+MSI 可以在“已安装的应用”中卸载，也可以使用静默卸载：
 
 ```powershell
 msiexec /x .\cnb-rs-v<VERSION>-<TARGET>.msi /qn /norestart
 ```
 
-卸载时会移除 MSI 安装的文件，以及 MSI 写入的系统级 `PATH` 项；不会主动删除用户配置或运行数据。
+卸载时会移除对应安装形态写入的程序文件；MSI 还会额外移除其写入的系统级 `PATH` 项。两种方式都不会主动删除用户配置或运行数据。
 
 ## 回退方式
 
-如果你不希望使用 MSI，或者当前目标不在上述 MSI 覆盖范围内，仍然可以继续使用 Release 页面中的 `.zip` 压缩包附件：
+如果你不希望使用 MSIX 或 MSI，或者当前目标不在上述覆盖范围内，仍然可以继续使用 Release 页面中的 `.zip` 压缩包附件：
 
 1. 下载对应目标的 `.zip`
 2. 解压到一个稳定目录，例如 `C:\Tools\cnb-rs`
@@ -55,7 +98,9 @@ msiexec /x .\cnb-rs-v<VERSION>-<TARGET>.msi /qn /norestart
 
 ## 当前边界
 
+- 当前 `.msixbundle` / `.msix` 覆盖 `x86_64-pc-windows-msvc` 与 `aarch64-pc-windows-msvc`
 - 当前 MSI 覆盖 `x86_64-pc-windows-msvc`、`aarch64-pc-windows-msvc` 和 `x86_64-pc-windows-gnu`
+- 当前 `.msi` 与 `.msixbundle` / `.msix` 会同时保留，避免影响已有安装方式
 - `aarch64-pc-windows-gnullvm` 当前仍以 `.zip` 为主
 - 当前不自动修改 PowerShell `$PROFILE`
 - 当前不内置 `cnb` -> `cnb-rs` 的 alias

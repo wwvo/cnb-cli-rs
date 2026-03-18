@@ -42,8 +42,8 @@
 从 [Release 页面](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/releases) 下载适合你平台的发布产物。
 
 - Linux `x86_64 / arm64`：优先使用 `.deb` 或 `.rpm`
-- Windows `x86_64`：优先使用 `x86_64-pc-windows-msvc.msi`，如需 GNU 变体可使用 `x86_64-pc-windows-gnu.msi`
-- Windows `arm64`：优先使用 `aarch64-pc-windows-msvc.msi`
+- Windows `x86_64 / arm64`（MSVC）：可选已签名 `.msixbundle`；如需传统机器级安装，也可继续使用对应 `.msi`
+- Windows `x86_64`（GNU）：使用 `x86_64-pc-windows-gnu.msi`
 - Windows 其他目标：当前继续使用 `.zip` 压缩包附件
 - macOS：当前继续使用 `.tar.gz` 压缩包附件
 - 其他 Linux 目标，或你的发行版不适用 `.deb` / `.rpm` 时，仍然可以回退到 `.tar.gz` 手动解压安装

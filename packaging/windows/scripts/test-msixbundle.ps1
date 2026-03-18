@@ -3,7 +3,6 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$BundlePath,
 
-    [Parameter(Mandatory = $true)]
     [string]$CertificatePath,
 
     [string]$PackageName = "wwvo.cnb-rs",
@@ -87,9 +86,13 @@ function Invoke-AliasCommand {
 }
 
 $BundlePath = [System.IO.Path]::GetFullPath($BundlePath)
-$CertificatePath = [System.IO.Path]::GetFullPath($CertificatePath)
+$pathsToValidate = @($BundlePath)
+if ($CertificatePath) {
+    $CertificatePath = [System.IO.Path]::GetFullPath($CertificatePath)
+    $pathsToValidate += $CertificatePath
+}
 
-foreach ($path in @($BundlePath, $CertificatePath)) {
+foreach ($path in $pathsToValidate) {
     if (-not (Test-Path $path)) {
         throw "Required input not found: $path"
     }
@@ -106,7 +109,9 @@ try {
         Copy-Item $configPath $backupPath -Force
     }
 
-    $thumbprint = Import-TestCertificate -Path $CertificatePath
+    if ($CertificatePath) {
+        $thumbprint = Import-TestCertificate -Path $CertificatePath
+    }
 
     Add-AppxPackage -Path $BundlePath -ForceApplicationShutdown
     $package = Get-AppxPackage -Name $PackageName | Select-Object -First 1

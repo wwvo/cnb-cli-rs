@@ -31,23 +31,29 @@ sudo dnf install ./cnb-rs-*.aarch64.rpm
 
 ### Windows
 
-Windows 当前提供以下 MSI 目标：
+Windows 当前提供以下 Windows 原生安装形态：
 
-- `x86_64-pc-windows-msvc`
-  - 默认推荐给大多数 `x86_64` 用户
-- `aarch64-pc-windows-msvc`
-  - 推荐给 Windows `arm64` 用户
+- `cnb-rs-v<VERSION>-windows-msvc.msixbundle`
+  - 覆盖 `x86_64-pc-windows-msvc` 与 `aarch64-pc-windows-msvc`
+  - 适合希望使用 Windows 原生包安装与 execution alias 的用户
+- `x86_64-pc-windows-msvc.msi`
+  - 默认推荐给偏好传统机器级安装的 `x86_64` 用户
+- `aarch64-pc-windows-msvc.msi`
+  - 推荐给偏好传统机器级安装的 Windows `arm64` 用户
 - `x86_64-pc-windows-gnu`
   - 作为 `x86_64` GNU toolchain 变体提供
 
 ```powershell
+Add-AppxPackage .\cnb-rs-v<VERSION>-windows-msvc.msixbundle
+# 或
 msiexec /i .\cnb-rs-v<VERSION>-x86_64-pc-windows-msvc.msi
 ```
 
-如果你不希望使用 MSI，或者当前目标不在上述 MSI 覆盖范围内，也仍然可以继续使用 release 页面中的 `.zip` 压缩包附件。
+如果你不希望使用 MSIX 或 MSI，或者当前目标不在上述覆盖范围内，也仍然可以继续使用 release 页面中的 `.zip` 压缩包附件。
 
 > [!NOTE]
-> 当前 MSI 覆盖 `x86_64-pc-windows-msvc`、`aarch64-pc-windows-msvc` 和 `x86_64-pc-windows-gnu`。
+> 当前 `.msixbundle` / `.msix` 覆盖 `x86_64-pc-windows-msvc` 与 `aarch64-pc-windows-msvc`；
+> `x86_64-pc-windows-gnu` 当前继续使用 `.msi`。
 
 更多说明见：[Windows 安装说明](/guide/windows-install)。
 
