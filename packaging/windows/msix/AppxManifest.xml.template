@@ -3,9 +3,9 @@
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
-  xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap uap5 desktop6 rescap">
+  IgnorableNamespaces="uap uap5 desktop rescap">
   <Identity
     Name="__IDENTITY_NAME__"
     Publisher="__PUBLISHER__"
@@ -43,9 +43,11 @@
         Square44x44Logo="Assets\Square44x44Logo.png"
         AppListEntry="none" />
       <Extensions>
-        <desktop6:Extension
+        <desktop:Extension
           Category="windows.fullTrustProcess"
-          Executable="cnb-rs.exe" />
+          Executable="cnb-rs.exe">
+          <desktop:FullTrustProcess />
+        </desktop:Extension>
         <uap5:Extension Category="windows.appExecutionAlias">
           <uap5:AppExecutionAlias>
             <uap5:ExecutionAlias Alias="__EXECUTION_ALIAS__" />
