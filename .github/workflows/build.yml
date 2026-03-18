@@ -376,6 +376,7 @@ jobs:
     if: ${{ needs.build.result == 'success' }}
     runs-on: windows-latest
     outputs:
+      msix_enabled: ${{ steps.signing_mode.outputs.enabled }}
       release_version: ${{ steps.metadata.outputs.release_version }}
       msix_version: ${{ steps.metadata.outputs.msix_version }}
     env:
@@ -391,34 +392,48 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Validate MSIX signing secrets
+      - name: Resolve MSIX signing mode
+        id: signing_mode
         shell: pwsh
         run: |
-          if ([string]::IsNullOrWhiteSpace($env:WINDOWS_MSIX_PFX_BASE64)) {
-            throw "Missing GitHub secret WINDOWS_MSIX_PFX_BASE64"
+          $hasPfx = -not [string]::IsNullOrWhiteSpace($env:WINDOWS_MSIX_PFX_BASE64)
+          $hasPassword = -not [string]::IsNullOrWhiteSpace($env:WINDOWS_MSIX_PFX_PASSWORD)
+
+          if ($hasPfx -and $hasPassword) {
+            "enabled=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+            Write-Host "MSIX signing secrets detected; Windows MSIX/MSIXBUNDLE build is enabled."
+            exit 0
           }
 
-          if ([string]::IsNullOrWhiteSpace($env:WINDOWS_MSIX_PFX_PASSWORD)) {
-            throw "Missing GitHub secret WINDOWS_MSIX_PFX_PASSWORD"
+          if (-not $hasPfx -and -not $hasPassword) {
+            "enabled=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+            Write-Warning "GitHub secrets WINDOWS_MSIX_PFX_BASE64 and WINDOWS_MSIX_PFX_PASSWORD are not configured; skipping Windows MSIX/MSIXBUNDLE build."
+            exit 0
           }
+
+          throw "Incomplete MSIX signing configuration: WINDOWS_MSIX_PFX_BASE64 and WINDOWS_MSIX_PFX_PASSWORD must either both be configured or both be absent"
 
       - name: Setup Rust toolchain
+        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: x86_64-pc-windows-msvc, aarch64-pc-windows-msvc
 
       - name: Setup Rust cache
+        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         uses: Swatinem/rust-cache@v2
         with:
           key: windows-msix-release
 
       - name: Setup .NET SDK
+        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: "8.0.x"
 
       - name: Resolve MSIX release metadata
         id: metadata
+        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         shell: pwsh
         run: |
           $manifest = Get-Content Cargo.toml -Raw
@@ -453,29 +468,35 @@ jobs:
           "execution_alias=$executionAlias" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
       - name: Setup MSVC developer command prompt (x64)
+        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: amd64
 
       - name: Build x64 MSVC binary
+        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         shell: pwsh
         run: cargo build --release --locked --target x86_64-pc-windows-msvc
 
       - name: Setup MSVC developer command prompt (arm64)
+        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: amd64_arm64
 
       - name: Build arm64 MSVC binary
+        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         shell: pwsh
         run: cargo build --release --locked --target aarch64-pc-windows-msvc
 
       - name: Install msixbundle-cli
+        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         shell: pwsh
         run: cargo install msixbundle-cli --locked --version 1.1.4 --root target/tools/msixbundle-cli
 
       - name: Materialize signing certificate
         id: certificate
+        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         shell: pwsh
         run: |
           $certDir = Join-Path $PWD "target/windows-msix/cert"
@@ -499,6 +520,7 @@ jobs:
           "publisher=$publisher" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
       - name: Stage MSIX package contents
+        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         shell: pwsh
         run: |
           .\packaging\windows\scripts\stage-msix-content.ps1 `
@@ -513,6 +535,7 @@ jobs:
             -ExecutionAlias "${{ steps.metadata.outputs.execution_alias }}"
 
       - name: Build Windows MSIX/MSIXBUNDLE artifacts
+        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         shell: pwsh
         run: |
           .\packaging\windows\scripts\build-msixbundle.ps1 `
@@ -522,6 +545,7 @@ jobs:
             -Version "${{ steps.metadata.outputs.release_version }}"
 
       - name: Upload x64 MSIX artifact
+        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         uses: actions/upload-artifact@v6
         with:
           name: cnb-rs-v${{ steps.metadata.outputs.release_version }}-x86_64-pc-windows-msvc.msix
@@ -531,6 +555,7 @@ jobs:
           compression-level: 0
 
       - name: Upload arm64 MSIX artifact
+        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         uses: actions/upload-artifact@v6
         with:
           name: cnb-rs-v${{ steps.metadata.outputs.release_version }}-aarch64-pc-windows-msvc.msix
@@ -540,6 +565,7 @@ jobs:
           compression-level: 0
 
       - name: Upload MSIX bundle artifact
+        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         uses: actions/upload-artifact@v6
         with:
           name: cnb-rs-v${{ steps.metadata.outputs.release_version }}-windows-msvc.msixbundle
@@ -551,7 +577,7 @@ jobs:
   smoke-test-msix:
     name: Smoke test Windows MSIX/MSIXBUNDLE (${{ matrix.target }})
     needs: build-msix
-    if: ${{ needs.build-msix.result == 'success' }}
+    if: ${{ needs.build-msix.result == 'success' && needs.build-msix.outputs.msix_enabled == 'true' }}
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
