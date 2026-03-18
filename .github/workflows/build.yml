@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
@@ -338,7 +339,7 @@ jobs:
   publish:
     name: Publish GitHub and CNB releases
     needs: build
-    if: ${{ always() && !cancelled() }}
+    if: ${{ github.event_name == 'push' && always() && !cancelled() }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
