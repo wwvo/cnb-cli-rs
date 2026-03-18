@@ -219,9 +219,8 @@ jobs:
           package_files+=("${asset_file}")
 
           if [[ "${{ matrix.package_windows_msi }}" == "true" ]]; then
-            msi_file="target/windows-msi/${asset_base}.msi"
-            : "${msi_file:?failed to determine expected MSI path}"
-            test -f "${msi_file}"
+            msi_file="$(find target/windows-msi -maxdepth 1 -type f -name "*-${{ matrix.target }}.msi" | sort | head -n 1)"
+            : "${msi_file:?failed to locate generated MSI file}"
             cp "${msi_file}" .
             package_files+=("$(basename "${msi_file}")")
           fi
