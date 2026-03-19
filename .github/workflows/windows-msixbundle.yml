@@ -140,7 +140,7 @@ jobs:
 
           $certificate = New-SelfSignedCertificate `
             -Type CodeSigningCert `
-            -Subject "CN=cnb-rs CI" `
+            -Subject "CN=wwvo, O=wwvo, C=CN" `
             -CertStoreLocation "Cert:\CurrentUser\My" `
             -KeyExportPolicy Exportable `
             -HashAlgorithm SHA256 `
@@ -166,7 +166,8 @@ jobs:
           .\packaging\windows\scripts\stage-msix-content.ps1 `
             -X64BinaryPath target\windows-msix\input\x64\cnb-rs.exe `
             -Arm64BinaryPath target\windows-msix\input\arm64\cnb-rs.exe `
-            -OutputDir target\windows-msix\appxcontent
+            -OutputDir target\windows-msix\appxcontent `
+            -Publisher "CN=wwvo, O=wwvo, C=CN"
 
       - name: Build Windows MSIX/MSIXBUNDLE artifacts
         shell: pwsh
