@@ -2,6 +2,30 @@
 
 此文件由 [git-cliff](https://git-cliff.org/) 自动生成。
 
+## [0.11.0] - 2026-03-19
+
+### ♻️ 重构
+
+- **(install)** 迁移安装脚本到 scripts 目录 ([801cf6a](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/801cf6a6e49f406305bb8fb4854e3042a781d3da))
+
+### ✨ 新功能
+
+- **(installer)** 支持切换 GitHub 下载源 ([d8ea344](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/d8ea344430bae09fdf8f6bcf18ac473bd7c4d093))
+- **(install)** 添加一键安装脚本 ([f776ed4](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/f776ed40fbdbbacc018931b8497d8af1c4e7b5af))
+
+### 👷 CI/CD
+
+- **(release)** 将安装脚本纳入 release 附件 ([58bb6fd](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/58bb6fd3b20977bbde0e41b5e0b1c2398809c2e4))
+- **(release)** 上传 MSIX 签名证书到发布附件 ([fdf7cd9](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/fdf7cd9b1126da7bdaf02b4e7678e5d259169270))
+
+### 📝 文档
+
+- **(install)** 补充 Windows MSIX 证书导入说明 ([528a572](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/528a572cd6621c166aacac85fd73f5ddd8ea85b3))
+
+### 🔧 杂项
+
+- **(toolchain)** 添加 stable 工具链文件 ([dc446f2](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/dc446f21de0d8bd06b42c4b963720fe51783e2bd))
+
 ## [0.10.2] - 2026-03-19
 
 ### 🐛 Bug 修复
