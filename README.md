@@ -41,19 +41,20 @@
 
 从 [Release 页面](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/releases) 下载适合你平台的发布产物。
 
-如果你想直接一键安装，也可以使用仓库根目录的安装脚本：
+如果你想直接一键安装，也可以使用仓库里的安装脚本：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/wwvo/cnb-rs/main/install.sh | bash
+curl -fsSL https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/git/raw/main/scripts/install.sh | bash
 ```
 
 ```powershell
-irm https://raw.githubusercontent.com/wwvo/cnb-rs/main/install.ps1 | iex
+irm https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/git/raw/main/scripts/install.ps1 | iex
 ```
 
-- `install.sh` 会自动识别 Linux / macOS 的系统和架构，默认安装到可写的 `/usr/local/bin`，否则回退到 `~/.local/bin`
-- `install.ps1` 会自动识别 Windows `x64 / arm64`，默认安装到当前用户的 `AppData\Local\Programs\cnb-rs\bin`，并尝试追加到用户级 `PATH`
-- 两个脚本都会从 GitHub Release 下载压缩包并校验 `sha256sum.txt`
+- `scripts/install.sh` 会自动识别 Linux / macOS 的系统和架构，默认安装到可写的 `/usr/local/bin`，否则回退到 `~/.local/bin`
+- `scripts/install.ps1` 会自动识别 Windows `x64 / arm64`，默认安装到当前用户的 `AppData\Local\Programs\cnb-rs\bin`，并尝试追加到用户级 `PATH`
+- 两个脚本都会从 CNB Release 下载压缩包并校验 `sha256sum.txt`
+- 如果你不显式指定版本，脚本会使用仓库当前维护的默认发布版本
 - 这两个脚本只安装 `cnb-rs` 二进制文件，不替代 `.deb` / `.rpm` / `.msix` / `.msi` 的完整安装形态
 
 - Linux `x86_64 / arm64`：优先使用 `.deb` 或 `.rpm`

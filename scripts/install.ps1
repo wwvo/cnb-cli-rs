@@ -2,12 +2,14 @@
 param(
     [string]$Version,
     [string]$InstallDir,
-    [string]$GitHubRepo = $(if ($env:CNB_RS_INSTALL_GITHUB_REPO) { $env:CNB_RS_INSTALL_GITHUB_REPO } else { "wwvo/cnb-rs" }),
+    [string]$RepoSlug = $(if ($env:CNB_RS_INSTALL_REPO_SLUG) { $env:CNB_RS_INSTALL_REPO_SLUG } else { "wwvo/cnb-rs/cnb-rs" }),
+    [string]$CnbWebEndpoint = $(if ($env:CNB_RS_INSTALL_CNB_WEB_ENDPOINT) { $env:CNB_RS_INSTALL_CNB_WEB_ENDPOINT } else { "https://cnb.cool" }),
     [switch]$NoPathUpdate
 )
 
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
+$DefaultVersion = "v0.10.2"
 
 function Write-StepLog {
     param(
@@ -28,7 +30,7 @@ function Get-RequestParameters {
         Uri     = $Uri
         Headers = @{
             "User-Agent" = "cnb-rs-install.ps1"
-            "Accept"     = "application/vnd.github+json"
+            "Accept"     = "*/*"
         }
     }
 
@@ -70,22 +72,6 @@ function Normalize-Version {
     }
 
     return "v$Value"
-}
-
-function Resolve-LatestVersion {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Repo
-    )
-
-    $params = Get-RequestParameters -Uri "https://api.github.com/repos/$Repo/releases/latest"
-    $release = Invoke-RestMethod @params
-
-    if ([string]::IsNullOrWhiteSpace($release.tag_name)) {
-        throw "Failed to resolve the latest release from GitHub"
-    }
-
-    return [string]$release.tag_name
 }
 
 function Get-TargetTriple {
@@ -168,8 +154,8 @@ function Ensure-UserPathEntry {
 }
 
 $resolvedVersion = if ([string]::IsNullOrWhiteSpace($Version)) {
-    Write-StepLog "Resolving the latest release version from GitHub"
-    Resolve-LatestVersion -Repo $GitHubRepo
+    Write-StepLog "Using bundled default release version $DefaultVersion"
+    $DefaultVersion
 }
 else {
     Normalize-Version -Value $Version
@@ -177,7 +163,7 @@ else {
 
 $target = Get-TargetTriple
 $assetName = "cnb-rs-$resolvedVersion-$target.zip"
-$releaseBaseUrl = "https://github.com/$GitHubRepo/releases/download/$resolvedVersion"
+$releaseBaseUrl = "$CnbWebEndpoint/$RepoSlug/-/releases/download/$resolvedVersion"
 
 $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("cnb-rs-install-" + [System.Guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Force -Path $tempRoot | Out-Null

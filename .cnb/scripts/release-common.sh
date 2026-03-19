@@ -76,6 +76,61 @@ set_workspace_version() {
   mv "${temp_file}" Cargo.toml
 }
 
+set_installer_default_version() {
+  local new_version="$1"
+  local version_tag
+  version_tag="$(version_tag "${new_version}")"
+
+  set_shell_installer_default_version "${version_tag}"
+  set_powershell_installer_default_version "${version_tag}"
+}
+
+set_shell_installer_default_version() {
+  local version_tag="$1"
+  local file="scripts/install.sh"
+  local temp_file
+  temp_file="$(mktemp)"
+
+  awk -v version_tag="${version_tag}" '
+    /^default_version=/ {
+      print "default_version=\"" version_tag "\""
+      replaced=1
+      next
+    }
+    { print }
+    END {
+      if (!replaced) {
+        exit 1
+      }
+    }
+  ' "${file}" > "${temp_file}" || cnb_err "无法更新 ${file} 中的默认版本号"
+
+  mv "${temp_file}" "${file}"
+}
+
+set_powershell_installer_default_version() {
+  local version_tag="$1"
+  local file="scripts/install.ps1"
+  local temp_file
+  temp_file="$(mktemp)"
+
+  awk -v version_tag="${version_tag}" '
+    /^\$DefaultVersion = / {
+      print "$DefaultVersion = \"" version_tag "\""
+      replaced=1
+      next
+    }
+    { print }
+    END {
+      if (!replaced) {
+        exit 1
+      }
+    }
+  ' "${file}" > "${temp_file}" || cnb_err "无法更新 ${file} 中的默认版本号"
+
+  mv "${temp_file}" "${file}"
+}
+
 version_tag() {
   printf 'v%s' "$1"
 }

@@ -49,7 +49,7 @@ bump_level="$(detect_bump_level "${commit_range}")"
 next_version="$(bump_version "${current_version}" "${bump_level}")"
 release_branch="${release_branch:-release/v${next_version}}"
 commit_title="🔧 chore(release): 准备 v${next_version} 发版"
-pr_body=$'## 自动发版准备\n\n- 自动推导下一个版本号并更新 `Cargo.toml`\n- 自动同步 `Cargo.lock` 中的 workspace crate 版本\n- 自动重建项目级 `CHANGELOG.md`\n- 合并到 `main` 后将由流水线自动创建对应 tag\n'
+pr_body=$'## 自动发版准备\n\n- 自动推导下一个版本号并更新 `Cargo.toml`\n- 自动同步 `Cargo.lock` 中的 workspace crate 版本\n- 自动重建项目级 `CHANGELOG.md`\n- 同步更新安装脚本中的默认 release 版本\n- 合并到 `main` 后将由流水线自动创建对应 tag\n'
 
 if git ls-remote --exit-code --heads origin "${release_branch}" >/dev/null 2>&1; then
   cnb_err "远端分支 ${release_branch} 已存在，请先处理现有 release PR"
@@ -67,6 +67,7 @@ fi
 git checkout -B "${release_branch}" "origin/${base_branch}"
 
 set_workspace_version "${next_version}"
+set_installer_default_version "${next_version}"
 cargo update -w
 
 if git diff --quiet -- Cargo.lock; then
@@ -75,7 +76,7 @@ fi
 
 git cliff --unreleased --tag "v${next_version}" --prepend CHANGELOG.md
 
-git add Cargo.toml Cargo.lock CHANGELOG.md
+git add Cargo.toml Cargo.lock CHANGELOG.md scripts/install.sh scripts/install.ps1
 git diff --cached --quiet && cnb_err "没有检测到需要提交的 release 变更"
 
 git config user.name "CNB Bot"
@@ -84,7 +85,7 @@ git config user.email "bot@cnb.cool"
 git commit \
   -m "${commit_title}" \
   -m "- 根据 ${current_version} 以来的提交自动推导出下一个版本号" \
-  -m "- 更新 workspace version、同步 Cargo.lock 并重建项目级 CHANGELOG.md" \
+  -m "- 更新 workspace version、同步 Cargo.lock、重建项目级 CHANGELOG.md，并刷新安装脚本默认版本" \
   -m "- 为 main 合并后的自动打 tag 流程准备 release PR" \
   -m "Refs: #48"
 

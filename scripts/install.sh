@@ -2,20 +2,24 @@
 
 set -euo pipefail
 
-github_repo="${CNB_RS_INSTALL_GITHUB_REPO:-wwvo/cnb-rs}"
+default_version="v0.10.2"
+cnb_web_endpoint="${CNB_RS_INSTALL_CNB_WEB_ENDPOINT:-https://cnb.cool}"
+repo_slug="${CNB_RS_INSTALL_REPO_SLUG:-wwvo/cnb-rs/cnb-rs}"
 version=""
 bin_dir=""
 
 usage() {
-  cat <<'EOF'
+  cat <<EOF
 Usage: install.sh [--version <version>] [--bin-dir <dir>] [--help]
 
-Installs cnb-rs from the public GitHub Release mirror.
+Installs cnb-rs from the CNB Release mirror.
 
 Options:
   --version <version>  Install a specific release tag, such as v0.10.2 or 0.10.2
   --bin-dir <dir>      Install directory for the cnb-rs binary
   --help               Show this help message
+
+If --version is omitted, the installer uses the bundled default release: ${default_version}
 EOF
 }
 
@@ -30,28 +34,6 @@ fail() {
 
 have_command() {
   command -v "$1" >/dev/null 2>&1
-}
-
-download_text() {
-  local url="$1"
-
-  if have_command curl; then
-    curl -fsSL \
-      -H "User-Agent: cnb-rs-install.sh" \
-      -H "Accept: application/vnd.github+json" \
-      "$url"
-    return
-  fi
-
-  if have_command wget; then
-    wget -qO- \
-      --header="User-Agent: cnb-rs-install.sh" \
-      --header="Accept: application/vnd.github+json" \
-      "$url"
-    return
-  fi
-
-  fail "curl or wget is required to download release assets"
 }
 
 download_file() {
@@ -90,21 +72,6 @@ normalize_version() {
   else
     printf 'v%s\n' "$raw_version"
   fi
-}
-
-resolve_latest_version() {
-  local api_url="https://api.github.com/repos/${github_repo}/releases/latest"
-  local response
-  local resolved_version
-
-  response="$(download_text "$api_url" | tr -d '\r\n')"
-  resolved_version="$(printf '%s' "$response" | sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')"
-
-  if [[ -z "$resolved_version" ]]; then
-    fail "failed to resolve the latest release from ${api_url}"
-  fi
-
-  printf '%s\n' "$resolved_version"
 }
 
 to_lower() {
@@ -177,8 +144,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$version" ]]; then
-  log "Resolving the latest release version from GitHub"
-  version="$(resolve_latest_version)"
+  version="$default_version"
+  log "Using bundled default release version ${version}"
 fi
 
 os_name="$(uname -s)"
@@ -225,7 +192,7 @@ if [[ -z "$bin_dir" ]]; then
 fi
 
 asset_name="cnb-rs-${version}-${target}.tar.gz"
-release_base_url="https://github.com/${github_repo}/releases/download/${version}"
+release_base_url="${cnb_web_endpoint}/${repo_slug}/-/releases/download/${version}"
 archive_url="${release_base_url}/${asset_name}"
 checksum_url="${release_base_url}/sha256sum.txt"
 
