@@ -22,10 +22,9 @@ function Import-TestCertificate {
 
     $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($Path)
     $addedStores = @()
+    # Match the build job trust scope and avoid Root-store prompts on headless runners.
     foreach ($storePath in @(
-        "Cert:\CurrentUser\Root",
         "Cert:\CurrentUser\TrustedPeople",
-        "Cert:\LocalMachine\Root",
         "Cert:\LocalMachine\TrustedPeople"
     )) {
         $existing = Get-ChildItem $storePath | Where-Object Thumbprint -eq $cert.Thumbprint | Select-Object -First 1
@@ -47,9 +46,7 @@ function Remove-TestCertificate {
         [string]$Thumbprint,
 
         [string[]]$StorePaths = @(
-            "Cert:\CurrentUser\Root",
             "Cert:\CurrentUser\TrustedPeople",
-            "Cert:\LocalMachine\Root",
             "Cert:\LocalMachine\TrustedPeople"
         )
     )

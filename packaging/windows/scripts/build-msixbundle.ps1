@@ -83,10 +83,9 @@ function Import-TemporaryTrustedCertificate {
     $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($Path)
     $addedStores = @()
     Write-StepLog "Preparing temporary trust import for certificate $($cert.Thumbprint) from $Path"
+    # Avoid Root stores here because they can trigger blocking trust prompts on headless runners.
     foreach ($storePath in @(
-        "Cert:\CurrentUser\Root",
         "Cert:\CurrentUser\TrustedPeople",
-        "Cert:\LocalMachine\Root",
         "Cert:\LocalMachine\TrustedPeople"
     )) {
         Write-StepLog "Checking certificate store $storePath"
@@ -114,9 +113,7 @@ function Remove-TemporaryTrustedCertificate {
         [string]$Thumbprint,
 
         [string[]]$StorePaths = @(
-            "Cert:\CurrentUser\Root",
             "Cert:\CurrentUser\TrustedPeople",
-            "Cert:\LocalMachine\Root",
             "Cert:\LocalMachine\TrustedPeople"
         )
     )
