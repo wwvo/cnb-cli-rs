@@ -14,7 +14,17 @@ curl -fsSL https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/git/raw/main/scripts/install.sh
 irm https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/git/raw/main/scripts/install.ps1 | iex
 ```
 
-这两个脚本会自动识别系统与架构，从 CNB Release 下载对应压缩包，并校验 `sha256sum.txt`。如果你不显式指定版本，它们会使用仓库当前维护的默认发布版本。它们只安装 `cnb-rs` 二进制文件，不会附带 `.deb` / `.rpm` 的 shell 补全，也不会替代 Windows 的 `.msixbundle` / `.msi` 安装流程。
+如果你希望安装脚本改从 GitHub Release 下载，也可以先切换下载源：
+
+```bash
+CNB_RS_INSTALL_SOURCE=github curl -fsSL https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/git/raw/main/scripts/install.sh | bash
+```
+
+```powershell
+$env:CNB_RS_INSTALL_SOURCE = "github"; irm https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/git/raw/main/scripts/install.ps1 | iex
+```
+
+这两个脚本会自动识别系统与架构，默认从 CNB Release 下载对应压缩包，也可以通过 `CNB_RS_INSTALL_SOURCE=github`、`--source github` 或 `-Source github` 切换到 GitHub Release，并校验 `sha256sum.txt`。如果你不显式指定版本，它们会使用仓库当前维护的默认发布版本。它们只安装 `cnb-rs` 二进制文件，不会附带 `.deb` / `.rpm` 的 shell 补全，也不会替代 Windows 的 `.msixbundle` / `.msi` 安装流程。
 
 ### Linux
 

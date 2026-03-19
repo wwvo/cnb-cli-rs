@@ -1,9 +1,13 @@
 [CmdletBinding()]
 param(
     [string]$Version,
+    [ValidateSet("cnb", "github")]
+    [string]$Source = $(if ($env:CNB_RS_INSTALL_SOURCE) { $env:CNB_RS_INSTALL_SOURCE } else { "cnb" }),
     [string]$InstallDir,
     [string]$RepoSlug = $(if ($env:CNB_RS_INSTALL_REPO_SLUG) { $env:CNB_RS_INSTALL_REPO_SLUG } else { "wwvo/cnb-rs/cnb-rs" }),
     [string]$CnbWebEndpoint = $(if ($env:CNB_RS_INSTALL_CNB_WEB_ENDPOINT) { $env:CNB_RS_INSTALL_CNB_WEB_ENDPOINT } else { "https://cnb.cool" }),
+    [string]$GitHubRepoSlug = $(if ($env:CNB_RS_INSTALL_GITHUB_REPO_SLUG) { $env:CNB_RS_INSTALL_GITHUB_REPO_SLUG } else { "wwvo/cnb-rs" }),
+    [string]$GitHubWebEndpoint = $(if ($env:CNB_RS_INSTALL_GITHUB_WEB_ENDPOINT) { $env:CNB_RS_INSTALL_GITHUB_WEB_ENDPOINT } else { "https://github.com" }),
     [switch]$NoPathUpdate
 )
 
@@ -72,6 +76,29 @@ function Normalize-Version {
     }
 
     return "v$Value"
+}
+
+function Get-ReleaseBaseUrl {
+    param(
+        [Parameter(Mandatory = $true)]
+        [ValidateSet("cnb", "github")]
+        [string]$Source,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Version
+    )
+
+    switch ($Source.ToLowerInvariant()) {
+        "cnb" {
+            return "$CnbWebEndpoint/$RepoSlug/-/releases/download/$Version"
+        }
+        "github" {
+            return "$GitHubWebEndpoint/$GitHubRepoSlug/releases/download/$Version"
+        }
+        default {
+            throw "Unsupported download source: $Source"
+        }
+    }
 }
 
 function Get-TargetTriple {
@@ -161,9 +188,12 @@ else {
     Normalize-Version -Value $Version
 }
 
+$resolvedSource = $Source.ToLowerInvariant()
+Write-StepLog "Using download source $resolvedSource"
+
 $target = Get-TargetTriple
 $assetName = "cnb-rs-$resolvedVersion-$target.zip"
-$releaseBaseUrl = "$CnbWebEndpoint/$RepoSlug/-/releases/download/$resolvedVersion"
+$releaseBaseUrl = Get-ReleaseBaseUrl -Source $resolvedSource -Version $resolvedVersion
 
 $tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("cnb-rs-install-" + [System.Guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Force -Path $tempRoot | Out-Null
