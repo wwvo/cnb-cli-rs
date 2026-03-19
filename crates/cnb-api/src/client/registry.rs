@@ -2,11 +2,20 @@
 
 use super::CnbClient;
 use crate::error::ApiError;
-use crate::types::*;
+use crate::types::{
+    ListPackageTagsOptions, ListRegistriesOptions, Package, PackageDetail, PackageTag, Registry,
+    SetRegistryVisibilityRequest,
+};
+use std::fmt::Write;
 use urlencoding::encode;
 
 impl CnbClient {
     /// 列出组织下的制品库
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn list_registries(
         &self,
         slug: &str,
@@ -18,13 +27,13 @@ impl CnbClient {
             self.base_url, opts.page, opts.page_size
         );
         if let Some(registry_type) = &opts.registry_type {
-            url.push_str(&format!("&registry_type={}", encode(registry_type)));
+            let _ = write!(url, "&registry_type={}", encode(registry_type));
         }
         if let Some(search) = &opts.search {
-            url.push_str(&format!("&search={}", encode(search)));
+            let _ = write!(url, "&search={}", encode(search));
         }
         if let Some(order_by) = &opts.order_by {
-            url.push_str(&format!("&order_by={}", encode(order_by)));
+            let _ = write!(url, "&order_by={}", encode(order_by));
         }
         if opts.desc {
             url.push_str("&desc=true");
@@ -34,6 +43,11 @@ impl CnbClient {
     }
 
     /// 删除制品库
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails or the CNB API returns a non-success
+    /// status.
     pub async fn delete_registry(&self, registry: &str) -> Result<(), ApiError> {
         let registry = Self::encode_path(registry);
         let url = format!("{}{registry}", self.base_url);
@@ -42,6 +56,11 @@ impl CnbClient {
     }
 
     /// 设置制品库可见性
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails or the CNB API returns a non-success
+    /// status.
     pub async fn set_registry_visibility(
         &self,
         registry: &str,
@@ -54,6 +73,11 @@ impl CnbClient {
     }
 
     /// 列出制品
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn list_packages(
         &self,
         slug: &str,
@@ -70,16 +94,21 @@ impl CnbClient {
             encode(pkg_type),
         );
         if let Some(n) = name {
-            url.push_str(&format!("&name={}", encode(n)));
+            let _ = write!(url, "&name={}", encode(n));
         }
         if let Some(o) = ordering {
-            url.push_str(&format!("&ordering={}", encode(o)));
+            let _ = write!(url, "&ordering={}", encode(o));
         }
         let resp = self.send_with_retry(|| self.http.get(&url)).await?;
         Self::handle_response(resp).await
     }
 
     /// 获取制品详情
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn get_package(
         &self,
         slug: &str,
@@ -98,6 +127,11 @@ impl CnbClient {
     }
 
     /// 删除制品
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails or the CNB API returns a non-success
+    /// status.
     pub async fn delete_package(
         &self,
         slug: &str,
@@ -116,6 +150,11 @@ impl CnbClient {
     }
 
     /// 列出制品标签
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn list_package_tags(
         &self,
         slug: &str,
@@ -133,16 +172,21 @@ impl CnbClient {
             opts.page_size
         );
         if let Some(tag_name) = &opts.tag_name {
-            url.push_str(&format!("&tag_name={}", encode(tag_name)));
+            let _ = write!(url, "&tag_name={}", encode(tag_name));
         }
         if let Some(ordering) = &opts.ordering {
-            url.push_str(&format!("&ordering={}", encode(ordering)));
+            let _ = write!(url, "&ordering={}", encode(ordering));
         }
         let resp = self.send_with_retry(|| self.http.get(&url)).await?;
         Self::handle_response(resp).await
     }
 
     /// 获取标签详情
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn get_package_tag_detail(
         &self,
         slug: &str,
@@ -160,13 +204,18 @@ impl CnbClient {
             encode(tag),
         );
         if let Some(a) = arch {
-            url.push_str(&format!("?arch={}", encode(a)));
+            let _ = write!(url, "?arch={}", encode(a));
         }
         let resp = self.send_with_retry(|| self.http.get(&url)).await?;
         Self::handle_response(resp).await
     }
 
     /// 删除制品标签
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails or the CNB API returns a non-success
+    /// status.
     pub async fn delete_package_tag(
         &self,
         slug: &str,

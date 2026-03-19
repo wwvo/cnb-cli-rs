@@ -2,13 +2,22 @@
 
 use super::CnbClient;
 use crate::error::ApiError;
-use crate::types::*;
+use crate::types::{
+    InheritMembersGroup, ListRepoAllMembersOptions, MemberAccessLevel, MemberAccessLevelInPath,
+    MemberInfo, MemberRequest, OutsideCollaborator,
+};
+use std::fmt::Write;
 use urlencoding::encode;
 
 impl CnbClient {
     // === 仓库成员 ===
 
     /// 列出仓库直接成员
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn list_repo_members(
         &self,
         repo: &str,
@@ -23,16 +32,21 @@ impl CnbClient {
             self.base_url
         );
         if let Some(r) = role {
-            url.push_str(&format!("&role={}", encode(r)));
+            let _ = write!(url, "&role={}", encode(r));
         }
         if let Some(s) = search {
-            url.push_str(&format!("&search={}", encode(s)));
+            let _ = write!(url, "&search={}", encode(s));
         }
         let resp = self.http.get(&url).send().await?;
         Self::handle_response(resp).await
     }
 
     /// 添加仓库成员
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails or the CNB API returns a non-success
+    /// status.
     pub async fn add_repo_member(
         &self,
         repo: &str,
@@ -47,6 +61,11 @@ impl CnbClient {
     }
 
     /// 更新仓库成员权限
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails or the CNB API returns a non-success
+    /// status.
     pub async fn update_repo_member(
         &self,
         repo: &str,
@@ -61,6 +80,11 @@ impl CnbClient {
     }
 
     /// 移除仓库成员
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails or the CNB API returns a non-success
+    /// status.
     pub async fn remove_repo_member(&self, repo: &str, username: &str) -> Result<(), ApiError> {
         let repo = Self::encode_path(repo);
         let username = encode(username);
@@ -70,6 +94,11 @@ impl CnbClient {
     }
 
     /// 查看自己在仓库的权限
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn get_repo_access_level(
         &self,
         repo: &str,
@@ -85,6 +114,11 @@ impl CnbClient {
     }
 
     /// 查看指定成员在仓库的权限层级
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn get_repo_user_access(
         &self,
         repo: &str,
@@ -98,6 +132,11 @@ impl CnbClient {
     }
 
     /// 列出仓库继承成员
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn list_repo_inherited_members(
         &self,
         repo: &str,
@@ -112,16 +151,21 @@ impl CnbClient {
             self.base_url
         );
         if let Some(r) = role {
-            url.push_str(&format!("&role={}", encode(r)));
+            let _ = write!(url, "&role={}", encode(r));
         }
         if let Some(s) = search {
-            url.push_str(&format!("&search={}", encode(s)));
+            let _ = write!(url, "&search={}", encode(s));
         }
         let resp = self.http.get(&url).send().await?;
         Self::handle_response(resp).await
     }
 
     /// 列出仓库所有有效成员
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn list_repo_all_members(
         &self,
         slug: &str,
@@ -133,16 +177,16 @@ impl CnbClient {
             self.base_url, opts.page, opts.page_size
         );
         if let Some(role) = &opts.role {
-            url.push_str(&format!("&role={}", encode(role)));
+            let _ = write!(url, "&role={}", encode(role));
         }
         if let Some(search) = &opts.search {
-            url.push_str(&format!("&search={}", encode(search)));
+            let _ = write!(url, "&search={}", encode(search));
         }
         if let Some(names) = &opts.names {
-            url.push_str(&format!("&names={}", encode(names)));
+            let _ = write!(url, "&names={}", encode(names));
         }
         if let Some(order_by) = &opts.order_by {
-            url.push_str(&format!("&order_by={}", encode(order_by)));
+            let _ = write!(url, "&order_by={}", encode(order_by));
         }
         if opts.desc {
             url.push_str("&desc=true");
@@ -154,6 +198,11 @@ impl CnbClient {
     // === 外部贡献者 ===
 
     /// 列出外部贡献者
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn list_outside_collaborators(
         &self,
         slug: &str,
@@ -168,16 +217,21 @@ impl CnbClient {
             self.base_url
         );
         if let Some(r) = role {
-            url.push_str(&format!("&role={}", encode(r)));
+            let _ = write!(url, "&role={}", encode(r));
         }
         if let Some(s) = search {
-            url.push_str(&format!("&search={}", encode(s)));
+            let _ = write!(url, "&search={}", encode(s));
         }
         let resp = self.http.get(&url).send().await?;
         Self::handle_response(resp).await
     }
 
     /// 更新外部贡献者权限
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails or the CNB API returns a non-success
+    /// status.
     pub async fn update_outside_collaborator(
         &self,
         slug: &str,
@@ -196,6 +250,11 @@ impl CnbClient {
     }
 
     /// 移除外部贡献者
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails or the CNB API returns a non-success
+    /// status.
     pub async fn remove_outside_collaborator(
         &self,
         slug: &str,

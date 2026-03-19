@@ -2,11 +2,19 @@
 
 use super::CnbClient;
 use crate::error::ApiError;
-use crate::types::*;
+use crate::types::{
+    CreateMissionRequest, Mission, MissionView, MissionViewConfig, SetMissionVisibilityRequest,
+};
+use std::fmt::Write;
 use urlencoding::encode;
 
 impl CnbClient {
     /// 列出组织下的任务集
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn list_missions(
         &self,
         slug: &str,
@@ -22,10 +30,10 @@ impl CnbClient {
             self.base_url
         );
         if let Some(s) = search {
-            url.push_str(&format!("&search={}", encode(s)));
+            let _ = write!(url, "&search={}", encode(s));
         }
         if let Some(o) = order_by {
-            url.push_str(&format!("&order_by={}", encode(o)));
+            let _ = write!(url, "&order_by={}", encode(o));
         }
         if desc {
             url.push_str("&desc=true");
@@ -35,6 +43,11 @@ impl CnbClient {
     }
 
     /// 创建任务集
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails or the CNB API returns a non-success
+    /// status.
     pub async fn create_mission(
         &self,
         slug: &str,
@@ -47,6 +60,11 @@ impl CnbClient {
     }
 
     /// 删除任务集
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails or the CNB API returns a non-success
+    /// status.
     pub async fn delete_mission(&self, mission: &str) -> Result<(), ApiError> {
         let mission = Self::encode_path(mission);
         let url = format!("{}{mission}", self.base_url);
@@ -55,6 +73,11 @@ impl CnbClient {
     }
 
     /// 设置任务集可见性
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails or the CNB API returns a non-success
+    /// status.
     pub async fn set_mission_visibility(
         &self,
         mission: &str,
@@ -67,6 +90,11 @@ impl CnbClient {
     }
 
     /// 列出视图
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn list_mission_views(&self, mission: &str) -> Result<Vec<MissionView>, ApiError> {
         let mission = Self::encode_path(mission);
         let url = format!("{}{mission}/-/mission/view-list", self.base_url);
@@ -75,6 +103,11 @@ impl CnbClient {
     }
 
     /// 获取视图配置
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn get_mission_view_config(
         &self,
         mission: &str,
@@ -91,6 +124,11 @@ impl CnbClient {
     }
 
     /// 设置视图配置
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails or the CNB API returns a non-success
+    /// status.
     pub async fn set_mission_view_config(
         &self,
         mission: &str,
@@ -103,6 +141,11 @@ impl CnbClient {
     }
 
     /// 添加/修改视图
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails or the CNB API returns a non-success
+    /// status.
     pub async fn put_mission_view(
         &self,
         mission: &str,
@@ -115,6 +158,11 @@ impl CnbClient {
     }
 
     /// 排序视图
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails or the CNB API returns a non-success
+    /// status.
     pub async fn sort_mission_views(
         &self,
         mission: &str,

@@ -1,9 +1,19 @@
 use super::CnbClient;
 use crate::error::ApiError;
-use crate::types::*;
+use crate::types::{
+    ListWorkspacesOptions, StartWorkspaceRequest, StartWorkspaceResponse, StopWorkspaceRequest,
+    StopWorkspaceResponse, WorkspaceDetailResponse, WorkspaceListResponse,
+};
+use std::fmt::Write;
 use urlencoding::encode;
 
 impl CnbClient {
+    /// 列出工作区。
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn list_workspaces(
         &self,
         status: &str,
@@ -15,13 +25,18 @@ impl CnbClient {
             self.base_url
         );
         if !status.is_empty() {
-            url.push_str(&format!("&status={}", encode(status)));
+            let _ = write!(url, "&status={}", encode(status));
         }
         let resp = self.http.get(&url).send().await?;
         Self::handle_response(resp).await
     }
 
     /// 列出工作区（带更多过滤参数）
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn list_workspaces_with_options(
         &self,
         opts: &ListWorkspacesOptions,
@@ -31,18 +46,24 @@ impl CnbClient {
             self.base_url, opts.page, opts.page_size
         );
         if let Some(ref status) = opts.status {
-            url.push_str(&format!("&status={}", encode(status)));
+            let _ = write!(url, "&status={}", encode(status));
         }
         if let Some(ref slug) = opts.slug {
-            url.push_str(&format!("&slug={}", encode(slug)));
+            let _ = write!(url, "&slug={}", encode(slug));
         }
         if let Some(ref branch) = opts.branch {
-            url.push_str(&format!("&branch={}", encode(branch)));
+            let _ = write!(url, "&branch={}", encode(branch));
         }
         let resp = self.http.get(&url).send().await?;
         Self::handle_response(resp).await
     }
 
+    /// 删除工作区。
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails or the CNB API returns a non-success
+    /// status.
     pub async fn delete_workspace(&self, pipeline_id: &str) -> Result<(), ApiError> {
         let pipeline_id = encode(pipeline_id);
         let url = format!("{}user/workspaces/{pipeline_id}", self.base_url);
@@ -51,6 +72,11 @@ impl CnbClient {
     }
 
     /// 启动工作区
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn start_workspace(
         &self,
         repo: &str,
@@ -63,6 +89,11 @@ impl CnbClient {
     }
 
     /// 停止工作区
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn stop_workspace(
         &self,
         req: &StopWorkspaceRequest,
@@ -73,6 +104,11 @@ impl CnbClient {
     }
 
     /// 获取工作区详情
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ApiError`] if the request fails, the response cannot be deserialized,
+    /// or the CNB API returns a non-success status.
     pub async fn get_workspace_detail(
         &self,
         repo: &str,
