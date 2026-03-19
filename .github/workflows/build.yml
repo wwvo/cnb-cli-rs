@@ -340,6 +340,16 @@ jobs:
           if-no-files-found: error
           compression-level: 0
 
+      - name: Upload Windows MSIX input artifact
+        if: ${{ matrix.target == 'x86_64-pc-windows-msvc' || matrix.target == 'aarch64-pc-windows-msvc' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: windows-msix-input-${{ matrix.target }}
+          path: target/${{ matrix.target }}/release/cnb-rs.exe
+          retention-days: 7
+          if-no-files-found: error
+          compression-level: 0
+
       - name: Upload Windows MSI artifact
         if: ${{ steps.package.outputs.msi_file != '' }}
         uses: actions/upload-artifact@v6
@@ -416,8 +426,6 @@ jobs:
       - name: Setup Rust toolchain
         if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: x86_64-pc-windows-msvc, aarch64-pc-windows-msvc
 
       - name: Setup Rust cache
         if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
@@ -467,27 +475,19 @@ jobs:
           "description=$description" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
           "execution_alias=$executionAlias" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
-      - name: Setup MSVC developer command prompt (x64)
+      - name: Download x64 MSIX input artifact
         if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
-        uses: ilammy/msvc-dev-cmd@v1
+        uses: actions/download-artifact@v7
         with:
-          arch: amd64
+          name: windows-msix-input-x86_64-pc-windows-msvc
+          path: target/windows-msix/input/x64
 
-      - name: Build x64 MSVC binary
+      - name: Download arm64 MSIX input artifact
         if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
-        shell: pwsh
-        run: cargo build --release --locked --target x86_64-pc-windows-msvc
-
-      - name: Setup MSVC developer command prompt (arm64)
-        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
-        uses: ilammy/msvc-dev-cmd@v1
+        uses: actions/download-artifact@v7
         with:
-          arch: amd64_arm64
-
-      - name: Build arm64 MSVC binary
-        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
-        shell: pwsh
-        run: cargo build --release --locked --target aarch64-pc-windows-msvc
+          name: windows-msix-input-aarch64-pc-windows-msvc
+          path: target/windows-msix/input/arm64
 
       - name: Install msixbundle-cli
         if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
@@ -531,8 +531,8 @@ jobs:
         shell: pwsh
         run: |
           .\packaging\windows\scripts\stage-msix-content.ps1 `
-            -X64BinaryPath target\x86_64-pc-windows-msvc\release\cnb-rs.exe `
-            -Arm64BinaryPath target\aarch64-pc-windows-msvc\release\cnb-rs.exe `
+            -X64BinaryPath target\windows-msix\input\x64\cnb-rs.exe `
+            -Arm64BinaryPath target\windows-msix\input\arm64\cnb-rs.exe `
             -OutputDir target\windows-msix\appxcontent `
             -IdentityName "${{ steps.metadata.outputs.identity_name }}" `
             -Publisher "${{ steps.certificate.outputs.publisher }}" `
