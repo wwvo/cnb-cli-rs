@@ -503,7 +503,8 @@ jobs:
           New-Item -ItemType Directory -Force -Path $certDir | Out-Null
 
           $pfxPath = Join-Path $certDir "release-signing.pfx"
-          $certificatePath = Join-Path $certDir "release-signing.cer"
+          $certificateAssetName = "cnb-rs-v${{ steps.metadata.outputs.release_version }}-windows-msvc-signing-cert.cer"
+          $certificatePath = Join-Path $certDir $certificateAssetName
           [System.IO.File]::WriteAllBytes($pfxPath, [System.Convert]::FromBase64String($env:WINDOWS_MSIX_PFX_BASE64))
 
           $password = ConvertTo-SecureString -String $env:WINDOWS_MSIX_PFX_PASSWORD -AsPlainText -Force
@@ -585,7 +586,7 @@ jobs:
         if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         uses: actions/upload-artifact@v6
         with:
-          name: windows-msix-signing-cert-v${{ steps.metadata.outputs.release_version }}
+          name: cnb-rs-v${{ steps.metadata.outputs.release_version }}-windows-msvc-signing-cert.cer
           path: ${{ steps.certificate.outputs.certificate_path }}
           retention-days: 7
           if-no-files-found: error
@@ -618,7 +619,7 @@ jobs:
       - name: Download MSIX signing certificate artifact
         uses: actions/download-artifact@v7
         with:
-          name: windows-msix-signing-cert-v${{ needs.build-msix.outputs.release_version }}
+          name: cnb-rs-v${{ needs.build-msix.outputs.release_version }}-windows-msvc-signing-cert.cer
           path: target/windows-msix/download/cert
 
       - name: Smoke test MSIX install and uninstall
@@ -691,7 +692,7 @@ jobs:
         run: |
           set -euo pipefail
           cd release-artifacts
-          find . -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.zip' -o -name '*.msi' -o -name '*.msix' -o -name '*.msixbundle' -o -name '*.deb' -o -name '*.rpm' \) -printf '%P\n' | sort | xargs sha256sum > sha256sum.txt
+          find . -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.zip' -o -name '*.msi' -o -name '*.msix' -o -name '*.msixbundle' -o -name '*.deb' -o -name '*.rpm' -o -name '*.cer' \) -printf '%P\n' | sort | xargs sha256sum > sha256sum.txt
 
       - name: Create or update GitHub Release
         uses: softprops/action-gh-release@v2
@@ -706,7 +707,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          files="$(find release-artifacts -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.zip' -o -name '*.msi' -o -name '*.msix' -o -name '*.msixbundle' -o -name '*.deb' -o -name '*.rpm' -o -name 'sha256sum.txt' \) | sort | paste -sd, -)"
+          files="$(find release-artifacts -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.zip' -o -name '*.msi' -o -name '*.msix' -o -name '*.msixbundle' -o -name '*.deb' -o -name '*.rpm' -o -name '*.cer' -o -name 'sha256sum.txt' \) | sort | paste -sd, -)"
           : "${files:?No release artifacts found for CNB upload}"
           echo "files=${files}" >> "$GITHUB_OUTPUT"
 

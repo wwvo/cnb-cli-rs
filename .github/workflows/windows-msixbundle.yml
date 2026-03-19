@@ -188,7 +188,8 @@ jobs:
           New-Item -ItemType Directory -Force -Path $certDir | Out-Null
 
           $pfxPath = Join-Path $certDir "release-signing.pfx"
-          $certificatePath = Join-Path $certDir "release-signing.cer"
+          $certificateAssetName = "cnb-rs-v${{ steps.metadata.outputs.release_version }}-windows-msvc-signing-cert.cer"
+          $certificatePath = Join-Path $certDir $certificateAssetName
           [System.IO.File]::WriteAllBytes($pfxPath, [System.Convert]::FromBase64String($env:WINDOWS_MSIX_PFX_BASE64))
 
           $password = ConvertTo-SecureString -String $env:WINDOWS_MSIX_PFX_PASSWORD -AsPlainText -Force
@@ -270,7 +271,7 @@ jobs:
         if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         uses: actions/upload-artifact@v6
         with:
-          name: windows-msix-signing-cert-v${{ steps.metadata.outputs.release_version }}
+          name: cnb-rs-v${{ steps.metadata.outputs.release_version }}-windows-msvc-signing-cert.cer
           path: ${{ steps.certificate.outputs.certificate_path }}
           retention-days: 7
           if-no-files-found: error
@@ -303,7 +304,7 @@ jobs:
       - name: Download MSIX certificate artifact
         uses: actions/download-artifact@v7
         with:
-          name: windows-msix-signing-cert-v${{ needs.bundle-msix.outputs.release_version }}
+          name: cnb-rs-v${{ needs.bundle-msix.outputs.release_version }}-windows-msvc-signing-cert.cer
           path: target/windows-msix/download/cert
 
       - name: Smoke test MSIX install and uninstall

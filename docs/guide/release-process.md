@@ -63,11 +63,11 @@ GitHub 镜像仓库收到 `v*` tag 后，会触发 `.github/workflows/build.yml`
 1. 在 GitHub 原生 runner 上分别构建 Linux、Windows、macOS 产物；当前默认发布矩阵包含 Linux 4 个目标、Windows 4 个目标（GNU 1 个 x86_64 变体 + gnullvm 1 个 aarch64 实验性变体，MSVC 2 个 x86_64 / aarch64 变体）和 macOS 2 个目标；此外还会单独构建一个面向 Windows MSVC 的签名 `MSIX` / `MSIXBUNDLE` 发布 job
 2. 对 `x86_64-unknown-linux-gnu` 和 `aarch64-unknown-linux-gnu`，除 `.tar.gz` 外，还会额外生成 Linux 原生包：`.deb` 和 `.rpm`
 3. 对 `x86_64-pc-windows-msvc`、`aarch64-pc-windows-msvc` 和 `x86_64-pc-windows-gnu`，除 `.zip` 外，还会额外生成 Windows 原生安装包：`.msi`
-4. 对 `x86_64-pc-windows-msvc` 和 `aarch64-pc-windows-msvc`，还会额外生成已签名的单架构 `.msix`，并产出跨架构的 `.msixbundle`
+4. 对 `x86_64-pc-windows-msvc` 和 `aarch64-pc-windows-msvc`，还会额外生成已签名的单架构 `.msix`、跨架构的 `.msixbundle`，以及用于侧载安装的公开 `.cer` 证书附件
 5. 对 Windows `MSIX` / `MSIXBUNDLE` 执行安装 smoke test，确认发布证书、execution alias 和基础运行路径正常
 6. 对 Linux 原生包执行等价发布校验，确认包架构字段和内置文件列表符合预期
 7. 生成与 CNB 一致的 `LATEST_CHANGELOG.md`
-8. 基于最终 release 附件生成 `sha256sum.txt`，其中包含 `.tar.gz`、`.zip`、`.msi`、`.msix`、`.msixbundle`、`.deb`、`.rpm`
+8. 基于最终 release 附件生成 `sha256sum.txt`，其中包含 `.tar.gz`、`.zip`、`.msi`、`.msix`、`.msixbundle`、`.deb`、`.rpm`、`.cer`
 9. 上传附件和 `sha256sum.txt` 到 GitHub Release
 10. 先删除 CNB 对应 Release 的旧附件，再回填同一批新文件
 
@@ -82,7 +82,7 @@ GitHub 镜像仓库收到 `v*` tag 后，会触发 `.github/workflows/build.yml`
 当前 Windows 原生安装包的发布范围说明：
 
 - 当前对 `x86_64-pc-windows-msvc`、`aarch64-pc-windows-msvc` 和 `x86_64-pc-windows-gnu` 发布 `.msi`
-- 当前对 `x86_64-pc-windows-msvc` 和 `aarch64-pc-windows-msvc` 额外发布单架构 `.msix`，并额外发布一个共享的 `.msixbundle`
+- 当前对 `x86_64-pc-windows-msvc` 和 `aarch64-pc-windows-msvc` 额外发布单架构 `.msix`、一个共享的 `.msixbundle`，以及 `cnb-rs-v<VERSION>-windows-msvc-signing-cert.cer`
 - `aarch64-pc-windows-gnullvm` 当前仍仅提供 `.zip`
 - 当前 `.msi`、`.msix` / `.msixbundle` 与 `.zip` 会按目标并存，避免影响已有使用方式
 
