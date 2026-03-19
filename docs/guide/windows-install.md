@@ -23,7 +23,15 @@
 - `cnb-rs-v<VERSION>-aarch64-pc-windows-msvc.msix`
   - 单独的 `arm64` 安装包
 
-安装命令示例：
+如果当前机器尚未信任该签名证书，或者你使用的是 CI / workflow 产物而不是已经信任的正式分发环境，建议先下载同版本的 `windows-msix-signing-cert-v<VERSION>` artifact，解压后取出其中的 `release-signing.cer`。
+
+首次侧载安装时可以先执行：
+
+```powershell
+Import-Certificate -FilePath .\release-signing.cer -CertStoreLocation Cert:\CurrentUser\TrustedPeople
+```
+
+导入完成后，再安装 `.msixbundle` / `.msix`：
 
 ```powershell
 Add-AppxPackage .\cnb-rs-v<VERSION>-windows-msvc.msixbundle
@@ -31,6 +39,8 @@ Add-AppxPackage .\cnb-rs-v<VERSION>-windows-msvc.msixbundle
 Add-AppxPackage .\cnb-rs-v<VERSION>-x86_64-pc-windows-msvc.msix
 Add-AppxPackage .\cnb-rs-v<VERSION>-aarch64-pc-windows-msvc.msix
 ```
+
+如果 Windows 没有提示发布者未受信任，或者这张证书已经导入过，一般不需要在每次升级时重复导入。
 
 MSIX 安装完成后，建议新开一个 PowerShell 或 CMD 窗口，再执行：
 

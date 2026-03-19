@@ -49,6 +49,8 @@ Add-AppxPackage .\cnb-rs-v<VERSION>-windows-msvc.msixbundle
 msiexec /i .\cnb-rs-v<VERSION>-x86_64-pc-windows-msvc.msi
 ```
 
+如果你安装的是 CI / workflow 产物，且 Windows 提示发布者未受信任，请先导入同版本 `windows-msix-signing-cert-v<VERSION>` artifact 中的 `release-signing.cer`，再执行 `Add-AppxPackage`。更完整的说明见：[Windows 安装说明](/guide/windows-install)。
+
 如果你不希望使用 MSIX 或 MSI，或者当前目标不在上述覆盖范围内，也仍然可以继续使用 release 页面中的 `.zip` 压缩包附件。
 
 > [!NOTE]
