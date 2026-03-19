@@ -56,20 +56,73 @@ pub fn parse_git_info_from_current_dir() -> Result<GitInfo> {
         bail!("没有找到 Git remote");
     }
 
-    // 取第一个 fetch remote 的 URL
-    let fetch_line = lines
-        .iter()
-        .find(|l| l.ends_with("(fetch)"))
-        .or(lines.first())
-        .copied()
-        .unwrap_or("");
-
-    let parts: Vec<&str> = fetch_line.split_whitespace().collect();
-    if parts.len() < 2 {
-        bail!("无法解析 Git remote URL");
+    let fetch_remotes = parse_fetch_remotes(&lines);
+    if fetch_remotes.is_empty() {
+        bail!("没有找到可用的 fetch remote");
     }
 
-    parse_git_url(parts[1])
+    let preferred_remote = current_branch_remote_name();
+    let remote_url = select_remote_url(&fetch_remotes, preferred_remote.as_deref())
+        .ok_or_else(|| anyhow::anyhow!("无法解析 Git remote URL"))?;
+
+    parse_git_url(remote_url)
+}
+
+fn parse_fetch_remotes<'a>(lines: &'a [&'a str]) -> Vec<(&'a str, &'a str)> {
+    lines
+        .iter()
+        .filter_map(|line| {
+            let parts: Vec<&str> = line.split_whitespace().collect();
+            if parts.len() >= 3 && parts[2] == "(fetch)" {
+                Some((parts[0], parts[1]))
+            } else {
+                None
+            }
+        })
+        .collect()
+}
+
+fn select_remote_url<'a>(
+    fetch_remotes: &'a [(&'a str, &'a str)],
+    preferred_remote: Option<&str>,
+) -> Option<&'a str> {
+    preferred_remote
+        .and_then(|preferred| {
+            fetch_remotes
+                .iter()
+                .find(|(name, _)| *name == preferred)
+                .map(|(_, url)| *url)
+        })
+        .or_else(|| {
+            fetch_remotes
+                .iter()
+                .find(|(name, _)| *name == "origin")
+                .map(|(_, url)| *url)
+        })
+        .or_else(|| fetch_remotes.first().map(|(_, url)| *url))
+}
+
+fn current_branch_remote_name() -> Option<String> {
+    let branch = current_branch().ok()?;
+    if branch.is_empty() || branch == "HEAD" {
+        return None;
+    }
+
+    let key = format!("branch.{branch}.remote");
+    let output = Command::new("git")
+        .args(["config", "--get", &key])
+        .output()
+        .ok()?;
+    if !output.status.success() {
+        return None;
+    }
+
+    let remote = String::from_utf8_lossy(&output.stdout).trim().to_string();
+    if remote.is_empty() {
+        None
+    } else {
+        Some(remote)
+    }
 }
 
 /// 解析 Git remote URL（支持 HTTPS 和 SSH 格式）
@@ -234,5 +287,60 @@ mod tests {
     fn parse_invalid_url() {
         assert!(parse_git_url("not-a-url").is_err());
         assert!(parse_git_url("ftp://cnb.cool/repo").is_err());
+    }
+
+    #[test]
+    fn select_remote_url_prefers_branch_remote() {
+        let fetch_remotes = vec![
+            ("github", "https://github.com/wwvo/cnb-cli-rs.git"),
+            ("origin", "https://cnb.cool/wwvo/cnb-rs/cnb-rs"),
+        ];
+
+        let selected = select_remote_url(&fetch_remotes, Some("origin"));
+
+        assert_eq!(selected, Some("https://cnb.cool/wwvo/cnb-rs/cnb-rs"));
+    }
+
+    #[test]
+    fn select_remote_url_falls_back_to_origin() {
+        let fetch_remotes = vec![
+            ("github", "https://github.com/wwvo/cnb-cli-rs.git"),
+            ("origin", "https://cnb.cool/wwvo/cnb-rs/cnb-rs"),
+        ];
+
+        let selected = select_remote_url(&fetch_remotes, None);
+
+        assert_eq!(selected, Some("https://cnb.cool/wwvo/cnb-rs/cnb-rs"));
+    }
+
+    #[test]
+    fn select_remote_url_falls_back_to_first_fetch_remote() {
+        let fetch_remotes = vec![
+            ("mirror", "https://git.example.com/group/repo.git"),
+            ("backup", "https://backup.example.com/group/repo.git"),
+        ];
+
+        let selected = select_remote_url(&fetch_remotes, None);
+
+        assert_eq!(selected, Some("https://git.example.com/group/repo.git"));
+    }
+
+    #[test]
+    fn parse_fetch_remotes_ignores_push_lines() {
+        let lines = vec![
+            "github https://github.com/wwvo/cnb-cli-rs.git (fetch)",
+            "github https://github.com/wwvo/cnb-cli-rs.git (push)",
+            "origin https://cnb.cool/wwvo/cnb-rs/cnb-rs (fetch)",
+        ];
+
+        let remotes = parse_fetch_remotes(&lines);
+
+        assert_eq!(
+            remotes,
+            vec![
+                ("github", "https://github.com/wwvo/cnb-cli-rs.git"),
+                ("origin", "https://cnb.cool/wwvo/cnb-rs/cnb-rs"),
+            ]
+        );
     }
 }
