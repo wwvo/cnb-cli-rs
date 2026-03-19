@@ -64,6 +64,16 @@ function Convert-ToMsixVersion {
     return "{0}.{1}.{2}.0" -f $match.Groups["major"].Value, $match.Groups["minor"].Value, $match.Groups["patch"].Value
 }
 
+function Write-StepLog {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Message
+    )
+
+    $timestamp = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+    Write-Host ("[{0}] {1}" -f $timestamp, $Message)
+}
+
 function Import-TemporaryTrustedCertificate {
     param(
         [Parameter(Mandatory = $true)]
@@ -72,16 +82,23 @@ function Import-TemporaryTrustedCertificate {
 
     $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($Path)
     $addedStores = @()
+    Write-StepLog "Preparing temporary trust import for certificate $($cert.Thumbprint) from $Path"
     foreach ($storePath in @(
         "Cert:\CurrentUser\Root",
         "Cert:\CurrentUser\TrustedPeople",
         "Cert:\LocalMachine\Root",
         "Cert:\LocalMachine\TrustedPeople"
     )) {
+        Write-StepLog "Checking certificate store $storePath"
         $existing = Get-ChildItem $storePath | Where-Object Thumbprint -eq $cert.Thumbprint | Select-Object -First 1
         if (-not $existing) {
+            Write-StepLog "Importing certificate into $storePath"
             Import-Certificate -FilePath $Path -CertStoreLocation $storePath | Out-Null
             $addedStores += $storePath
+            Write-StepLog "Imported certificate into $storePath"
+        }
+        else {
+            Write-StepLog "Certificate already present in $storePath"
         }
     }
 
@@ -105,7 +122,11 @@ function Remove-TemporaryTrustedCertificate {
     )
 
     foreach ($storePath in $StorePaths) {
-        Get-ChildItem $storePath | Where-Object Thumbprint -eq $Thumbprint | Remove-Item -Force -ErrorAction SilentlyContinue
+        $matchingCertificates = Get-ChildItem $storePath | Where-Object Thumbprint -eq $Thumbprint
+        if ($matchingCertificates) {
+            Write-StepLog "Removing temporary certificate $Thumbprint from $storePath"
+            $matchingCertificates | Remove-Item -Force -ErrorAction SilentlyContinue
+        }
     }
 }
 
@@ -131,11 +152,27 @@ foreach ($path in @($X64ContentDir, $Arm64ContentDir, $CliPath, $CertificatePath
     }
 }
 
+Write-StepLog "Resolved MSIX packaging inputs"
+Write-StepLog "Workspace version: $Version"
+Write-StepLog "MSIX version: $msixVersion"
+Write-StepLog "x64 AppxContent dir: $X64ContentDir"
+Write-StepLog "arm64 AppxContent dir: $Arm64ContentDir"
+Write-StepLog "Output dir: $OutputDir"
+Write-StepLog "msixbundle-cli path: $CliPath"
+if ($CertificatePath) {
+    Write-StepLog "Certificate path: $CertificatePath"
+}
+else {
+    Write-StepLog "Certificate path not provided; temporary trust import will be skipped"
+}
+
 if (Test-Path $OutputDir) {
+    Write-StepLog "Removing existing output directory $OutputDir"
     Remove-Item -Recurse -Force $OutputDir
 }
 
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
+Write-StepLog "Prepared output directory $OutputDir"
 
 $arguments = @(
     "--out-dir", $OutputDir,
@@ -157,19 +194,42 @@ if ($PfxPath) {
     if ($PfxPassword) {
         $arguments += @("--pfx-password", $PfxPassword)
     }
+
+    Write-StepLog "Signing is enabled for this MSIX packaging run"
+    Write-StepLog "PFX path: $PfxPath"
+}
+else {
+    Write-StepLog "No PFX path provided; MSIX packaging will run without signing"
 }
 
 $trustedCertificate = $null
 try {
     if ($CertificatePath) {
+        Write-StepLog "Starting temporary certificate trust import"
         $trustedCertificate = Import-TemporaryTrustedCertificate -Path $CertificatePath
+        $addedStoresMessage = if ($trustedCertificate.AddedStores.Count -gt 0) {
+            $trustedCertificate.AddedStores -join ", "
+        }
+        else {
+            "none"
+        }
+        Write-StepLog "Temporary certificate trust import complete; added stores: $addedStoresMessage"
+    }
+    else {
+        Write-StepLog "Skipping temporary certificate trust import because no certificate path was provided"
     }
 
+    Write-StepLog "Invoking msixbundle-cli"
+    $cliStopwatch = [System.Diagnostics.Stopwatch]::StartNew()
     & $CliPath @arguments
-    if ($LASTEXITCODE -ne 0) {
-        throw "msixbundle-cli failed with exit code $LASTEXITCODE"
+    $cliExitCode = $LASTEXITCODE
+    $cliStopwatch.Stop()
+    Write-StepLog ("msixbundle-cli finished in {0:N1}s with exit code {1}" -f $cliStopwatch.Elapsed.TotalSeconds, $cliExitCode)
+    if ($cliExitCode -ne 0) {
+        throw "msixbundle-cli failed with exit code $cliExitCode"
     }
 
+    Write-StepLog "Locating generated MSIX/MSIXBUNDLE outputs"
     $generatedX64 = Get-ChildItem -Path $OutputDir -Filter "*_${msixVersion}_x64.msix" | Select-Object -First 1
     $generatedArm64 = Get-ChildItem -Path $OutputDir -Filter "*_${msixVersion}_arm64.msix" | Select-Object -First 1
     $generatedBundle = Get-ChildItem -Path $OutputDir -Filter "*_${msixVersion}.msixbundle" | Select-Object -First 1
@@ -188,6 +248,7 @@ try {
     $finalArm64 = Join-Path $OutputDir "$PackageBase-v$Version-aarch64-pc-windows-msvc.msix"
     $finalBundle = Join-Path $OutputDir "$PackageBase-v$Version-windows-msvc.msixbundle"
 
+    Write-StepLog "Renaming generated outputs to release artifact names"
     Move-Item -Path $generatedX64.FullName -Destination $finalX64 -Force
     Move-Item -Path $generatedArm64.FullName -Destination $finalArm64 -Force
     Move-Item -Path $generatedBundle.FullName -Destination $finalBundle -Force
@@ -198,6 +259,7 @@ try {
 }
 finally {
     if ($trustedCertificate -and $trustedCertificate.AddedStores.Count -gt 0) {
+        Write-StepLog "Cleaning up temporary certificate trust entries"
         Remove-TemporaryTrustedCertificate -Thumbprint $trustedCertificate.Thumbprint -StorePaths $trustedCertificate.AddedStores
     }
 }
