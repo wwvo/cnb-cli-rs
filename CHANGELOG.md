@@ -2,6 +2,24 @@
 
 此文件由 [git-cliff](https://git-cliff.org/) 自动生成。
 
+## [0.10.2] - 2026-03-19
+
+### 🐛 Bug 修复
+
+- **(git)** 调整远程回退优先级 ([e960080](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/e9600801f114e5e65caa616182557c0d91751e26))
+- **(ci)** 改为从环境变量读取 MSIX PFX 密码 ([3816589](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/38165899b4f8a9bba6c3f69e66203ec60f374689))
+- **(git)** 修正多 remote 仓库的 CNB 上下文解析 ([071e052](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/071e05291f9b939d44d9588cbf18d5277abb8b44))
+- **(ci)** 改用证书指纹执行 MSIX 签名 ([29f281d](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/29f281d55af59edbed2d31ca0df764207fe9aa23))
+- **(ci)** narrow msix trust import scope ([a50f728](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/a50f7282e63ef10918597b20a2ca39d8bf3fe823))
+- **(ci)** 增强 MSIX 打包阶段诊断日志 ([400008a](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/400008a53383921c3cbd73ff8af4bf6e8a12dd30))
+- **(ci)** 复用 MSIX 打包所需的 Windows 二进制 ([0c820d6](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/0c820d6c1947ae25a7587fc5481c4abc9be0b03e))
+- **(ci)** 统一独立 MSIX workflow 的签名流程 ([c6cfa57](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/c6cfa576bdb23e3e4c3eb490964783bf37d03eb3))
+- **(ci)** 统一 Windows MSIX 证书发布者 ([b15f556](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/b15f55682ff7329f8ad1de4a9ea803ae41ac0d47))
+- **(ci)** 补齐 MSIX 证书的本机信任上下文 ([1ee8ce4](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/1ee8ce417085e8010c314cc81b4a9d8723892d1a))
+- **(ci)** 修复 MSIX 自签名证书信任校验 ([59dc29a](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/59dc29a3eb5828ff0f8cbafc4b7ceb2cfb462ecc))
+- **(ci)** 缺少 MSIX 签名密钥时跳过打包作业 ([b2b2e9a](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/b2b2e9aa3c5bb31c58f8c19e89c841d6a5878cf9))
+- **(windows-msix)** 修正全信任进程清单扩展 ([b4c2b0a](https://cnb.cool/wwvo/cnb-rs/cnb-rs/-/commit/b4c2b0a8a3d8a98c08c2aeb90734d0b22e7bf2d8))
+
 ## [0.10.1] - 2026-03-18
 
 ### 👷 CI/CD
