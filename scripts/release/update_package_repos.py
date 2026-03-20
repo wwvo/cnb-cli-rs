@@ -28,6 +28,12 @@ GITHUB_WEB_ENDPOINT_DEFAULT = "https://github.com"
 CNB_WEB_ENDPOINT_DEFAULT = "https://cnb.cool"
 HOMEBREW_REPO_SLUG_DEFAULT = "wwvo/cnb-rs/homebrew-cnb-rs"
 SCOOP_REPO_SLUG_DEFAULT = "wwvo/cnb-rs/scoop-cnb-rs"
+# Identity for commits pushed to CNB package repos (Homebrew / Scoop taps).
+# Local config keeps author and committer identical without GIT_AUTHOR_* overrides.
+PACKAGE_REPO_GIT_USER_NAME = "illegal_name_cnb.by9cbmyhqda"
+PACKAGE_REPO_GIT_USER_EMAIL = (
+    "NSC0TbC7oYPediWNVyWWaC+illegal_name_cnb.by9cbmyhqda@noreply.cnb.cool"
+)
 HOMEBREW_FORMULAE = {
     "cnb-rs.rb": (
         "aarch64-apple-darwin",
@@ -476,17 +482,16 @@ def git_has_changes(repo_dir: Path) -> bool:
     return bool(git_output(repo_dir, "status", "--short"))
 
 
-def git_identity_env() -> dict[str, str]:
-    env = os.environ.copy()
-    env.update(
-        {
-            "GIT_AUTHOR_NAME": "github-actions[bot]",
-            "GIT_AUTHOR_EMAIL": "41898282+github-actions[bot]@users.noreply.github.com",
-            "GIT_COMMITTER_NAME": "github-actions[bot]",
-            "GIT_COMMITTER_EMAIL": "41898282+github-actions[bot]@users.noreply.github.com",
-        }
+def configure_package_repo_git_identity(repo_dir: Path) -> None:
+    """Set local author/committer identity (both use user.name / user.email)."""
+    run_cmd(
+        ["git", "config", "--local", "user.name", PACKAGE_REPO_GIT_USER_NAME],
+        cwd=repo_dir,
     )
-    return env
+    run_cmd(
+        ["git", "config", "--local", "user.email", PACKAGE_REPO_GIT_USER_EMAIL],
+        cwd=repo_dir,
+    )
 
 
 def commit_repo(repo_dir: Path, *, paths_to_add: list[str], message: str) -> bool:
@@ -494,13 +499,13 @@ def commit_repo(repo_dir: Path, *, paths_to_add: list[str], message: str) -> boo
         log(f"No changes detected in {repo_dir}; skip commit.")
         return False
 
-    env = git_identity_env()
-    run_cmd(["git", "add", *paths_to_add], cwd=repo_dir, env=env)
+    configure_package_repo_git_identity(repo_dir)
+    run_cmd(["git", "add", *paths_to_add], cwd=repo_dir)
     if not git_has_changes(repo_dir):
         log(f"No staged changes remained in {repo_dir}; skip commit.")
         return False
 
-    run_cmd(["git", "commit", "-m", message], cwd=repo_dir, env=env)
+    run_cmd(["git", "commit", "-m", message], cwd=repo_dir)
     return True
 
 
