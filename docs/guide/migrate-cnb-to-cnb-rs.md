@@ -20,7 +20,7 @@ cnb info                  -> cnb-rs info
 cnb issue list            -> cnb-rs issue list
 cnb pull create           -> cnb-rs pull create
 cnb release latest        -> cnb-rs release latest
-cnb completion fish       -> cnb-rs completion fish
+cnb completion fish       -> cnb-rs completion -s fish
 ```
 
 ## 如果你想继续输入 cnb
@@ -41,9 +41,16 @@ alias cnb cnb-rs
 
 ### PowerShell
 
+如果你希望继续输入 `cnb`，并且还想保留 Tab 补全，建议把下面两行加入 `$PROFILE`：
+
 ```powershell
 Set-Alias cnb cnb-rs
+Invoke-Expression -Command $((cnb-rs completion -s powershell | Out-String) -replace [regex]::Escape("-CommandName 'cnb-rs'"), "-CommandName 'cnb-rs', 'cnb'")
 ```
+
+更完整的补全说明可以参考 [cnb-rs completion](/completion)。
+
+如果你刚从旧版本升级过来，记得重新加载一次 `$PROFILE` 或重开终端，让新的补全定义生效。
 
 如果你选择 alias，请注意：
 
