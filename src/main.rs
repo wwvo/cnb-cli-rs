@@ -7,6 +7,7 @@ use cnb_core::context::AppContext;
 
 mod build_info;
 mod commands;
+mod root_help;
 
 /// cnb-rs - 一个非官方的 CNB 命令行工具
 #[derive(Debug, Parser)]
@@ -14,18 +15,18 @@ mod commands;
     name = "cnb-rs",
     version = build_info::SHORT_VERSION,
     long_version = build_info::CLAP_LONG_VERSION,
-    about = "一个非官方的 CNB 命令行工具",
+    about = "在命令行中高效管理你的 CNB 仓库、Issue、PR、Release 等资源",
 )]
 struct Cli {
-    /// 指定 CNB 域名（默认：cnb.cool）
+    /// 指定 CNB 域名，默认 `cnb.cool`
     #[arg(long, global = true)]
     domain: Option<String>,
 
-    /// 指定仓库路径（如：looc/git-cnb）
+    /// 指定仓库路径，如 `wwvo/cnb-rs/cnb-rs`
     #[arg(long, global = true)]
     repo: Option<String>,
 
-    /// 以 JSON 格式输出结果
+    /// 以 JSON 输出，适合脚本调用
     #[arg(long, global = true)]
     json: bool,
 
@@ -35,22 +36,22 @@ struct Cli {
 
 #[derive(Debug, clap::Subcommand)]
 enum Commands {
-    /// 认证管理
+    /// 登录、查看状态与退出登录
     Auth(commands::auth::AuthCommand),
 
-    /// 徽章管理
+    /// 获取和上传仓库徽章
     Badge(commands::badge::BadgeCommand),
 
-    /// 在浏览器中打开仓库页面
+    /// 在浏览器中打开仓库或资源页面
     Browse(commands::browse::BrowseArgs),
 
-    /// 构建管理
+    /// 查看、触发与管理构建
     Build(commands::build::BuildCommand),
 
-    /// 使用自然语言与 CNB `OpenAPI` 交互
+    /// 使用自然语言与 CNB OpenAPI 交互
     Chat(commands::chat::ChatArgs),
 
-    /// 配置管理
+    /// 查看和修改本地配置
     Config(commands::config::ConfigCommand),
 
     /// 生成终端命令行补全脚本
@@ -60,26 +61,26 @@ enum Commands {
         shell: clap_complete::Shell,
     },
 
-    /// 显示仓库和用户信息
+    /// 显示当前用户与仓库信息
     Info,
 
     /// 显示版本信息（建议使用 --version）
     #[command(hide = true)]
     Version,
 
-    /// Issue 管理
+    /// 创建、查看和管理 Issue
     Issue(commands::issue::IssueCommand),
 
-    /// Pull Request 管理
+    /// 创建、查看和管理 Pull Request
     Pull(commands::pull::PullCommand),
 
-    /// Release 管理
+    /// 查看和管理 Release
     Release(commands::release::ReleaseCommand),
 
-    /// 仓库管理
+    /// 查看、创建与配置仓库
     Repo(commands::repo::RepoCommand),
 
-    /// Commit 管理
+    /// 管理 Commit 附件
     Commit(commands::commit::CommitCommand),
 
     /// 下载仓库文件
@@ -89,34 +90,34 @@ enum Commands {
     #[command(name = "gpg-key")]
     GpgKey(commands::gpg_key::GpgKeyCommand),
 
-    /// 提交统计仪表盘
+    /// 查看本地 Git 提交统计
     Stats,
 
-    /// Star 趋势图
+    /// 查看仓库 Star 趋势
     Stars,
 
-    /// 标签管理
+    /// 管理仓库标签
     Label(commands::label::LabelCommand),
 
-    /// 知识库管理
+    /// 管理知识库
     Knowledge(commands::knowledge::KnowledgeCommand),
 
-    /// 成员管理
+    /// 管理仓库成员
     Member(commands::member::MemberCommand),
 
-    /// 任务集管理
+    /// 管理任务集
     Mission(commands::mission::MissionCommand),
 
-    /// 制品库管理
+    /// 管理制品库与标签
     Registry(commands::registry::RegistryCommand),
 
-    /// 组织管理
+    /// 管理组织
     Group(commands::group::GroupCommand),
 
-    /// 用户信息
+    /// 查看用户活动、粉丝与关注
     User(commands::user::UserCommand),
 
-    /// 云原生工作区管理
+    /// 管理云原生工作区
     Workspace(commands::workspace::WorkspaceCommand),
 }
 
@@ -129,6 +130,12 @@ fn main() {
     unsafe {
         windows_sys::Win32::System::Console::SetConsoleOutputCP(65001);
         windows_sys::Win32::System::Console::SetConsoleCP(65001);
+    }
+
+    let args: Vec<_> = std::env::args_os().skip(1).collect();
+    if root_help::is_root_help_invocation(&args) {
+        print!("{}", root_help::render());
+        return;
     }
 
     let rt = tokio::runtime::Builder::new_multi_thread()
