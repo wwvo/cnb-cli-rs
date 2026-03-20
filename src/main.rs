@@ -2,7 +2,7 @@
 //!
 //! 通过 `cnb-rs` 命令使用。
 
-use clap::Parser;
+use clap::{CommandFactory, Parser};
 use cnb_core::context::AppContext;
 
 mod build_info;
@@ -13,6 +13,7 @@ mod root_help;
 #[derive(Debug, Parser)]
 #[clap(
     name = "cnb-rs",
+    bin_name = "cnb-rs",
     version = build_info::SHORT_VERSION,
     long_version = build_info::CLAP_LONG_VERSION,
     about = "在命令行中高效管理你的 CNB 仓库、Issue、PR、Release 等资源",
@@ -55,11 +56,8 @@ enum Commands {
     Config(commands::config::ConfigCommand),
 
     /// 生成终端命令行补全脚本
-    Completion {
-        /// 目标 shell 类型
-        #[arg(value_enum)]
-        shell: clap_complete::Shell,
-    },
+    #[command(override_usage = "cnb-rs completion -s <shell>")]
+    Completion(commands::completion::CompletionArgs),
 
     /// 显示当前用户与仓库信息
     Info,
@@ -137,6 +135,9 @@ fn main() {
         print!("{}", root_help::render());
         return;
     }
+    if commands::completion::handle_invocation(&args) {
+        return;
+    }
 
     let rt = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
@@ -156,6 +157,12 @@ fn main() {
     }
 }
 
+fn completion_generation_command() -> clap::Command {
+    let mut cmd = Cli::command();
+    cmd.build();
+    cmd.mut_subcommand("completion", commands::completion::customize_subcommand)
+}
+
 async fn async_main() -> anyhow::Result<()> {
     // 初始化日志
     tracing_subscriber::fmt()
@@ -173,8 +180,13 @@ async fn async_main() -> anyhow::Result<()> {
         Commands::Build(cmd) => cmd.execute(&ctx).await,
         Commands::Chat(ref args) => args.execute(&ctx).await,
         Commands::Config(cmd) => cmd.execute(&ctx),
-        Commands::Completion { shell } => {
-            commands::completion::run(shell);
+        Commands::Completion(args) => {
+            if let Some(shell) = args.shell {
+                commands::completion::run(shell);
+            } else {
+                eprint!("{}", commands::completion::missing_shell_message());
+                std::process::exit(2);
+            }
             Ok(())
         }
         Commands::Info => commands::info::run(&ctx).await,
@@ -199,5 +211,86 @@ async fn async_main() -> anyhow::Result<()> {
         Commands::Group(cmd) => cmd.execute(&ctx).await,
         Commands::User(cmd) => cmd.execute(&ctx).await,
         Commands::Workspace(cmd) => cmd.execute(&ctx).await,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::commands;
+    use clap_complete::Shell;
+
+    #[test]
+    fn completion_accepts_long_shell_option() {
+        let matches = commands::completion::standalone_command()
+            .try_get_matches_from(["cnb-rs completion", "--shell", "bash"])
+            .expect("failed to parse completion --shell");
+        assert!(matches!(matches.get_one::<Shell>("shell"), Some(Shell::Bash)));
+    }
+
+    #[test]
+    fn completion_accepts_short_shell_option() {
+        let matches = commands::completion::standalone_command()
+            .try_get_matches_from(["cnb-rs completion", "-s", "zsh"])
+            .expect("failed to parse completion -s");
+        assert!(matches!(matches.get_one::<Shell>("shell"), Some(Shell::Zsh)));
+    }
+
+    #[test]
+    fn completion_rejects_legacy_positional_shell_syntax() {
+        match commands::completion::standalone_command()
+            .try_get_matches_from(["cnb-rs completion", "fish"])
+        {
+            Ok(matches) => panic!("legacy positional syntax unexpectedly parsed: {matches:?}"),
+            Err(err) => {
+                let message = err.to_string();
+                assert!(message.contains("unexpected argument"));
+                assert!(message.contains("fish"));
+            }
+        }
+    }
+
+    #[test]
+    fn completion_missing_shell_message_matches_expected_format() {
+        assert_eq!(
+            commands::completion::missing_shell_message(),
+            "error: the value for `--shell` is required\n\nUsage:  cnb-rs completion -s <shell>\n\nFlags:\n  -s, --shell string   Shell type: {bash|zsh|fish|powershell|elvish}\n\n"
+        );
+    }
+
+    #[test]
+    fn completion_help_uses_custom_template_without_global_flags() {
+        let message =
+            commands::completion::format_help_output(commands::completion::help_message());
+
+        assert!(message.contains("USAGE"));
+        assert!(message.contains("FLAGS"));
+        assert!(message.contains("INHERITED FLAGS"));
+        assert!(message.contains("--shell <string>"));
+        assert!(message.contains("Show help for command"));
+        assert!(message.contains(
+            "Use `cnb-rs <command> <subcommand> --help` for more information about a command."
+        ));
+        assert!(message.contains("https://cnb.wwvo.fun/completion"));
+        assert!(!message.contains("--domain"));
+        assert!(!message.contains("--repo"));
+        assert!(!message.contains("--json"));
+    }
+
+    #[test]
+    fn generated_completion_command_hides_global_flags_for_completion_subcommand() {
+        let script = commands::completion::render_script(Shell::PowerShell);
+        let start = script
+            .find("        'cnb-rs;completion' {")
+            .expect("completion block should exist");
+        let end = script[start..]
+            .find("        }")
+            .map(|offset| start + offset)
+            .expect("completion block should end");
+        let block = &script[start..end];
+
+        assert!(block.contains("--shell"));
+        assert!(!block.contains("--domain"));
+        assert!(!block.contains("--repo"));
+        assert!(!block.contains("--json"));
     }
 }
