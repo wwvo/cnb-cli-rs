@@ -38,6 +38,15 @@ jobs:
         with:
           key: linux-rpm-x86_64
 
+      - name: Resolve Cargo host target
+        id: host_target
+        shell: bash
+        run: |
+          set -euo pipefail
+          host_target="$(rustc -vV | sed -n 's/^host: //p')"
+          : "${host_target:?failed to resolve Cargo host target}"
+          printf 'target=%s\n' "${host_target}" >> "$GITHUB_OUTPUT"
+
       - name: Install RPM tooling
         shell: bash
         run: |
@@ -47,7 +56,7 @@ jobs:
 
       - name: Install cargo-generate-rpm
         shell: bash
-        run: cargo install cargo-generate-rpm --locked
+        run: cargo install cargo-generate-rpm --locked --target "${{ steps.host_target.outputs.target }}"
 
       - name: Build release binary
         shell: bash
