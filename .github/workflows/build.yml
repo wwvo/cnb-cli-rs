@@ -84,6 +84,20 @@ jobs:
         with:
           key: ${{ matrix.target }}
 
+      - name: Resolve Cargo host target
+        id: host_target
+        shell: pwsh
+        run: |
+          $hostTarget = rustc -vV |
+            Select-String '^host: ' |
+            ForEach-Object { $_.ToString().Substring(6).Trim() }
+
+          if ([string]::IsNullOrWhiteSpace($hostTarget)) {
+            throw "Failed to resolve Cargo host target from rustc -vV"
+          }
+
+          "target=$hostTarget" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
       - name: Setup MinGW
         if: matrix.setup_mingw
         uses: msys2/setup-msys2@v2
@@ -122,12 +136,12 @@ jobs:
       - name: Install cargo-deb
         if: matrix.package_linux_deb
         shell: bash
-        run: cargo install cargo-deb --locked
+        run: cargo install cargo-deb --locked --target "${{ steps.host_target.outputs.target }}"
 
       - name: Install cargo-generate-rpm
         if: matrix.package_linux_rpm
         shell: bash
-        run: cargo install cargo-generate-rpm --locked
+        run: cargo install cargo-generate-rpm --locked --target "${{ steps.host_target.outputs.target }}"
 
       - name: Setup Windows ARM64 gnullvm toolchain
         if: matrix.setup_cross_toolchain
@@ -433,6 +447,21 @@ jobs:
         with:
           key: windows-msix-release
 
+      - name: Resolve Cargo host target
+        id: msix_host_target
+        if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
+        shell: pwsh
+        run: |
+          $hostTarget = rustc -vV |
+            Select-String '^host: ' |
+            ForEach-Object { $_.ToString().Substring(6).Trim() }
+
+          if ([string]::IsNullOrWhiteSpace($hostTarget)) {
+            throw "Failed to resolve Cargo host target from rustc -vV"
+          }
+
+          "target=$hostTarget" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+
       - name: Setup .NET SDK
         if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         uses: actions/setup-dotnet@v5
@@ -492,7 +521,7 @@ jobs:
       - name: Install msixbundle-cli
         if: ${{ steps.signing_mode.outputs.enabled == 'true' }}
         shell: pwsh
-        run: cargo install msixbundle-cli --locked --version 1.1.4 --root target/tools/msixbundle-cli
+        run: cargo install msixbundle-cli --locked --version 1.1.4 --root target/tools/msixbundle-cli --target "${{ steps.msix_host_target.outputs.target }}"
 
       - name: Materialize signing certificate
         id: certificate
