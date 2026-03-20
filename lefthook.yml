@@ -1,0 +1,37 @@
+glob_matcher: doublestar
+
+pre-commit:
+  commands:
+    rustfmt:
+      glob:
+        - "Cargo.toml"
+        - "Cargo.lock"
+        - "build.rs"
+        - "rust-toolchain.toml"
+        - "rustfmt.toml"
+        - ".cargo/**/*"
+        - "src/**/*"
+        - "crates/**/*"
+      run: cargo fmt --all --check
+      fail_text: "Rust 格式检查失败。请先执行 `cargo fmt --all`，再重新提交。"
+
+pre-push:
+  commands:
+    rust-gate:
+      glob:
+        - "Cargo.toml"
+        - "Cargo.lock"
+        - "build.rs"
+        - "rust-toolchain.toml"
+        - "rustfmt.toml"
+        - ".cargo/**/*"
+        - "src/**/*"
+        - "crates/**/*"
+        - ".cnb/scripts/ci-check.sh"
+        - ".cnb/workflows/ci-check.yml"
+      run: |
+        set -e
+        cargo fmt --all --check
+        cargo clippy --workspace --all-targets --target x86_64-pc-windows-msvc -- -W clippy::all -W clippy::pedantic
+        cargo test --workspace --target x86_64-pc-windows-msvc
+      fail_text: "Pre-push 校验失败。请修复问题后再推送，或手动执行 `lefthook run pre-push --force` 复查。"

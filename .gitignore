@@ -11,3 +11,4 @@ packaging/linux/generated
 packaging/windows/wix/bin
 packaging/windows/wix/obj
 artifacts/windows-msi-local
+lefthook-local.yml
