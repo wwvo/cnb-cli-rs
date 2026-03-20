@@ -48,7 +48,7 @@ enum Commands {
     /// 查看、触发与管理构建
     Build(commands::build::BuildCommand),
 
-    /// 使用自然语言与 CNB OpenAPI 交互
+    /// 使用自然语言与 CNB `OpenAPI` 交互
     Chat(commands::chat::ChatArgs),
 
     /// 查看和修改本地配置

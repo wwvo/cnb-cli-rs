@@ -1,5 +1,4 @@
 use std::ffi::{OsStr, OsString};
-use std::fmt::Write as _;
 
 struct HelpEntry {
     name: &'static str,
@@ -141,56 +140,55 @@ pub fn is_root_help_invocation(args: &[OsString]) -> bool {
 pub fn render() -> String {
     let mut output = String::new();
 
-    writeln!(output, "cnb-rs").expect("writing to a String cannot fail");
-    writeln!(
-        output,
-        "在命令行中高效管理你的 CNB 仓库、Issue、PR、Release 等资源。"
-    )
-    .expect("writing to a String cannot fail");
-    writeln!(output).expect("writing to a String cannot fail");
+    push_line(&mut output, "cnb-rs");
+    push_line(
+        &mut output,
+        "在命令行中高效管理你的 CNB 仓库、Issue、PR、Release 等资源。",
+    );
+    push_blank_line(&mut output);
 
-    writeln!(output, "USAGE").expect("writing to a String cannot fail");
-    writeln!(output, "  cnb-rs [OPTIONS] <COMMAND>").expect("writing to a String cannot fail");
-    writeln!(output).expect("writing to a String cannot fail");
+    push_line(&mut output, "USAGE");
+    push_line(&mut output, "  cnb-rs [OPTIONS] <COMMAND>");
+    push_blank_line(&mut output);
 
     write_section(&mut output, "CORE COMMANDS", CORE_COMMANDS);
     write_section(&mut output, "REPOSITORY COMMANDS", REPOSITORY_COMMANDS);
     write_section(&mut output, "PLATFORM COMMANDS", PLATFORM_COMMANDS);
     write_section(&mut output, "UTILITY COMMANDS", UTILITY_COMMANDS);
 
-    writeln!(output, "GLOBAL OPTIONS").expect("writing to a String cannot fail");
-    writeln!(
-        output,
-        "  --repo <REPO>      指定仓库路径，如 `wwvo/cnb-rs/cnb-rs`"
-    )
-    .expect("writing to a String cannot fail");
-    writeln!(
-        output,
-        "  --domain <DOMAIN>  指定 CNB 域名，默认 `cnb.cool`"
-    )
-    .expect("writing to a String cannot fail");
-    writeln!(output, "  --json             以 JSON 输出，适合脚本调用")
-        .expect("writing to a String cannot fail");
-    writeln!(output, "  -h, --help         显示帮助").expect("writing to a String cannot fail");
-    writeln!(output, "  -V, --version      显示版本").expect("writing to a String cannot fail");
-    writeln!(output).expect("writing to a String cannot fail");
+    push_line(&mut output, "GLOBAL OPTIONS");
+    push_line(
+        &mut output,
+        "  --repo <REPO>      指定仓库路径，如 `wwvo/cnb-rs/cnb-rs`",
+    );
+    push_line(
+        &mut output,
+        "  --domain <DOMAIN>  指定 CNB 域名，默认 `cnb.cool`",
+    );
+    push_line(
+        &mut output,
+        "  --json             以 JSON 输出，适合脚本调用",
+    );
+    push_line(&mut output, "  -h, --help         显示帮助");
+    push_line(&mut output, "  -V, --version      显示版本");
+    push_blank_line(&mut output);
 
-    writeln!(output, "EXAMPLES").expect("writing to a String cannot fail");
-    writeln!(output, "  $ cnb-rs auth login").expect("writing to a String cannot fail");
-    writeln!(output, "  $ cnb-rs --repo wwvo/cnb-rs/cnb-rs issue list")
-        .expect("writing to a String cannot fail");
-    writeln!(output, "  $ cnb-rs browse -/issues").expect("writing to a String cannot fail");
-    writeln!(output, "  $ cnb-rs release list --json").expect("writing to a String cannot fail");
-    writeln!(output).expect("writing to a String cannot fail");
+    push_line(&mut output, "EXAMPLES");
+    push_line(&mut output, "  $ cnb-rs auth login");
+    push_line(
+        &mut output,
+        "  $ cnb-rs --repo wwvo/cnb-rs/cnb-rs issue list",
+    );
+    push_line(&mut output, "  $ cnb-rs browse -/issues");
+    push_line(&mut output, "  $ cnb-rs release list --json");
+    push_blank_line(&mut output);
 
-    writeln!(output, "LEARN MORE").expect("writing to a String cannot fail");
-    writeln!(
-        output,
-        "  Use `cnb-rs <command> --help` for more information about a command."
-    )
-    .expect("writing to a String cannot fail");
-    writeln!(output, "  Read the docs at https://cnb.wwvo.fun")
-        .expect("writing to a String cannot fail");
+    push_line(&mut output, "LEARN MORE");
+    push_line(
+        &mut output,
+        "  Use `cnb-rs <command> --help` for more information about a command.",
+    );
+    push_line(&mut output, "  Read the docs at https://cnb.wwvo.fun");
 
     output
 }
@@ -199,13 +197,27 @@ fn matches_token(actual: &OsString, expected: &str) -> bool {
     actual == OsStr::new(expected)
 }
 
+fn push_line(output: &mut String, line: &str) {
+    output.push_str(line);
+    output.push('\n');
+}
+
+fn push_blank_line(output: &mut String) {
+    output.push('\n');
+}
+
 fn write_section(output: &mut String, title: &str, entries: &[HelpEntry]) {
-    writeln!(output, "{title}").expect("writing to a String cannot fail");
+    push_line(output, title);
     for entry in entries {
-        writeln!(output, "  {:<12}{}", entry.name, entry.summary)
-            .expect("writing to a String cannot fail");
+        output.push_str("  ");
+        output.push_str(entry.name);
+        for _ in entry.name.len()..12 {
+            output.push(' ');
+        }
+        output.push_str(entry.summary);
+        output.push('\n');
     }
-    writeln!(output).expect("writing to a String cannot fail");
+    push_blank_line(output);
 }
 
 #[cfg(test)]
