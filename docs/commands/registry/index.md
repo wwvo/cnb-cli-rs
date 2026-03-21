@@ -51,5 +51,5 @@ $ cnb-rs registry tag detail docker my-app latest --registry my-org/my-registry 
 
 ## 另请参阅
 
-- [cnb-rs](/guide/cnb)
+- [cnb-rs](/cnb)
 - [cnb-rs build](/build/)

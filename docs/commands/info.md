@@ -54,4 +54,4 @@ $ cnb-rs --repo wwvo/cnb-rs/cnb-rs info
 
 ## 另请参阅
 
-- [cnb-rs](/guide/cnb)
+- [cnb-rs](/cnb)

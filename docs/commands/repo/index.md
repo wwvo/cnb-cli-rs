@@ -43,5 +43,5 @@ cnb-rs --repo org/repo repo view
 
 ## 另请参阅
 
-- [cnb-rs](/guide/cnb)
+- [cnb-rs](/cnb)
 - [cnb-rs auth](/auth/)

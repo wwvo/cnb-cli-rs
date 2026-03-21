@@ -7,13 +7,13 @@ hero:
   actions:
     - theme: brand
       text: 快速开始
-      link: /guide/getting-started
+      link: /getting-started
     - theme: alt
       text: 命令参考
-      link: /guide/cnb
+      link: /cnb
     - theme: alt
       text: 迁移指南
-      link: /guide/migrate-cnb-to-cnb-rs
+      link: /migrate-cnb-to-cnb-rs
 
 features:
   - title: 认证管理

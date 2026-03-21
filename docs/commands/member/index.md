@@ -69,6 +69,6 @@ $ cnb-rs member collaborator-list --group myorg
 
 ## 另请参阅
 
-- [cnb-rs](/guide/cnb)
+- [cnb-rs](/cnb)
 - [cnb-rs repo](/repo/)
 - [cnb-rs group](/group/)

@@ -41,4 +41,4 @@ $ cnb-rs download --files docs/ --ref develop
 
 ## 另请参阅
 
-- [cnb-rs](/guide/cnb)
+- [cnb-rs](/cnb)

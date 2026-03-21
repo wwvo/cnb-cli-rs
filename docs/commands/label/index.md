@@ -54,6 +54,6 @@ $ cnb-rs label pull-list 10
 
 ## 另请参阅
 
-- [cnb-rs](/guide/cnb)
+- [cnb-rs](/cnb)
 - [cnb-rs issue](/issue/)
 - [cnb-rs pr](/pr/)

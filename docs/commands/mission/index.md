@@ -47,5 +47,5 @@ $ cnb-rs mission view list my-org/sprint-2025-q1
 
 ## 另请参阅
 
-- [cnb-rs](/guide/cnb)
+- [cnb-rs](/cnb)
 - [cnb-rs issue](/issue/)

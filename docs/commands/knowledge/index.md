@@ -22,4 +22,4 @@ $ cnb-rs knowledge query
 
 ## 另请参阅
 
-- [cnb-rs](/guide/cnb)
+- [cnb-rs](/cnb)

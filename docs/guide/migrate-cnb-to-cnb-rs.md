@@ -86,6 +86,6 @@ Invoke-Expression -Command $((cnb-rs completion -s powershell | Out-String) -rep
 
 ## 另请参阅
 
-- [快速开始](/guide/getting-started)
-- [cnb-rs 命令总览](/guide/cnb)
-- [发布流程](/guide/release-process)
+- [快速开始](/getting-started)
+- [cnb-rs 命令总览](/cnb)
+- [发布流程](/release-process)

@@ -62,7 +62,7 @@ sudo dnf install ./cnb-rs-*.aarch64.rpm
 > [!NOTE]
 > 当前只提供 release 附件下载，不提供 apt / yum 软件源托管；其他 Linux 目标目前仍以 `.tar.gz` 为主。
 
-更多说明见：[Linux 安装说明](/guide/linux-install)。
+更多说明见：[Linux 安装说明](/linux-install)。
 
 ### Windows
 
@@ -84,7 +84,7 @@ Add-AppxPackage .\cnb-rs-v<VERSION>-windows-msvc.msixbundle
 msiexec /i .\cnb-rs-v<VERSION>-x86_64-pc-windows-msvc.msi
 ```
 
-如果 Windows 提示发布者未受信任，请先从同版本 Release 下载 `cnb-rs-v<VERSION>-windows-msvc-signing-cert.cer` 并导入，再执行 `Add-AppxPackage`。更完整的说明见：[Windows 安装说明](/guide/windows-install)。
+如果 Windows 提示发布者未受信任，请先从同版本 Release 下载 `cnb-rs-v<VERSION>-windows-msvc-signing-cert.cer` 并导入，再执行 `Add-AppxPackage`。更完整的说明见：[Windows 安装说明](/windows-install)。
 
 如果你不希望使用 MSIX 或 MSI，或者当前目标不在上述覆盖范围内，也仍然可以继续使用 release 页面中的 `.zip` 压缩包附件。
 
@@ -92,7 +92,7 @@ msiexec /i .\cnb-rs-v<VERSION>-x86_64-pc-windows-msvc.msi
 > 当前 `.msixbundle` / `.msix` 覆盖 `x86_64-pc-windows-msvc` 与 `aarch64-pc-windows-msvc`；
 > `x86_64-pc-windows-gnu` 当前继续使用 `.msi`。
 
-更多说明见：[Windows 安装说明](/guide/windows-install)。
+更多说明见：[Windows 安装说明](/windows-install)。
 
 ### macOS
 
@@ -120,7 +120,7 @@ scoop install cnb-rs/cnb-rs
 
 > [!WARNING]
 > 从改名版本开始，原来的 `cnb ...` 已改为 `cnb-rs ...`。
-> 如果你是从旧版本升级，请先阅读 [从 cnb 迁移到 cnb-rs](/guide/migrate-cnb-to-cnb-rs)。
+> 如果你是从旧版本升级，请先阅读 [从 cnb 迁移到 cnb-rs](/migrate-cnb-to-cnb-rs)。
 
 ## 登录
 
@@ -153,4 +153,4 @@ cnb-rs chat --do "查看我的 Issue 列表"
 - 如果你想保留旧输入习惯，请自行配置 shell alias
 - Linux 用户若改用 `.deb` / `.rpm` 安装，补全文件会随包一起安装，无需再手工拷贝 Bash / Zsh / Fish 补全脚本
 
-完整迁移说明见：[从 cnb 迁移到 cnb-rs](/guide/migrate-cnb-to-cnb-rs)
+完整迁移说明见：[从 cnb 迁移到 cnb-rs](/migrate-cnb-to-cnb-rs)

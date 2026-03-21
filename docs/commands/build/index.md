@@ -41,5 +41,5 @@ $ cnb-rs build stop cnb-1qa-1i3f5ecau
 
 ## 另请参阅
 
-- [cnb-rs](/guide/cnb)
+- [cnb-rs](/cnb)
 - [cnb-rs repo](/repo/)

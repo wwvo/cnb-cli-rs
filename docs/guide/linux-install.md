@@ -130,4 +130,4 @@ cnb-rs auth status
 - 当前 shell 已重新加载
 - 你使用的是 `cnb-rs`，而不是旧命令名 `cnb`
 
-旧命令迁移说明见：[从 cnb 迁移到 cnb-rs](/guide/migrate-cnb-to-cnb-rs)。
+旧命令迁移说明见：[从 cnb 迁移到 cnb-rs](/migrate-cnb-to-cnb-rs)。

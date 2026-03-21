@@ -51,4 +51,4 @@ $ cnb-rs --json issue list
 
 ## 另请参阅
 
-- [cnb-rs](/guide/cnb)
+- [cnb-rs](/cnb)

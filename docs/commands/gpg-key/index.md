@@ -30,5 +30,5 @@ $ cnb-rs gpg-key list --json
 
 ## 另请参阅
 
-- [cnb-rs](/guide/cnb)
+- [cnb-rs](/cnb)
 - [cnb-rs auth](/auth/)

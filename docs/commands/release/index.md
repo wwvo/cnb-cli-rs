@@ -38,4 +38,4 @@ $ cnb-rs release download v1.0.0 app.tar.gz
 
 ## 另请参阅
 
-- [cnb-rs](/guide/cnb)
+- [cnb-rs](/cnb)

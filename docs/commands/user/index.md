@@ -37,5 +37,5 @@ $ cnb-rs user activity-detail --type commit --repo org/repo --date 202501
 
 ## 另请参阅
 
-- [cnb-rs](/guide/cnb)
+- [cnb-rs](/cnb)
 - [cnb-rs auth](/auth/)

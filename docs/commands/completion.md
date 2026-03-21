@@ -137,5 +137,5 @@ cnb-rs completion -s elvish >> ~/.config/elvish/rc.elv
 
 ## 另请参阅
 
-- [cnb-rs](/guide/cnb)
-- [从 cnb 迁移到 cnb-rs](/guide/migrate-cnb-to-cnb-rs)
+- [cnb-rs](/cnb)
+- [从 cnb 迁移到 cnb-rs](/migrate-cnb-to-cnb-rs)
