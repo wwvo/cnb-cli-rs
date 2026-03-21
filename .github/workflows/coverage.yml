@@ -1,4 +1,5 @@
-# 使用 cargo-llvm-cov 生成 LCOV，便于在 IDE / Codecov 等工具中查看；不强制覆盖率阈值，避免阻碍合并。
+# 使用 cargo-llvm-cov 生成 LCOV，上传到 Codecov（需配置仓库 Secret：CODECOV_TOKEN）。
+# 不强制覆盖率阈值，避免阻碍合并（可在 codecov.io 仓库设置或 codecov.yml 中再收紧）。
 
 name: Coverage
 
@@ -24,6 +25,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: llvm-tools-preview
@@ -36,3 +39,10 @@ jobs:
         with:
           name: coverage-lcov
           path: lcov.info
+      - name: Upload coverage to Codecov
+        if: ${{ secrets.CODECOV_TOKEN != '' }}
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: lcov.info
+          fail_ci_if_error: false
