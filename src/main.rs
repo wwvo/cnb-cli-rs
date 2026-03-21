@@ -122,14 +122,14 @@ enum Commands {
 }
 
 fn main() {
-    // Windows: 设置控制台编码为 UTF-8，避免中文乱码
+    // Windows: 设置控制台编码为 UTF-8，避免中文乱码（使用 `windows` crate 的类型化绑定，替代手写 FFI）
     #[cfg(windows)]
-    // SAFETY: SetConsoleOutputCP/SetConsoleCP 是线程安全的 Windows API，
-    // 在程序启动时调用一次，参数 65001 (UTF-8) 是合法的代码页值。
     #[allow(unsafe_code)]
     unsafe {
-        windows_sys::Win32::System::Console::SetConsoleOutputCP(65001);
-        windows_sys::Win32::System::Console::SetConsoleCP(65001);
+        use windows::Win32::System::Console::{SetConsoleCP, SetConsoleOutputCP};
+        // SAFETY: SetConsoleOutputCP/SetConsoleCP 在进程启动早期各调用一次；65001 为 UTF-8 代码页。
+        let _ = SetConsoleOutputCP(65001);
+        let _ = SetConsoleCP(65001);
     }
 
     let args: Vec<_> = std::env::args_os().skip(1).collect();
