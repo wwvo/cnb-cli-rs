@@ -1,0 +1,33 @@
+x-cargo-deny-rust-image: &cargo-deny-rust-image
+  image: docker.cnb.cool/wwvo/cnb-rs/cnb-rs:rust-ci
+
+x-cargo-deny-pr-filters: &cargo-deny-pr-filters
+  ifModify:
+    - "Cargo.toml"
+    - "Cargo.lock"
+    - "deny.toml"
+    - "crates/**/Cargo.toml"
+    - ".cnb/workflows/cargo-deny.yml"
+
+x-cargo-deny-job: &cargo-deny-job
+  name: cargo-deny
+  runner:
+    cpus: 2
+  stages:
+    - name: cargo deny check
+      <<: *cargo-deny-rust-image
+      script: bash .cnb/scripts/ci-check.sh deny
+
+x-cargo-deny-push-jobs: &cargo-deny-push-jobs
+  - <<: *cargo-deny-job
+
+x-cargo-deny-pr-jobs: &cargo-deny-pr-jobs
+  - <<: *cargo-deny-job
+    <<: *cargo-deny-pr-filters
+
+main:
+  push: *cargo-deny-push-jobs
+  pull_request: *cargo-deny-pr-jobs
+
+'**':
+  web_trigger_cargo-deny: *cargo-deny-push-jobs

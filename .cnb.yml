@@ -1,6 +1,7 @@
 include:
   - .cnb/workflows/deploy-docs.yml
   - .cnb/workflows/ci-check.yml
+  - .cnb/workflows/cargo-deny.yml
   - .cnb/workflows/sync-github-main.yml
   - .cnb/workflows/auto-tag.yml
   - .cnb/workflows/release-prepare.yml
