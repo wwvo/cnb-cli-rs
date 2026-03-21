@@ -44,6 +44,15 @@ impl Table {
         self.rows.push(row);
     }
 
+    /// 渲染并输出表格；若无数据行，输出提示信息到 stderr
+    pub fn print_or_hint(&self, empty_hint: &str) {
+        if self.rows.is_empty() {
+            eprintln!("{empty_hint}");
+        } else {
+            self.print();
+        }
+    }
+
     /// 渲染并输出表格
     pub fn print(&self) {
         // 输出表头
