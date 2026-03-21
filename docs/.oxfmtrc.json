@@ -4,13 +4,5 @@
   "singleQuote": true,
   "semi": false,
   "sortPackageJson": false,
-  "ignorePatterns": [
-    "node_modules/**",
-    ".vitepress/cache/**",
-    ".vitepress/dist/**",
-    "commands/**",
-    "guide/**",
-    "index.md",
-    "pnpm-lock.yaml"
-  ]
+  "ignorePatterns": ["node_modules/**", ".vitepress/cache/**", ".vitepress/dist/**", "pnpm-lock.yaml"]
 }
