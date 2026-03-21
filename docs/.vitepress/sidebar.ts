@@ -29,7 +29,7 @@ const commandCollator = new Intl.Collator('en', {
 export const sidebar: DefaultTheme.Sidebar = [
   {
     text: '指南',
-    base: '/guide/',
+    base: '/',
     items: buildGuideItems(),
   },
   {

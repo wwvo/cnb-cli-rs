@@ -12,6 +12,7 @@ export default defineConfig({
   appearance: 'dark',
 
   rewrites: {
+    'guide/:slug*': ':slug*',
     'commands/:slug*': ':slug*',
   },
 
@@ -36,7 +37,7 @@ export default defineConfig({
   },
 
   themeConfig: {
-    nav: [{ text: '指南', link: '/guide/getting-started' }],
+    nav: [{ text: '指南', link: '/getting-started' }],
 
     sidebar,
 
