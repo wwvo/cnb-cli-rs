@@ -124,26 +124,25 @@ function buildCommandItems(): DefaultTheme.SidebarItem[] {
       link,
     }
 
-    const childItems = childPaths
-      .map((path) => {
-        const childMeta = readDocMeta(path)
-        if (!childMeta.sidebar) {
-          return undefined
-        }
+    const childItems: DefaultTheme.SidebarItem[] = []
 
-        const childText = deriveChildCommandText(childMeta.title, meta.title, path)
-        return {
-          item: {
-            text: childText,
-            link: toRelativeLink(path, fullPath),
-            base: childBase,
-          },
-          sortKey: childText,
-        } satisfies SortableItem
+    for (const path of childPaths) {
+      const childMeta = readDocMeta(path)
+      if (!childMeta.sidebar) {
+        continue
+      }
+
+      const childText = deriveChildCommandText(childMeta.title, meta.title, path)
+      childItems.push({
+        text: childText,
+        link: toRelativeLink(path, fullPath),
+        base: childBase,
       })
-      .filter((value): value is SortableItem => value !== undefined)
-      .sort((left, right) => commandCollator.compare(left.sortKey, right.sortKey))
-      .map(({ item }) => item)
+    }
+
+    childItems.sort((left, right) =>
+      commandCollator.compare(left.text ?? '', right.text ?? ''),
+    )
 
     if (childItems.length) {
       item.items = childItems
