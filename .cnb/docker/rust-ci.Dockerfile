@@ -8,6 +8,7 @@ ENV RUSTUP_UPDATE_ROOT=https://mirrors.tuna.tsinghua.edu.cn/rustup/rustup
 
 # 预装 CI 检查所需组件
 RUN rustup component add rustfmt clippy
+RUN cargo install cargo-deny --locked
 
 # release-prepare 与 tag release 仍在 CNB 侧使用 git-cliff
 RUN set -eux; \
