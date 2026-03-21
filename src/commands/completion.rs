@@ -6,30 +6,29 @@ use std::io::Write;
 use clap::{Arg, Args, Command};
 use clap_complete::{Shell, generate};
 
-const COMPLETION_SHELL_HELP: &str = "Shell type: {bash|zsh|fish|powershell|elvish}";
+const COMPLETION_SHELL_HELP: &str = "Shell 类型：{bash|zsh|fish|powershell|elvish}";
 const COMPLETION_HELP_TEMPLATE: &str = "\
 {about-with-newline}\
 \n\
-USAGE\n  {usage}\n\
+用法\n  {usage}\n\
 \n\
-FLAGS\n{options}{after-help}";
-const COMPLETION_AFTER_HELP: &str =
-    "\nLEARN MORE\n  Read the docs at https://cnb.wwvo.fun/completion\n\n";
+参数\n{options}{after-help}";
+const COMPLETION_AFTER_HELP: &str = "\n了解更多\n  文档：https://cnb.wwvo.fun/completion\n\n";
 const COMPLETION_HELP_MESSAGE: &str = "\
 生成终端命令行补全脚本
 
-USAGE
+用法
   cnb-rs completion -s <shell>
 
-FLAGS
-  -s, --shell <string>  Shell type: {bash|zsh|fish|powershell|elvish}
+参数
+  -s, --shell <string>  Shell 类型：{bash|zsh|fish|powershell|elvish}
 
-INHERITED FLAGS
-  --help   Show help for command
+继承参数
+  --help   显示该命令的帮助
 
-LEARN MORE
-  Use `cnb-rs <command> <subcommand> --help` for more information about a command.
-  Read the docs at https://cnb.wwvo.fun/completion
+了解更多
+  使用 `cnb-rs <命令> <子命令> --help` 查看子命令的详细说明。
+  文档：https://cnb.wwvo.fun/completion
 
 ";
 
@@ -122,7 +121,7 @@ pub fn run(shell: Shell) {
 }
 
 pub fn missing_shell_message() -> &'static str {
-    "error: the value for `--shell` is required\n\nUsage:  cnb-rs completion -s <shell>\n\nFlags:\n  -s, --shell string   Shell type: {bash|zsh|fish|powershell|elvish}\n\n"
+    "错误: 必须为 `--shell` 提供取值\n\n用法:  cnb-rs completion -s <shell>\n\n参数:\n  -s, --shell <string>   Shell 类型：{bash|zsh|fish|powershell|elvish}\n\n"
 }
 
 fn matches_completion_invocation(args: &[OsString]) -> bool {

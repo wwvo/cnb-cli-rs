@@ -166,6 +166,8 @@ cargo install cargo-llvm-cov --locked
 cargo llvm-cov --workspace --html --output-dir coverage-html
 ```
 
+**文案约定：** 面向用户的**错误、提示与自定义帮助**（如顶层 `错误:`、补全子命令说明）统一为**简体中文**；依赖库自带的英文（如部分 clap 解析错误）若需完全中文化，需在后续迭代中逐步包装或替换。
+
 ## 迁移说明
 
 - 旧命令：`cnb ...`

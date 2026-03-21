@@ -174,9 +174,9 @@ fn render_top_level_error_message(message: &str, color_choice: ColorChoice) -> S
 
     let styles = clap::builder::styling::Styles::default();
     let use_color = should_color_stderr(color_choice);
-    let error = style_text("error", styles.get_error(), use_color);
+    let error_label = style_text("错误", styles.get_error(), use_color);
 
-    format!("{error}: {message}{line_ending}{line_ending}")
+    format!("{error_label}: {message}{line_ending}{line_ending}")
 }
 
 fn handle_removed_command_invocation(args: &[std::ffi::OsString]) -> bool {
@@ -215,15 +215,15 @@ fn render_removed_command_message(
 
     let styles = clap::builder::styling::Styles::default();
     let use_color = should_color_stderr(color_choice);
-    let error = style_text("error", styles.get_error(), use_color);
-    let tip = style_text("tip:", styles.get_valid(), use_color);
-    let usage = style_text("Usage:", styles.get_usage(), use_color);
+    let error_label = style_text("错误", styles.get_error(), use_color);
+    let tip = style_text("提示:", styles.get_valid(), use_color);
+    let usage = style_text("用法:", styles.get_usage(), use_color);
     let invalid_command = style_text(&format!("'{command}'"), styles.get_invalid(), use_color);
     let valid_command = style_text(&format!("'{replacement}'"), styles.get_valid(), use_color);
     let help = style_text("'--help'", styles.get_literal(), use_color);
 
     format!(
-        "{error}: unrecognized subcommand {invalid_command}{line_ending}{line_ending}  {tip} a similar subcommand exists: {valid_command}{line_ending}{line_ending}{usage} cnb-rs [OPTIONS] <COMMAND>{line_ending}{line_ending}For more information, try {help}.{line_ending}{line_ending}"
+        "{error_label}: 无法识别子命令 {invalid_command}{line_ending}{line_ending}  {tip} 存在相近子命令：{valid_command}{line_ending}{line_ending}{usage} cnb-rs [OPTIONS] <COMMAND>{line_ending}{line_ending}更多信息请使用 {help}。{line_ending}{line_ending}"
     )
 }
 
@@ -359,7 +359,7 @@ mod tests {
     fn completion_missing_shell_message_matches_expected_format() {
         assert_eq!(
             commands::completion::missing_shell_message(),
-            "error: the value for `--shell` is required\n\nUsage:  cnb-rs completion -s <shell>\n\nFlags:\n  -s, --shell string   Shell type: {bash|zsh|fish|powershell|elvish}\n\n"
+            "错误: 必须为 `--shell` 提供取值\n\n用法:  cnb-rs completion -s <shell>\n\n参数:\n  -s, --shell <string>   Shell 类型：{bash|zsh|fish|powershell|elvish}\n\n"
         );
     }
 
@@ -368,14 +368,12 @@ mod tests {
         let message =
             commands::completion::format_help_output(commands::completion::help_message());
 
-        assert!(message.contains("USAGE"));
-        assert!(message.contains("FLAGS"));
-        assert!(message.contains("INHERITED FLAGS"));
+        assert!(message.contains("用法"));
+        assert!(message.contains("参数"));
+        assert!(message.contains("继承参数"));
         assert!(message.contains("--shell <string>"));
-        assert!(message.contains("Show help for command"));
-        assert!(message.contains(
-            "Use `cnb-rs <command> <subcommand> --help` for more information about a command."
-        ));
+        assert!(message.contains("显示该命令的帮助"));
+        assert!(message.contains("使用 `cnb-rs <命令> <子命令> --help` 查看子命令的详细说明。"));
         assert!(message.contains("https://cnb.wwvo.fun/completion"));
         assert!(!message.contains("--domain"));
         assert!(!message.contains("--repo"));
@@ -408,9 +406,9 @@ mod tests {
             super::render_top_level_error_message("当前目录不是 Git 仓库", ColorChoice::Never);
 
         #[cfg(windows)]
-        assert_eq!(rendered, "error: 当前目录不是 Git 仓库\r\n\r\n");
+        assert_eq!(rendered, "错误: 当前目录不是 Git 仓库\r\n\r\n");
         #[cfg(not(windows))]
-        assert_eq!(rendered, "error: 当前目录不是 Git 仓库\n\n");
+        assert_eq!(rendered, "错误: 当前目录不是 Git 仓库\n\n");
     }
 
     #[test]
@@ -450,12 +448,12 @@ mod tests {
         #[cfg(windows)]
         assert_eq!(
             rendered,
-            "error: unrecognized subcommand 'pull'\r\n\r\n  tip: a similar subcommand exists: 'pr'\r\n\r\nUsage: cnb-rs [OPTIONS] <COMMAND>\r\n\r\nFor more information, try '--help'.\r\n\r\n"
+            "错误: 无法识别子命令 'pull'\r\n\r\n  提示: 存在相近子命令：'pr'\r\n\r\n用法: cnb-rs [OPTIONS] <COMMAND>\r\n\r\n更多信息请使用 '--help'。\r\n\r\n"
         );
         #[cfg(not(windows))]
         assert_eq!(
             rendered,
-            "error: unrecognized subcommand 'pull'\n\n  tip: a similar subcommand exists: 'pr'\n\nUsage: cnb-rs [OPTIONS] <COMMAND>\n\nFor more information, try '--help'.\n\n"
+            "错误: 无法识别子命令 'pull'\n\n  提示: 存在相近子命令：'pr'\n\n用法: cnb-rs [OPTIONS] <COMMAND>\n\n更多信息请使用 '--help'。\n\n"
         );
     }
 
@@ -464,7 +462,7 @@ mod tests {
         let rendered = super::render_removed_command_message("pull", "pr", ColorChoice::Always);
 
         assert!(rendered.contains("\u{1b}["));
-        assert!(rendered.contains("unrecognized subcommand"));
+        assert!(rendered.contains("无法识别子命令"));
         assert!(rendered.contains("'pull'"));
         assert!(rendered.contains("'pr'"));
     }
@@ -475,7 +473,7 @@ mod tests {
             super::render_top_level_error_message("当前目录不是 Git 仓库", ColorChoice::Always);
 
         assert!(rendered.contains("\u{1b}["));
-        assert!(rendered.contains("error"));
+        assert!(rendered.contains("错误"));
         assert!(rendered.contains("当前目录不是 Git 仓库"));
     }
 }
