@@ -140,7 +140,6 @@ pub fn is_root_help_invocation(args: &[OsString]) -> bool {
 pub fn render() -> String {
     let mut output = String::new();
 
-    push_line(&mut output, "cnb-rs");
     push_line(
         &mut output,
         "在命令行中高效管理你的 CNB 仓库、Issue、PR、Release 等资源。",
@@ -189,6 +188,8 @@ pub fn render() -> String {
         "  使用 `cnb-rs <命令> --help` 查看子命令的详细说明。",
     );
     push_line(&mut output, "  文档：https://cnb.wwvo.fun");
+    // 末尾空行：与终端提示符分隔，避免与最后一行粘连产生歧义
+    push_blank_line(&mut output);
 
     output
 }
@@ -244,6 +245,15 @@ mod tests {
 
         assert!(help.contains("  pr          创建、查看和管理 PR"));
         assert!(!help.contains("  pull        "));
+    }
+
+    #[test]
+    fn root_help_ends_with_blank_line() {
+        let help = render();
+        assert!(
+            help.ends_with("\n\n"),
+            "末尾应有一个空行，便于与终端提示符分隔"
+        );
     }
 
     #[test]
