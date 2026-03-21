@@ -4,8 +4,10 @@
   "type": "module",
   "scripts": {
     "dev": "vitepress dev",
+    "fix": "pnpm fmt && pnpm lint:fix && pnpm fmt",
     "fmt": "oxfmt",
     "fmt:check": "oxfmt --check",
+    "check": "pnpm fmt:check && pnpm lint",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "build": "vitepress build",
