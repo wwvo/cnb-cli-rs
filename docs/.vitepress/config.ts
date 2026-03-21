@@ -33,7 +33,7 @@ export default defineConfig({
       lazyLoading: true,
     },
 
-    config(md: any) {},
+    config() {},
   },
 
   themeConfig: {
