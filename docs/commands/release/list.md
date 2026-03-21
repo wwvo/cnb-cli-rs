@@ -1,3 +1,6 @@
+---
+title: cnb-rs release list
+---
 # cnb-rs release list
 
 ```

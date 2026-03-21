@@ -1,3 +1,6 @@
+---
+title: cnb-rs workspace stop
+---
 # cnb-rs workspace stop
 
 ```

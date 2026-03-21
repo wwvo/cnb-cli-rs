@@ -1,3 +1,6 @@
+---
+title: cnb-rs registry package detail
+---
 # cnb-rs registry package detail
 
 ```

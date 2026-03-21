@@ -1,3 +1,6 @@
+---
+title: cnb-rs group delete
+---
 # cnb-rs group delete
 
 ```

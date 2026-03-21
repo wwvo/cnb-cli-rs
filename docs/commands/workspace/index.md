@@ -1,3 +1,6 @@
+---
+title: cnb-rs workspace
+---
 # cnb-rs workspace
 
 ```

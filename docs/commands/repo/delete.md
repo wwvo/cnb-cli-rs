@@ -1,3 +1,6 @@
+---
+title: cnb-rs repo delete
+---
 # cnb-rs repo delete
 
 ```

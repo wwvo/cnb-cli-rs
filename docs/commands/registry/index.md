@@ -1,3 +1,6 @@
+---
+title: cnb-rs registry
+---
 # cnb-rs registry
 
 ```

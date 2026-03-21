@@ -1,3 +1,6 @@
+---
+title: cnb-rs build status
+---
 # cnb-rs build status
 
 ```

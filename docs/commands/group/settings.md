@@ -1,3 +1,6 @@
+---
+title: cnb-rs group settings
+---
 # cnb-rs group settings
 
 ```

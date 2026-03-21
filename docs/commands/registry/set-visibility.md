@@ -1,3 +1,6 @@
+---
+title: cnb-rs registry set-visibility
+---
 # cnb-rs registry set-visibility
 
 ```

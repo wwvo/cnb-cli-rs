@@ -1,3 +1,6 @@
+---
+title: Windows 安装说明
+---
 # Windows 安装说明
 
 ## 推荐方式

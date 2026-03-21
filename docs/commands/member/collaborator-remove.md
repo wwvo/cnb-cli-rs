@@ -1,3 +1,6 @@
+---
+title: cnb-rs member collaborator-remove
+---
 # cnb-rs member collaborator-remove
 
 ```

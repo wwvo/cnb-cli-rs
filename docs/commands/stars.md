@@ -1,3 +1,6 @@
+---
+title: cnb-rs stars
+---
 # cnb-rs stars
 
 ```

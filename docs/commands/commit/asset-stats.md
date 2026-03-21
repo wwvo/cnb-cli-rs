@@ -1,3 +1,6 @@
+---
+title: cnb-rs commit asset-stats
+---
 # cnb-rs commit asset-stats
 
 ```

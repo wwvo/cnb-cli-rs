@@ -1,3 +1,6 @@
+---
+title: cnb-rs repo asset
+---
 # cnb-rs repo asset
 
 ```

@@ -1,3 +1,6 @@
+---
+title: cnb-rs badge list
+---
 # cnb-rs badge list
 
 ```

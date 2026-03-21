@@ -1,3 +1,6 @@
+---
+title: cnb-rs issue create
+---
 # cnb-rs issue create
 
 ```

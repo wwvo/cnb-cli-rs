@@ -1,3 +1,6 @@
+---
+title: cnb-rs version
+---
 # cnb-rs version
 
 ```

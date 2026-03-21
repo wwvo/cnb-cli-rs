@@ -1,3 +1,6 @@
+---
+title: cnb-rs completion
+---
 # cnb-rs completion
 
 ::: details 包管理器安装

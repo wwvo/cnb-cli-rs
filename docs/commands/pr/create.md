@@ -1,3 +1,6 @@
+---
+title: cnb-rs pr create
+---
 # cnb-rs pr create
 
 ```

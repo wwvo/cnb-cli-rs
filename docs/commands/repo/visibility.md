@@ -1,3 +1,6 @@
+---
+title: cnb-rs repo visibility
+---
 # cnb-rs repo visibility
 
 ```

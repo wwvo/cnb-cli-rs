@@ -1,3 +1,6 @@
+---
+title: cnb-rs release delete
+---
 # cnb-rs release delete
 
 ```

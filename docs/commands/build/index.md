@@ -1,3 +1,6 @@
+---
+title: cnb-rs build
+---
 # cnb-rs build
 
 ```

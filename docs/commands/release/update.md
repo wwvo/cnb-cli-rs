@@ -1,3 +1,6 @@
+---
+title: cnb-rs release update
+---
 # cnb-rs release update
 
 ```

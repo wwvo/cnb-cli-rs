@@ -1,3 +1,6 @@
+---
+title: cnb-rs pr
+---
 # cnb-rs pr
 
 PR 管理，查看、创建、更新和合并 PR。

@@ -1,3 +1,6 @@
+---
+title: cnb-rs mission create
+---
 # cnb-rs mission create
 
 ```

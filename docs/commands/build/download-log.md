@@ -1,3 +1,6 @@
+---
+title: cnb-rs build download-log
+---
 # cnb-rs build download-log
 
 ```

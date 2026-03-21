@@ -1,3 +1,6 @@
+---
+title: cnb-rs member repo-add
+---
 # cnb-rs member repo-add
 
 ```

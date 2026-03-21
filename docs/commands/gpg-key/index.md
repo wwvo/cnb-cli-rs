@@ -1,3 +1,6 @@
+---
+title: cnb-rs gpg-key
+---
 # cnb-rs gpg-key
 
 ```

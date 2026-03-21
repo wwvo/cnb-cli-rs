@@ -1,3 +1,6 @@
+---
+title: cnb-rs registry delete
+---
 # cnb-rs registry delete
 
 ```

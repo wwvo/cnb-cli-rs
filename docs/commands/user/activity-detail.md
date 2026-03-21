@@ -1,3 +1,6 @@
+---
+title: cnb-rs user activity-detail
+---
 # cnb-rs user activity-detail
 
 ```

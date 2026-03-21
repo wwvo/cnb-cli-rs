@@ -1,3 +1,6 @@
+---
+title: cnb-rs repo top-contributors
+---
 # cnb-rs repo top-contributors
 
 ```

@@ -1,3 +1,6 @@
+---
+title: cnb-rs auth logout
+---
 # cnb-rs auth logout
 
 ```

@@ -1,3 +1,6 @@
+---
+title: cnb-rs build stage
+---
 # cnb-rs build stage
 
 ```

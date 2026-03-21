@@ -1,3 +1,6 @@
+---
+title: cnb-rs auth
+---
 # cnb-rs auth
 
 ```

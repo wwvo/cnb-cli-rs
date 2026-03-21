@@ -1,3 +1,6 @@
+---
+title: cnb-rs release asset-upload
+---
 # cnb-rs release asset-upload
 
 ```

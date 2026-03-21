@@ -1,3 +1,6 @@
+---
+title: cnb-rs group view
+---
 # cnb-rs group view
 
 ```

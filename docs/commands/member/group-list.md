@@ -1,3 +1,6 @@
+---
+title: cnb-rs member group-list
+---
 # cnb-rs member group-list
 
 ```

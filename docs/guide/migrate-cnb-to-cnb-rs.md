@@ -1,3 +1,7 @@
+---
+title: 从 cnb 迁移到 cnb-rs
+sidebar: false
+---
 # 从 cnb 迁移到 cnb-rs
 
 `cnb` 已在本项目中正式改名为 `cnb-rs`。

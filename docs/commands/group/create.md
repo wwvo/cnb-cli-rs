@@ -1,3 +1,6 @@
+---
+title: cnb-rs group create
+---
 # cnb-rs group create
 
 ```

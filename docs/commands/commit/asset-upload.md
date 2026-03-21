@@ -1,3 +1,6 @@
+---
+title: cnb-rs commit asset-upload
+---
 # cnb-rs commit asset-upload
 
 ```

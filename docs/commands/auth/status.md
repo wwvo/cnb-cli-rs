@@ -1,3 +1,6 @@
+---
+title: cnb-rs auth status
+---
 # cnb-rs auth status
 
 ```

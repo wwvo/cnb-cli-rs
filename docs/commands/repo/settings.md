@@ -1,3 +1,6 @@
+---
+title: cnb-rs repo settings
+---
 # cnb-rs repo settings
 
 ```

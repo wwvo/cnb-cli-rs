@@ -1,3 +1,6 @@
+---
+title: cnb-rs member group-inherited
+---
 # cnb-rs member group-inherited
 
 ```

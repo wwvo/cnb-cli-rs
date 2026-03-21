@@ -1,3 +1,6 @@
+---
+title: cnb-rs mission view get
+---
 # cnb-rs mission view get
 
 ```

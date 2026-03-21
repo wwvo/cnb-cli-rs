@@ -1,3 +1,6 @@
+---
+title: cnb-rs badge upload
+---
 # cnb-rs badge upload
 
 ```

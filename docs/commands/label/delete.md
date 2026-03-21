@@ -1,3 +1,6 @@
+---
+title: cnb-rs label delete
+---
 # cnb-rs label delete
 
 ```

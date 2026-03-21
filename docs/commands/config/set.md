@@ -1,3 +1,6 @@
+---
+title: cnb-rs config set
+---
 # cnb-rs config set
 
 ```

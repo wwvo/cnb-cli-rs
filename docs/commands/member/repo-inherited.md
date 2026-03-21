@@ -1,3 +1,6 @@
+---
+title: cnb-rs member repo-inherited
+---
 # cnb-rs member repo-inherited
 
 ```

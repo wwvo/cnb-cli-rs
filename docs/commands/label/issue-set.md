@@ -1,3 +1,6 @@
+---
+title: cnb-rs label issue-set
+---
 # cnb-rs label issue-set
 
 ```

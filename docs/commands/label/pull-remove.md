@@ -1,3 +1,6 @@
+---
+title: cnb-rs label pull-remove
+---
 # cnb-rs label pull-remove
 
 ```

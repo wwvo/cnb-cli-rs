@@ -1,3 +1,6 @@
+---
+title: cnb-rs knowledge list-models
+---
 # cnb-rs knowledge list-models
 
 ```
