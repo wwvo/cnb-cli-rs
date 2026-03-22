@@ -48,7 +48,8 @@ fi
 bump_level="$(detect_bump_level "${commit_range}")"
 next_version="$(bump_version "${current_version}" "${bump_level}")"
 release_branch="${release_branch:-release/v${next_version}}"
-commit_title="🔧 chore(release): 准备 v${next_version} 发版"
+commit_title="🔧 chore(release): bump version to v${next_version}"
+pr_title="🔧 chore(release): 准备 v${next_version} 发版"
 pr_body=$'## 自动发版准备\n\n- 自动推导下一个版本号并更新 `Cargo.toml`\n- 自动同步 `Cargo.lock` 中的 workspace crate 版本\n- 自动重建项目级 `CHANGELOG.md`\n- 同步更新安装脚本中的默认 release 版本\n- 合并到 `main` 后将由流水线自动创建对应 tag\n'
 
 if git ls-remote --exit-code --heads origin "${release_branch}" >/dev/null 2>&1; then
@@ -94,5 +95,5 @@ git push origin "HEAD:${release_branch}"
 create_pull_request \
   "${base_branch}" \
   "${release_branch}" \
-  "${commit_title}" \
+  "${pr_title}" \
   "${pr_body}"
