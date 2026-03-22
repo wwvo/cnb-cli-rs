@@ -27,12 +27,24 @@ pub enum CredentialError {
 /// 跨平台凭证存储接口。
 pub trait CredentialStore {
     /// 读取凭证。
+    ///
+    /// # Errors
+    ///
+    /// 当系统凭证存储中不存在对应条目、访问超时或底层存储调用失败时返回错误。
     fn get(&self, service: &str, account: &str) -> Result<String, CredentialError>;
 
     /// 写入凭证。
+    ///
+    /// # Errors
+    ///
+    /// 当底层系统凭证存储拒绝写入、访问超时或调用异常时返回错误。
     fn set(&self, service: &str, account: &str, secret: &str) -> Result<(), CredentialError>;
 
     /// 删除凭证。
+    ///
+    /// # Errors
+    ///
+    /// 当系统凭证存储中不存在对应条目、访问超时或底层删除失败时返回错误。
     fn delete(&self, service: &str, account: &str) -> Result<(), CredentialError>;
 }
 

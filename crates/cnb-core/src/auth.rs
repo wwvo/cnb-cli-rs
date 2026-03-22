@@ -473,7 +473,7 @@ mod tests {
             let mut values = self
                 .values
                 .lock()
-                .unwrap_or_else(|poisoned| poisoned.into_inner());
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             values.insert(
                 (service.to_string(), account.to_string()),
                 secret.to_string(),
@@ -490,7 +490,7 @@ mod tests {
             let values = self
                 .values
                 .lock()
-                .unwrap_or_else(|poisoned| poisoned.into_inner());
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             values
                 .get(&(service.to_string(), account.to_string()))
                 .cloned()
@@ -505,7 +505,7 @@ mod tests {
             let mut values = self
                 .values
                 .lock()
-                .unwrap_or_else(|poisoned| poisoned.into_inner());
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             values.insert(
                 (service.to_string(), account.to_string()),
                 secret.to_string(),
@@ -521,7 +521,7 @@ mod tests {
             let mut values = self
                 .values
                 .lock()
-                .unwrap_or_else(|poisoned| poisoned.into_inner());
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             if values
                 .remove(&(service.to_string(), account.to_string()))
                 .is_some()
