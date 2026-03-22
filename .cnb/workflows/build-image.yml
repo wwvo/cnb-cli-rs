@@ -30,9 +30,21 @@ x-build-image-publish-job: &build-image-publish-job
       - name: 推送镜像
         script: bash .cnb/scripts/build-image.sh push
 
+x-build-image-web-trigger-job: &build-image-web-trigger-job
+  - name: build-rust-ci-image-web-trigger
+    runner:
+      cpus: 4
+    services:
+      - docker
+    stages:
+      - name: 构建镜像
+        script: bash .cnb/scripts/build-image.sh build
+      - name: 推送镜像
+        script: bash .cnb/scripts/build-image.sh push
+
 main:
   push: *build-image-publish-job
   pull_request: *build-image-check-job
 
 '**':
-  web_trigger_build-image: *build-image-publish-job
+  web_trigger_build-image: *build-image-web-trigger-job
