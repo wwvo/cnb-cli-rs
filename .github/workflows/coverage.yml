@@ -1,4 +1,4 @@
-# 使用 cargo-llvm-cov 生成 LCOV，上传到 Codecov（需配置仓库 Secret：CODECOV_TOKEN）。
+# 使用 cargo-llvm-cov 生成 HTML 与 LCOV，上传工件；可选上传到 Codecov（需配置仓库 Secret：CODECOV_TOKEN）。
 # 不强制覆盖率阈值，避免阻碍合并（可在 codecov.io 仓库设置或 codecov.yml 中再收紧）。
 
 name: Coverage
@@ -39,8 +39,14 @@ jobs:
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-llvm-cov
-      - name: Generate LCOV (runs workspace tests)
-        run: cargo llvm-cov --workspace --lcov --output-path lcov.info
+      - name: Generate HTML coverage (runs workspace tests)
+        run: cargo llvm-cov --workspace --html --output-dir coverage-html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: coverage-html
+      - name: Export LCOV report
+        run: cargo llvm-cov report --lcov --output-path lcov.info
       - uses: actions/upload-artifact@v4
         with:
           name: coverage-lcov

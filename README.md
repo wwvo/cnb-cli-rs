@@ -154,7 +154,7 @@ cargo build --release
 cargo test --workspace
 ```
 
-`main` 分支与指向 `main` 的 PR 会在 **GitHub Actions** 上执行 `cargo llvm-cov` 并上传 **LCOV** 工件（见 `.github/workflows/coverage.yml`），便于在本地或第三方工具中查看行覆盖率。
+`main` 分支与指向 `main` 的 PR 会在 **GitHub Actions** 上执行 `cargo llvm-cov`，上传 **HTML** 与 **LCOV** 工件（见 `.github/workflows/coverage.yml`）；HTML 报告便于人工查看文件与行覆盖情况，`lcov.info` 便于在本地或第三方工具中继续分析。
 
 若使用 [Codecov](https://codecov.io)：在 Codecov 中绑定仓库并复制 **Repository upload token**，在 GitHub 仓库 **Settings → Secrets and variables → Actions** 中新增名为 **`CODECOV_TOKEN`** 的 Secret；工作流会把 `lcov.info` 传给 Codecov（未配置 Secret 时跳过上传步骤，不影响其余检查）。也可在 Codecov 侧配置 **GitHub App + OIDC**，再于工作流中改用 `codecov/codecov-action` 的 `use_oidc`（见官方文档）。
 
